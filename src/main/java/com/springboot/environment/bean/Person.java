@@ -1,14 +1,20 @@
 package com.springboot.environment.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.io.Serializable;
 
 @Data
 @Entity
-public class Person {
+@JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
+public class Person implements Serializable {
+
+
+    private static final long serialVersionUID = -509438491019594820L;
     @Id
     @GeneratedValue
     private Integer id;

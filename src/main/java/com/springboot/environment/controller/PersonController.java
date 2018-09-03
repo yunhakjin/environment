@@ -24,4 +24,9 @@ public class PersonController {
         return personService.findAll();
     }
 
+    @GetMapping("/getone")
+    public Person findOne(){
+        return personService.getOne(1);
+    }
+
 }
