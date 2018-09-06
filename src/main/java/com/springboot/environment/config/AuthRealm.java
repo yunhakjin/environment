@@ -34,8 +34,6 @@ public class AuthRealm extends AuthorizingRealm {
         Session session = SecurityUtils.getSubject().getSession();
         //查询用户的权限
        // JSONObject permission = (JSONObject) session.getAttribute(Constants.SESSION_USER_PERMISSION);
-    //    logger.info("permission的值为:" + permission);//输出cmd
-    //    logger.info("本用户权限为:" + permission.get("permissionList"));
 
         logger.info("session:" + session.getId());
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
