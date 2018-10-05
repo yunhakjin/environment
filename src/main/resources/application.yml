@@ -8,10 +8,10 @@ spring:
          enabled: false
     datasource:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/test
+      url: jdbc:mysql://localhost:3306/test?characterEncoding=utf-8
       hikari:
         username: root
-        password: root
+        password: 123456
     jpa:
         hibernate:
           ddl-auto: update
@@ -19,5 +19,5 @@ spring:
     redis:
         host: 127.0.0.1
         port: 6379
-        password: 123456
+        password:
         database: 0
