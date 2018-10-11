@@ -14,7 +14,7 @@ import javax.persistence.*;
 * norm_id_code:指标代码（3位） 用作标记ID
 * norm_code: 指标代码(6位)
 * norm_name: 指标名称
-* norm_status:指标状态 有效 0 无效 1
+* norm_status:指标状态 有效 1 无效 0
 * application:所属应用（暂未使用）*/
 public class Norm {
     @Id

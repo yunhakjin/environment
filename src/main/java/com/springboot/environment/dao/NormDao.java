@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 /*关于指标的DAO*/
 public interface NormDao extends JpaRepository<Norm,String> {
+
 }

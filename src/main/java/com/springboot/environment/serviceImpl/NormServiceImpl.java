@@ -28,34 +28,12 @@ public class NormServiceImpl implements NormService {
 
     @Override
     public void addOne(Norm norm){
-        for(int i=0;i<20;i++){
-            if(normDao.findById("tmp"+i).isPresent()){
-                normDao.deleteById("tmp"+i);
-                normDao.save(norm);
-                return;
-            }
-        }
         normDao.save(norm);
     }
 
     @Override
     public void delOne(String norm_id_code){
-        for(int i=0;i<20;i++){
-            if(normDao.findById("tmp"+i).isPresent()){
-            }
-            else{
-                normDao.deleteById(norm_id_code);
-                Norm norm=new Norm();
-                String tmpStr="tmp"+(i);
-                norm.setNorm_id_code(tmpStr);
-                norm.setNorm_code(tmpStr);
-                norm.setNorm_name(tmpStr);
-                norm.setNorm_status(0);
-                norm.setApplication("");
-                normDao.save(norm);
-                return;
-            }
-        }
+        normDao.deleteById(norm_id_code);
     }
 
     @Override
