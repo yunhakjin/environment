@@ -37,7 +37,8 @@ public class NormServiceImpl implements NormService {
     }
 
     @Override
-    public void updateOne(Norm norm){
+    public void updateOne(String norm_id_code,Norm norm){
+        normDao.deleteById(norm_id_code);
         normDao.save(norm);
     }
 

@@ -15,6 +15,6 @@ public interface NormService {
     public List<Norm> getAll();
     public void addOne(Norm norm);
     public void delOne(String norm_id_code);
-    public void updateOne(Norm norm);
+    public void updateOne(String norm_id_code,Norm norm);
     public Norm getOne(String norm_id_code);
 }
