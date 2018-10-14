@@ -31,4 +31,6 @@ public class DataController {
         Page<DData> pages=dDataService.getAllPage(page,size);
         return pages;
     }
+
+    /*查询指定站点，指定时间的日数据*/
 }

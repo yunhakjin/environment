@@ -28,4 +28,18 @@ public class DDataServiceImp implements DDataService {
         return dDataDao.findAll(pageable);
     }
 
+    @Override
+    public List<DData> getDDataByData_id(String Data_id) {
+        return dDataDao.getDDataByData_id(Data_id);
+    }
+
+    @Override
+    public void saveDData(DData dData) {
+        dDataDao.saveAndFlush(dData);
+    }
+
+    @Override
+    public void delDData(String Data_id) {
+        dDataDao.deleteAll(getDDataByData_id(Data_id));
+    }
 }
