@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Data
 @Entity
-@Table(name = "egroup")
+@Table(name = "group")
 @JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 
 public class Group  implements Serializable {
@@ -24,7 +24,7 @@ public class Group  implements Serializable {
     private String group_name;
     private String group_detail;
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="e_user_group",joinColumns={@JoinColumn(name="group_id")},inverseJoinColumns={@JoinColumn(name="user_id")})
+    @JoinTable(name="user_group",joinColumns={@JoinColumn(name="group_id")},inverseJoinColumns={@JoinColumn(name="user_id")})
     private List<User> users;
 
     public List<User> getUsers() {

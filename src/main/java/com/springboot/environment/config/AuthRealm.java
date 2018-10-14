@@ -41,6 +41,7 @@ public class AuthRealm extends AuthorizingRealm {
         User user  = (User)principalCollection.getPrimaryPrincipal();
         for(Role role:user.getRoles()){
             authorizationInfo.addRole(role.getRole_name());
+            //这里关于用户的权限管理
         }
         for(Group p:user.getGroups()){
             authorizationInfo.addStringPermission(p.getGroup_name());
@@ -57,7 +58,7 @@ public class AuthRealm extends AuthorizingRealm {
         String userName  = usernamePasswordToken.getUsername();
         System.out.println("NAME"+userName);
         //根据用户名查询数据库中对应的记录
-        User user = userService.findByUsername(userName);
+        User user = userService.findByUserId(userName);
         System.out.println(user);
         //当前realm对象的name
         String realmName = getName();

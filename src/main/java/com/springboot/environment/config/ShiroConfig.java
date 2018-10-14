@@ -41,11 +41,11 @@ public class ShiroConfig {
         //配置访问权限
         //bean.setSuccessUrl("/success.html");
         LinkedHashMap<String, String> filterChainDefinitionMap=new LinkedHashMap<>();
-        filterChainDefinitionMap.put("/ShiroTest/login", "anon"); //表示可以匿名访问
-        filterChainDefinitionMap.put("/ShiroTest/loadByName*", "anon"); //表示可以匿名访问
-        filterChainDefinitionMap.put("/ShiroTest/login*", "anon"); //表示可以匿名访问
-        filterChainDefinitionMap.put("/ShiroTest/login**", "anon"); //表示可以匿名访问
-        filterChainDefinitionMap.put("/ShiroTest/register*", "anon"); //表示可以匿名访问
+        filterChainDefinitionMap.put("/user/login", "anon"); //表示可以匿名访问
+        filterChainDefinitionMap.put("/user/loadByName*", "anon"); //表示可以匿名访问
+        filterChainDefinitionMap.put("/user/login*", "anon"); //表示可以匿名访问
+        filterChainDefinitionMap.put("/user/login**", "anon"); //表示可以匿名访问
+        filterChainDefinitionMap.put("/user/register*", "anon"); //表示可以匿名访问
         filterChainDefinitionMap.put("/*", "authc");//表示需要认证才可以访问
         filterChainDefinitionMap.put("/**", "authc");//表示需要认证才可以访问
         filterChainDefinitionMap.put("/*.*", "authc");//表示需要认证才可以访问
@@ -62,19 +62,6 @@ public class ShiroConfig {
     }
 
 
-    //不加密配置
-    //配置自定义的权限登录器
-//    @Bean(name="authRealm")
-//    public AuthRealm authRealm(@Qualifier("credentialsMatcher") CredentialsMatcher matcher) {
-//        AuthRealm authRealm=new AuthRealm();
-//        authRealm.setCredentialsMatcher(matcher);
-//        return authRealm;
-//    }
-//    //配置自定义的密码比较器
-//    @Bean(name="credentialsMatcher")
-//    public CredentialsMatcher credentialsMatcher() {
-//        return new MyCredentialsMatcher();
-//    }
 
 
     @Bean("hashedCredentialsMatcher")
