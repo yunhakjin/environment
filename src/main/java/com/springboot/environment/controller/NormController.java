@@ -34,7 +34,8 @@ public class NormController {
             @ApiImplicitParam(name="application",value = "暂未使用")
     }
     )
-    @PostMapping(value = "/addone/{norm_id_code}/{norm_code}/{norm_name}/{norm_status}/{application}")
+    @RequestMapping(value = "/addone/{norm_id_code}/{norm_code}/{norm_name}/{norm_status}/{application}",method = RequestMethod.GET)
+    @ResponseBody
     public void addOne(@PathVariable String norm_id_code,
                        @PathVariable String norm_code,
                        @PathVariable String norm_name,
@@ -58,7 +59,8 @@ public class NormController {
             @ApiImplicitParam(name="application",value = "暂未使用")
     }
     )
-    @PostMapping(value = "/updateone/{norm_id_code}/{norm_code}/{norm_name}/{norm_status}/{application}")
+    @RequestMapping(value = "/updateone/{norm_id_code}/{norm_code}/{norm_name}/{norm_status}/{application}",method = RequestMethod.GET)
+    @ResponseBody
     public void updateOne(@PathVariable String norm_id_code,
                        @PathVariable String norm_code,
                        @PathVariable String norm_name,
@@ -78,7 +80,8 @@ public class NormController {
             @ApiImplicitParam(name = "node_id_code",value="指标代码（3位）",dataType = "String",example = "leq")
     }
     )
-    @DeleteMapping(value="/deleteone/{norm_id_code}")
+    @RequestMapping(value="/deleteone/{norm_id_code}",method = RequestMethod.GET)
+    @ResponseBody
     public void deleteOne(@PathVariable String norm_id_code){
         normService.delOne(norm_id_code);
     }

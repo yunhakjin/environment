@@ -37,7 +37,8 @@ public class GroupController {
             @ApiImplicitParam(name = "group_name",value="用户组名称",dataType = "String")
     }
     )
-    @PostMapping(value = "/addone/{group_name}")
+    @RequestMapping(value = "/addone/{group_name}",method = RequestMethod.GET)
+    @ResponseBody
     public void addOne(@PathVariable String group_name){
         Group group=new Group();
         group.setGroup_name(group_name);
@@ -50,7 +51,8 @@ public class GroupController {
             @ApiImplicitParam(name = "group_name",value="用户组名称",dataType = "String")
     }
     )
-    @PostMapping(value = "/updateone/{group_id}/{group_name}")
+    @RequestMapping(value = "/updateone/{group_id}/{group_name}",method = RequestMethod.GET)
+    @ResponseBody
     public void updateOne(@PathVariable String group_id,
                           @PathVariable String group_name){
         groupService.updateOne(group_id,group_name);
@@ -61,7 +63,8 @@ public class GroupController {
             @ApiImplicitParam(name = "group_id",value="用户组id",dataType = "String")
     }
     )
-    @DeleteMapping(value="/deleteone/{group_id}")
+    @RequestMapping(value="/deleteone/{group_id}",method = RequestMethod.GET)
+    @ResponseBody
     public void deleteOne(@PathVariable String group_id){
         groupService.delOne(group_id);
     }

@@ -30,6 +30,8 @@ public interface UserService {
 
     void updateOne(String user_id, String user_name, String password, String user_mail, String user_tel, String user_prefer);
 
+    List<String> getPrefer(String user_id);
+
 
     // Object login(String name, String pass, HttpSession session, HttpServletRequest request);
 
