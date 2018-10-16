@@ -9,6 +9,7 @@ spring:
     datasource:
       driver-class-name: com.mysql.jdbc.Driver
       url: jdbc:mysql://139.196.200.37:3306/environment?characterEncoding=utf-8
+
       hikari:
         username: environment
         password: Nelson1006.

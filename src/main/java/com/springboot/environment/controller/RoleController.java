@@ -36,7 +36,8 @@ public class RoleController {
             @ApiImplicitParam(name = "role_name",value="角色名称",dataType = "String")
     }
     )
-    @PostMapping(value = "/addone/{role_name}")
+    @RequestMapping(value = "/addone/{role_name}",method = RequestMethod.GET)
+    @ResponseBody
     public void addOne(@PathVariable String role_name){
         Role role=new Role();
         role.setRole_name(role_name);
@@ -49,7 +50,8 @@ public class RoleController {
             @ApiImplicitParam(name = "role_name",value="角色名称",dataType = "String")
     }
     )
-    @PostMapping(value = "/updateone/{role_id}/{role_name}")
+    @RequestMapping(value = "/updateone/{role_id}/{role_name}",method = RequestMethod.GET)
+    @ResponseBody
     public void updateOne(@PathVariable String role_id,
                           @PathVariable String role_name){
         roleService.updateOne(role_id,role_name);
@@ -60,7 +62,8 @@ public class RoleController {
             @ApiImplicitParam(name = "role_id",value="角色id",dataType = "String")
     }
     )
-    @DeleteMapping(value="/deleteone/{role_id}")
+    @RequestMapping(value="/deleteone/{role_id}",method = RequestMethod.GET)
+    @ResponseBody
     public void deleteOne(@PathVariable String role_id){
         roleService.delOne(role_id);
     }

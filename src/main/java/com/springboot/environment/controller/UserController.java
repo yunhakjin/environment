@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,18 +44,9 @@ public class UserController {
             @ApiImplicitParam(name="group_id",value = "用户组id",dataType = "String")
     }
     )
-    @RequestMapping(value = "/register/{user_id}/{user_name}/{password}/{user_mail}/{user_tel}/{user_prefer}/{role_id}/{group_id}",method=RequestMethod.GET)
+    @RequestMapping(value = "/register",method = RequestMethod.GET)
     @ResponseBody
-    public Boolean register(@PathVariable String user_id,
-                            @PathVariable String user_name,
-                            @PathVariable String password,
-                            @PathVariable String user_mail ,
-                            @PathVariable String user_tel,
-                            @PathVariable String user_prefer,
-                            @PathVariable String role_id,
-                            @PathVariable String group_id,
-                           HttpSession session,
-                             HttpServletRequest request) {
+    public Boolean register(String user_id,String user_name, String password, String user_mail , String user_tel, String user_prefer,String role_id,String group_id,HttpSession session, HttpServletRequest request) {
         return userService.register(user_id, user_name, password, user_mail, user_tel, user_prefer, role_id, group_id, session, request);
     }
 
@@ -76,33 +68,6 @@ public class UserController {
             @ApiImplicitParam(name="session",value = "session",dataType = "HttpSession")
     }
     )
-  /*  @RequestMapping(value="/login/{user_id}/{password}",method=RequestMethod.GET)
-    @ResponseBody
-    public Map<String,Object> submitLogin(@PathVariable String user_id,
-                                    @PathVariable String password,
-                                    HttpSession session) {
-        System.out.println(user_id);
-        System.out.println(password);
-        Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-        try {
-            UsernamePasswordToken usernamePasswordToken=new UsernamePasswordToken(user_id,password);
-            Subject subject = SecurityUtils.getSubject();
-            subject.login(usernamePasswordToken);   //完成登录
-            User user=(User) subject.getPrincipal();
-            session.setAttribute("user", user);
-            System.out.println(user);
-            resultMap.put("status", 200);
-            resultMap.put("message", "登录成功");
-            resultMap.put("user", user.getUser_id());
-            resultMap.put("password",user.getPassword());
-        }catch(Exception e) {
-            resultMap.put("status", 500);
-            e.printStackTrace();
-            resultMap.put("message", e.getMessage());
-        }
-        return resultMap;
-    }*/
-
     @RequestMapping(value="/login",method=RequestMethod.GET)
     @ResponseBody
     public Map<String,Object> submitLogin(String user_id, String password, HttpSession session) {
@@ -178,6 +143,16 @@ public class UserController {
         return true;
     }
 
+    @ApiOperation(value="得到用户喜好列表",notes = "根据用户id获得用户喜好列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "user_id",value="用户id（指定）",dataType = "String")
+    }
+    )
+    @RequestMapping(value="/getprefer/{user_id}",method = RequestMethod.GET)
+    @ResponseBody
+    public List<String> getPrefer(@PathVariable String user_id){
+        return  userService.getPrefer(user_id);
+    }
 
 
 }

@@ -38,7 +38,8 @@ public class PermissionController {
             @ApiImplicitParam(name = "permission_name",value="权限名称",dataType = "String")
     }
     )
-    @PostMapping(value = "/addone/{permission_name}")
+    @RequestMapping(value = "/addone/{permission_name}",method = RequestMethod.GET)
+    @ResponseBody
     public void addOne(@PathVariable String permission_name){
         Permission permission=new Permission();
         permission.setPermission_name(permission_name);
@@ -51,7 +52,8 @@ public class PermissionController {
             @ApiImplicitParam(name = "permission_name",value="权限名称",dataType = "String")
     }
     )
-    @PostMapping(value = "/updateone/{permission_id}/{permission_name}")
+    @RequestMapping(value = "/updateone/{permission_id}/{permission_name}",method = RequestMethod.GET)
+    @ResponseBody
     public void updateOne(@PathVariable String permission_id,
                           @PathVariable String permission_name){
         permissionService.updateOne(permission_id,permission_name);
@@ -62,7 +64,8 @@ public class PermissionController {
             @ApiImplicitParam(name = "permission_id",value="权限id",dataType = "String")
     }
     )
-    @DeleteMapping(value="/deleteone/{permission_id}")
+    @RequestMapping(value="/deleteone/{permission_id}",method = RequestMethod.GET)
+    @ResponseBody
     public void deleteOne(@PathVariable String permission_id){
         permissionService.delOne(permission_id);
     }

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -108,6 +109,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateOne(String user_id, String user_name, String password, String user_mail, String user_tel, String user_prefer) {
         userDao.updateOne(Integer.parseInt(user_id),user_name,password,user_mail,user_tel,user_prefer);
+    }
+
+    @Override
+    public List<String> getPrefer(String user_id) {
+        String[] prefers=userDao.loadByUserId(Integer.parseInt(user_id)).getUser_prefer().split(",");
+        List<String> lists=new ArrayList<>();
+        for (String a: prefers) {
+            lists.add(a);
+        }
+        return lists;
     }
 
 
