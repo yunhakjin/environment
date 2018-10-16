@@ -42,6 +42,7 @@
             <optional>true</optional>
         </dependency>
 
+        <!--spring boot的jpa引用-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -92,6 +93,16 @@
             <version>1.3.2</version>
         </dependency>
 
+        <!--jpa的相关pom依赖-->
+        <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>1.8.1.RELEASE</version>
+        </dependency>
+
+
+
         <!-- shiro ehcache -->
         <dependency>
             <groupId>org.apache.shiro</groupId>
@@ -113,6 +124,15 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <!--google的工具依赖-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>25.1-jre</version>
+        </dependency>
+
     </dependencies>
 
     <build>
