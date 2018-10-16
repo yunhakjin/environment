@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Data
 @Entity
-@Table(name = "erole")
+@Table(name = "role")
 @JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 
 public class Role  implements Serializable {
@@ -22,7 +22,27 @@ public class Role  implements Serializable {
     @GeneratedValue
     private int role_id;
     private String role_name;
-    private String role_authority;
+
+
+
+    // 用户 - 角色关系定义;多对多
+    @ManyToMany(mappedBy = "roles" ,fetch = FetchType.LAZY)
+//    @JoinTable(name="e_user_role",joinColumns={@JoinColumn(name="role_id")},inverseJoinColumns={@JoinColumn(name="user_id")})
+    private List<User> users;// 一个角色对应多个用户
+
+
+    //指定了多对多的关系，fetch=FetchType.LAZY属性表示在多的那一方通过延迟加载的方式加载对象（默认不是延迟加载）
+    @ManyToMany(fetch= FetchType.LAZY)//立即从数据库中进行加载数据;
+    @JoinTable(name = "role_permission", joinColumns = { @JoinColumn(name = "role_id") }, inverseJoinColumns ={@JoinColumn(name = "permission_id") })
+    private List<Permission> permissions;// 一个用户具有多个角色
+
+    public List<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<Permission> permissions) {
+        this.permissions = permissions;
+    }
 
     public List<User> getUsers() {
         return users;
@@ -31,12 +51,6 @@ public class Role  implements Serializable {
     public void setUsers(List<User> users) {
         this.users = users;
     }
-
-    // 用户 - 角色关系定义;多对多
-    @ManyToMany(mappedBy = "roles" ,fetch = FetchType.LAZY)
-//    @JoinTable(name="e_user_role",joinColumns={@JoinColumn(name="role_id")},inverseJoinColumns={@JoinColumn(name="user_id")})
-    private List<User> users;// 一个角色对应多个用户
-
     public int getRole_id() {
         return role_id;
     }
@@ -53,14 +67,6 @@ public class Role  implements Serializable {
         this.role_name = role_name;
     }
 
-    public String getRole_authority() {
-        return role_authority;
-    }
-
-    public void setRole_authority(String role_authority) {
-        this.role_authority = role_authority;
-    }
-
     public Role() {
     }
 
@@ -68,8 +74,7 @@ public class Role  implements Serializable {
     public String toString() {
         return "Role{" +
                 "role_id=" + role_id +
-                ", role_name='" + role_name + '\'' +
-                ", role_authority='" + role_authority + '\'' +
+                ", role_name='" + role_name +
                 '}';
     }
 }

@@ -12,14 +12,14 @@ import java.util.List;
  */
 @Data
 @Entity
-@Table(name = "euser")
+@Table(name = "user")
 @JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 
 public class User  implements Serializable {
     private static final long serialVersionUID = -509438491019594820L;
 
     @Id
-    @GeneratedValue
+    //@GeneratedValue
     private Integer user_id;
     private String password;
     private String user_mail;
@@ -28,10 +28,12 @@ public class User  implements Serializable {
     private String user_name;
     private String user_tel;
 
+    @Column(name = "user_prefer")
+    private String user_prefer;
 
     //指定了多对多的关系，fetch=FetchType.LAZY属性表示在多的那一方通过延迟加载的方式加载对象（默认不是延迟加载）
     @ManyToMany(fetch= FetchType.LAZY)//立即从数据库中进行加载数据;
-    @JoinTable(name = "e_user_role", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns ={@JoinColumn(name = "role_id") })
+    @JoinTable(name = "user_role", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns ={@JoinColumn(name = "role_id") })
     private List<Role> roles;// 一个用户具有多个角色
 
     //角色 -- 权限关系：多对多关系;mappedBy同样指定由对方来进行维护关联关系
@@ -87,11 +89,22 @@ public class User  implements Serializable {
         this.user_tel = user_tel;
     }
 
-    public User(String password, String user_mail, String user_name, String user_tel) {
+    public String getUser_prefer() {
+        return user_prefer;
+    }
+
+    public void setUser_prefer(String user_prefer) {
+        this.user_prefer = user_prefer;
+    }
+
+    public User(String password, String user_mail, String user_tel, String user_prefer, String user_name, List<Role> roles, List<Group> groups) {
         this.password = password;
         this.user_mail = user_mail;
-        this.user_name = user_name;
         this.user_tel = user_tel;
+        this.user_prefer = user_prefer;
+        this.user_name = user_name;
+        this.roles = roles;
+        this.groups = groups;
     }
 
     public User() {
@@ -105,8 +118,7 @@ public class User  implements Serializable {
                 ", user_mail='" + user_mail + '\'' +
                 ", user_name='" + user_name + '\'' +
                 ", user_tel='" + user_tel + '\'' +
-                ", roles=" + roles +
-                ", groups=" + groups +
+                ", user_prefer='" + user_prefer +
                 '}';
     }
 

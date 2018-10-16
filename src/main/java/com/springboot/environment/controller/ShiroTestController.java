@@ -26,26 +26,25 @@ public class ShiroTestController {
 
     @RequestMapping(value = "/register",method = RequestMethod.GET)
     @ResponseBody
-    public Boolean register(String name, String password, String mail , String tel, HttpSession session, HttpServletRequest request) {
-        return userService.register(name, password,mail,tel, session, request);
+    public Boolean register(String user_id,String user_name, String password, String user_mail , String user_tel, String user_prefer,String role_id,String group_id,HttpSession session, HttpServletRequest request) {
+        return userService.register(user_id, user_name, password, user_mail, user_tel, user_prefer, role_id, group_id, session, request);
     }
 
-    @RequestMapping(value = "/loadByName",method = RequestMethod.GET)
+    @RequestMapping(value = "/loadByUserId",method = RequestMethod.GET)
     @ResponseBody
-    public User loadByName(String name) {
-        return userService.findByUsername(name);
+    public User loadByUserId(String user_id) {
+        return userService.findByUserId(user_id);
     }
 
 
     @RequestMapping(value="/login",method=RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object> submitLogin(String username, String password, HttpSession session) {
-        System.out.println(username);
+    public Map<String,Object> submitLogin(String user_id, String password, HttpSession session) {
+        System.out.println(user_id);
         System.out.println(password);
         Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-
         try {
-            UsernamePasswordToken usernamePasswordToken=new UsernamePasswordToken(username,password);
+            UsernamePasswordToken usernamePasswordToken=new UsernamePasswordToken(user_id,password);
             Subject subject = SecurityUtils.getSubject();
             subject.login(usernamePasswordToken);   //完成登录
             User user=(User) subject.getPrincipal();
@@ -60,8 +59,6 @@ public class ShiroTestController {
             e.printStackTrace();
             resultMap.put("message", e.getMessage());
         }
-
-
         return resultMap;
     }
     @GetMapping("/testRedis")
@@ -73,6 +70,7 @@ public class ShiroTestController {
     public Boolean testRedisSet(){
         return userService.testRedisSet();
     }
+
 
 }
 

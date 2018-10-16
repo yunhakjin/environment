@@ -11,13 +11,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by yww on 2018/9/11.
  */
+@Transactional
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -34,13 +38,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUsername(String username) {
-        return userDao.loadByUserName(username);
+    public User findByUserId(String user_id) {
+        return userDao.loadByUserId(Integer.parseInt(user_id));
         // return null;
     }
 
+    @Transactional
     @Override
-    public Boolean register(String name, String password, String mail, String tel, HttpSession session, HttpServletRequest request) {
+    public Boolean register(String user_id, String name, String password, String mail , String tel, String user_prefer,String role_id,String group_id, HttpSession session, HttpServletRequest request) {
 
         ByteSource salt = ByteSource.Util.bytes(name);
         /*
@@ -53,13 +58,17 @@ public class UserServiceImpl implements UserService {
         * 最后用toHex()方法将加密后的密码转成String
         * */
         String newPs = new SimpleHash("MD5", password, salt, 1024).toHex();
-
+        boolean flag=false;
         User u = new User();
+        u.setUser_id(Integer.parseInt(user_id));
         u.setPassword(newPs);
         u.setUser_mail(mail);
         u.setUser_tel(tel);
         u.setUser_name(name);
+        u.setUser_prefer(user_prefer);
         userDao.save(u);
+        userDao.saveUser_Role(Integer.parseInt(user_id),Integer.parseInt(role_id));
+        userDao.saveUser_Group(Integer.parseInt(user_id),Integer.parseInt(group_id));
         return true;
     }
 
@@ -82,6 +91,34 @@ public class UserServiceImpl implements UserService {
             flag=true;
         }
         return flag;
+    }
+
+    @Override
+    public List<User> getAll() {
+        return userDao.findAll();
+    }
+
+
+    @Override
+    public void delOne(String user_id) {
+        userDao.deleteUserRole(Integer.parseInt(user_id));
+        userDao.deleteUserGroup(Integer.parseInt(user_id));
+        userDao.deleteById(Integer.parseInt(user_id));
+    }
+
+    @Override
+    public void updateOne(String user_id, String user_name, String password, String user_mail, String user_tel, String user_prefer) {
+        userDao.updateOne(Integer.parseInt(user_id),user_name,password,user_mail,user_tel,user_prefer);
+    }
+
+    @Override
+    public List<String> getPrefer(String user_id) {
+        String[] prefers=userDao.loadByUserId(Integer.parseInt(user_id)).getUser_prefer().split(",");
+        List<String> lists=new ArrayList<>();
+        for (String a: prefers) {
+            lists.add(a);
+        }
+        return lists;
     }
 
 
