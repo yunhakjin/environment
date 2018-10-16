@@ -12,5 +12,5 @@ import java.util.List;
 @Component
 @Repository
 public interface MDataDao extends JpaRepository<MData,Integer> {
-    public Page<MData> getAllByStation_idIn(Collection<String> station_id,int page,int size);
+//    public Page<MData> getAllByStation_idIn(Collection<String> station_id,int page,int size);
 }
