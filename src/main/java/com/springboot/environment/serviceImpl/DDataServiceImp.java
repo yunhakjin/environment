@@ -30,7 +30,8 @@ public class DDataServiceImp implements DDataService {
 
     @Override
     public List<DData> getDDataByData_id(String Data_id) {
-        return dDataDao.getDDataByData_id(Data_id);
+//        return dDataDao.getDDataByData_id(Data_id);
+        return null;
     }
 
     @Override
