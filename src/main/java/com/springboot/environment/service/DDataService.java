@@ -11,4 +11,5 @@ public interface DDataService {
     public List<DData> getDDataByData_id(String Data_id);
     public void saveDData(DData dData);
     public void delDData(String Data_id);
+    public Page<DData> getByStationAndTime(String station_id,String starttime,String endtime,int data_check,int data_status,int page,int size);
 }
