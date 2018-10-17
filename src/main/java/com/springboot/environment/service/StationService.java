@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface StationService {
 
-    List<Station> queryStationsByCountryCon(int isCountryCon);
+    String queryStationsByCountryCon(int isCountryCon);
 }
