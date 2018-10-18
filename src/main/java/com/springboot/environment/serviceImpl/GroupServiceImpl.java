@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,8 +21,9 @@ public class GroupServiceImpl implements GroupService {
     private GroupDao groupDao;
 
     @Override
-    public List<Group> getAll() {
-        return groupDao.findAll();
+    public List< Object[]> getAll() {
+
+        return groupDao.getAll();
     }
 
     @Override
@@ -30,8 +32,8 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public void updateOne(String group_id, String group_name) {
-        groupDao.updateOne(Integer.parseInt(group_id),group_name);
+    public void updateOne(String group_id, String group_name, String group_detail) {
+        groupDao.updateOne(Integer.parseInt(group_id),group_name,group_detail);
     }
 
     @Override

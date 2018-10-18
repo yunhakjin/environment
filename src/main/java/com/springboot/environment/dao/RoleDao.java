@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * Created by yww on 2018/9/11.
  */
@@ -26,4 +28,6 @@ public interface RoleDao extends JpaRepository<Role,Integer> {
     @Query(value = "delete from  role_permission where role_id = ?1",nativeQuery = true)
     void deleteRolePermission(int role_id);
 
+    @Query(value = "select DISTINCT * from role",nativeQuery = true)
+    List<Object[]> getAll();
 }

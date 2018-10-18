@@ -104,7 +104,7 @@ public class UserController {
 
     @ApiOperation(value="返回所有用户的信息",notes = "所有用户的信息")
     @GetMapping(value = "/getall")
-    public List<User> getAll(){
+    public List< Object[]> getAll(){
         return userService.getAll();
     }
 

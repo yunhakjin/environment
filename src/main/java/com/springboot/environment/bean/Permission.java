@@ -23,7 +23,7 @@ public class Permission implements Serializable {
     @Column(name = "permission_name")
     private String permission_name;
 
-    // 用户 - 角色关系定义;多对多
+    //*/ 用户 - 角色关系定义;多对多
     @ManyToMany(mappedBy = "permissions" ,fetch = FetchType.LAZY)
 //    @JoinTable(name="e_user_role",joinColumns={@JoinColumn(name="role_id")},inverseJoinColumns={@JoinColumn(name="user_id")})
     private List<Role> roles;// 一个角色对应多个用户

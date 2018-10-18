@@ -22,7 +22,7 @@ public interface UserService {
 
     Boolean testRedisSet();
 
-    List<User> getAll();
+    List< Object[]> getAll();
 
      
 
