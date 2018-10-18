@@ -110,7 +110,7 @@ public class UserController {
 
 
 
-    @ApiOperation(value="修改某一个用户",notes = "需要用户的所有信息")
+    @ApiOperation(value="修改某一个 用户",notes = "需要用户的所有信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "user_id",value="用户id（指定）",dataType = "String"),
             @ApiImplicitParam(name = "user_name",value="用户名",dataType = "String"),
