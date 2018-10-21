@@ -226,5 +226,65 @@ public class StationController {
 
 
 
+    @ApiOperation(value="新增站点信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "stationId",value="对内站点编号",dataType = "String"),
+            @ApiImplicitParam(name = "stationCode",value="对外站点编号",dataType = "String"),
+            @ApiImplicitParam(name = "stationName",value="站点名称",dataType = "String"),
+            @ApiImplicitParam(name = "stationStatus",value="站点状态",dataType = "String"),
+            @ApiImplicitParam(name = "application",value="所属应用(暂未使用)",dataType = "String"),
+            @ApiImplicitParam(name = "onlineFlag",value="在线标识",dataType = "String"),
+            @ApiImplicitParam(name = "stationIdDZ",value="对照码",dataType = "String"),
+            @ApiImplicitParam(name = "protocol",value="所用协议",dataType = "String"),
+            @ApiImplicitParam(name = "protocolName",value="所用协议名称",dataType = "String"),
+            @ApiImplicitParam(name = "position",value="站点位置",dataType = "String"),
+            @ApiImplicitParam(name = "street",value="站点所属街道",dataType = "String"),
+            @ApiImplicitParam(name = "district",value="站点所属行政区",dataType = "String"),
+            @ApiImplicitParam(name = "range",value="噪声点范围",dataType = "String"),
+            @ApiImplicitParam(name = "countryCon",value="国控",dataType = "String"),
+            @ApiImplicitParam(name = "cityCon",value="市控",dataType = "String"),
+            @ApiImplicitParam(name = "domainCon",value="区控",dataType = "String"),
+            @ApiImplicitParam(name = "area",value="区域环境",dataType = "String"),
+            @ApiImplicitParam(name = "domain",value="功能区",dataType = "String")
+    })
+    @RequestMapping(value = "/addStation/{stationId}/{stationCode}/{stationName}/{stationStatus}/{application}/{onlineFlag}/{stationIdDZ}/{protocol}/{protocolName}/{position}/{street}/{district}/{range}/{countryCon}/{cityCon}/{domainCon}/{area}/{domain}", method = RequestMethod.GET)
+    @ResponseBody
+    public String addStation(@PathVariable String stationId,
+                             @PathVariable String stationCode,
+                             @PathVariable String stationName,
+                             @PathVariable String stationStatus,
+                             @PathVariable String application,
+                             @PathVariable String onlineFlag,
+                             @PathVariable String stationIdDZ,
+                             @PathVariable String protocol,
+                             @PathVariable String protocolName,
+                             @PathVariable String position,
+                             @PathVariable String street,
+                             @PathVariable String district,
+                             @PathVariable String range,
+                             @PathVariable String countryCon,
+                             @PathVariable String cityCon,
+                             @PathVariable String domainCon,
+                             @PathVariable String area,
+                             @PathVariable String domain){
+
+        return stationService.addStation(stationId, stationCode, stationName, stationStatus, application, onlineFlag, stationIdDZ, protocol, protocolName, position, street, district, range, countryCon, cityCon, domainCon, area, domain);
+
+    }
+
+
+    @ApiOperation(value="根据站点Id删除站点信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "stationId",value="站点对内Id",dataType = "String")
+    })
+
+    @RequestMapping(value = "/deleteByStationId/{stationId}", method = RequestMethod.GET)
+    @ResponseBody
+    public String deleteByStationId(@PathVariable String stationId){
+
+        return stationService.deleteStationByStationId(stationId);
+    }
+
+
 
 }

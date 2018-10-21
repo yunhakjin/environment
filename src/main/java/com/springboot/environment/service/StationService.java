@@ -28,5 +28,12 @@ public interface StationService {
 
     List<Station> queryStationsByDomain(int domain);
 
+    String addStation(String stationId, String stationCode, String stationName, String stationStatus, String application,
+                      String onlineFlag, String stationIdDZ, String protocol, String protocolName, String position,
+                      String street, String district, String range, String countryCon, String cityCon, String domainCon,
+                      String area, String domain);
+
+    String deleteStationByStationId(String stationId);
+
 
 }

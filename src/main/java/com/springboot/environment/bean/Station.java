@@ -22,7 +22,7 @@ public class Station implements Serializable {
      * 站点的主键id，没有实际的意义
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", unique = true, nullable = false)
     private int id;
     /**
@@ -76,7 +76,7 @@ public class Station implements Serializable {
     /**
      * 站点位置
      */
-    @Column(name = "POSITION", nullable = false)
+    @Column(name = "STATION_POSITION", nullable = false)
     private String position;
     /**
      * 站点所属街道
@@ -91,7 +91,7 @@ public class Station implements Serializable {
     /**
      * 噪声点范围
      */
-    @Column(name = "RANGE", nullable = false)
+    @Column(name = "STATION_RANGE", nullable = false)
     private String range;
     /**
      * 国控

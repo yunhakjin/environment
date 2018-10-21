@@ -106,4 +106,46 @@ public class StationServiceImpl implements StationService {
         List<Station> stations = stationDao.findByDomain(domain);
         return stations;
     }
+
+    @Transactional
+    @Override
+    public String addStation(String stationId, String stationCode, String stationName, String stationStatus, String application, String onlineFlag, String stationIdDZ, String protocol, String protocolName, String position, String street, String district, String range, String countryCon, String cityCon, String domainCon, String area, String domain) {
+        Station station = new Station();
+        station.setStationId(stationId);
+        station.setStationCode(stationCode);
+        station.setStationName(stationName);
+        station.setStationStatus(Integer.parseInt(stationStatus));
+        station.setApplication(application);
+        station.setOnlineFlag(Integer.parseInt(onlineFlag));
+        station.setStationIdDZ(stationIdDZ);
+        station.setProtocol(Integer.parseInt(protocol));
+        station.setProtocolName(protocolName);
+        station.setPosition(position);
+        station.setStreet(street);
+        station.setDistrict(district);
+        station.setRange(range);
+        station.setCountryCon(Integer.parseInt(countryCon));
+        station.setCityCon(Integer.parseInt(cityCon));
+        station.setDomainCon(Integer.parseInt(domainCon));
+        station.setArea(Integer.parseInt(area));
+        station.setDomainCon(Integer.parseInt(domain));
+        System.out.println(station.toString());
+        Station result = stationDao.save(station);
+        if (result != null){
+            return "新增成功";
+        }
+
+        return "新增失败";
+    }
+
+    @Override
+    public String deleteStationByStationId(String stationId) {
+        Station station = stationDao.findByStationId(stationId);
+        if (station == null){
+            return "该站点信息不存在";
+        }
+
+        stationDao.deleteByStationId(stationId);
+        return "删除成功";
+    }
 }

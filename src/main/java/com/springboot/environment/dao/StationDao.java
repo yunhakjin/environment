@@ -28,7 +28,7 @@ public interface StationDao extends JpaRepository<Station, Integer> {
      * @param stationId
      * @return
      */
-    Station findByStationId(int stationId);
+    Station findByStationId(String stationId);
 
     /**
      * 根据站点对外编号查询站点信息
@@ -115,8 +115,22 @@ public interface StationDao extends JpaRepository<Station, Integer> {
     @Query(value = "select * from station s where s.STATION_NAME like %?1%", nativeQuery = true)
     List<Station> findByStationNameLike(String stationName);
 
-
+    /**
+     * 站点所属街道的模糊查询
+     * @param street
+     * @return
+     */
     @Query(value = "select * from station s where s.STREET like %?1%", nativeQuery = true)
     List<Station> findByStreetLike(String street);
+
+
+    /**
+     * 根据站点对内信息删除站点
+     * @param stationId
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "delete from station where STATION_ID = ?1 ", nativeQuery = true)
+    void deleteByStationId(String stationId);
 
 }
