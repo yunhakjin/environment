@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Data
 @Entity
-@Table(name = "group")
+@Table(name = "groups")
 @JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 
 public class Group  implements Serializable {

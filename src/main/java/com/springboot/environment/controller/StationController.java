@@ -35,6 +35,7 @@ public class StationController {
 
         if (!isCountryCon.equals("0") && !isCountryCon.equals("1")){
             System.out.println("参数格式不正确");
+            return null;
         }
 
         String stationMessage = stationService.queryStationsByCountryCon(Integer.parseInt(isCountryCon));
