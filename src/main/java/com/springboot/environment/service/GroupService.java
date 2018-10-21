@@ -9,11 +9,11 @@ import java.util.List;
  */
 public interface GroupService {
     
-    List<Group> getAll();
+    List< Object[]> getAll();
 
     void addOne(Group group);
 
-    void updateOne(String group_id, String group_name);
+    void updateOne(String group_id, String group_name, String group_detail);
 
     void delOne(String group_id);
 }

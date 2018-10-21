@@ -27,7 +27,7 @@ public class RoleController {
     @ApiOperation(value="返回所有角色的信息",notes = "所有角色的信息")
 
     @GetMapping(value = "/getall")
-    public List<Role> getAll(){
+    public List< Object[]> getAll(){
         return roleService.getAll();
     }
 

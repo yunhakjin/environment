@@ -8,7 +8,7 @@ import java.util.List;
  * Created by yww on 2018/10/13.
  */
 public interface PermissionService {
-    List<Permission> getAll();
+    List< Object[]> getAll();
 
     void addOne(Permission permission);
 

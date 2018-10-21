@@ -94,8 +94,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAll() {
-        return userDao.findAll();
+    public List< Object[]> getAll() {
+        return userDao.getAll();
     }
 
 

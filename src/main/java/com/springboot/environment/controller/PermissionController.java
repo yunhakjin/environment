@@ -29,7 +29,7 @@ public class PermissionController {
     @ApiOperation(value="返回所有权限的信息",notes = "所有权限的信息")
 
     @GetMapping(value = "/getall")
-    public List<Permission> getAll(){
+    public List< Object[]> getAll(){
         return permissionService.getAll();
     }
 

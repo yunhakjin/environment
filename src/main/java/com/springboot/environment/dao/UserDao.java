@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * Created by yww on 2018/9/11.
  */
@@ -40,4 +42,7 @@ public interface UserDao extends JpaRepository<User,Integer> {
     @Modifying
     @Query(value = "update user set user_name=?2,password=?3,user_mail=?4,user_tel=?5,user_prefer=?6 where user_id=?1 ",nativeQuery = true)
     void updateOne(int user_id, String user_name, String password, String user_mail, String user_tel, String user_prefer);
+
+    @Query(value = "select DISTINCT * from user",nativeQuery = true)
+    List<Object[]> getAll();
 }
