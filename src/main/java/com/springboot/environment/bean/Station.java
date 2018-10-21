@@ -1,13 +1,18 @@
 package com.springboot.environment.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * 站点表实体类
  */
+@Data
 @Entity
 @Table(name = "station")
+@JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 public class Station implements Serializable {
 
     private static final long serialVersionUID = 1L;

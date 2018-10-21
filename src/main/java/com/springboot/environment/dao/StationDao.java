@@ -112,9 +112,11 @@ public interface StationDao extends JpaRepository<Station, Integer> {
      * @param stationName
      * @return
      */
-//    @Transactional
-//    @Modifying
-//    @Query(value = "select s from station s where s.STATION_NAME like '%?1%'")
-//    List<Station> findByStationNameLike(String stationName);
+    @Query(value = "select * from station s where s.STATION_NAME like %?1%", nativeQuery = true)
+    List<Station> findByStationNameLike(String stationName);
+
+
+    @Query(value = "select * from station s where s.STREET like %?1%", nativeQuery = true)
+    List<Station> findByStreetLike(String street);
 
 }

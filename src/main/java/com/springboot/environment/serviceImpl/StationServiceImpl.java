@@ -1,7 +1,5 @@
 package com.springboot.environment.serviceImpl;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.Station;
 import com.springboot.environment.dao.StationDao;
 import com.springboot.environment.service.StationService;
@@ -10,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.util.Iterator;
 import java.util.List;
 
 @Transactional
@@ -22,47 +18,92 @@ public class StationServiceImpl implements StationService {
     StationDao stationDao;
 
 
+    @Override
+    public List<Station> findALl() {
+        return stationDao.findAll();
+    }
 
     @Override
-    public String queryStationsByCountryCon(int isCountryCon) {
+    public List<Station> queryStationsByCountryCon(int isCountryCon) {
 
         if (isCountryCon != StationConstant.STATION_IS_COUNTRY_CON && isCountryCon != StationConstant.STATION_ISNOT_COUNTRY_CON){
            throw new RuntimeException();
         }
 
         List<Station> stations = stationDao.findByCountryCon(isCountryCon);
-        if (stations.isEmpty()){
-            JSONObject message = new JSONObject();
-            message.put("message", "查询信息为空");
-            return message.toJSONString();
+        return stations;
+    }
+
+    @Override
+    public List<Station> queryStationsByStatus(int stationStatus) {
+
+        if (stationStatus != StationConstant.STATION_RUN && stationStatus != StationConstant.STATION_DISABLE){
+            throw new RuntimeException();
         }
 
-        JSONArray stationsArray = new JSONArray();
-        for(Station station : stations){
-            JSONObject stationJson = new JSONObject();
-            stationJson.put("id", station.getId());
-            stationJson.put("stationId",station.getStationId());
-            stationJson.put("stationCode",station.getStationCode());
-            stationJson.put("stationName",station.getStationName());
-            stationJson.put("stationStatus",station.getStationStatus());
-            stationJson.put("application",station.getApplication());
-            stationJson.put("onlineFlag",station.getOnlineFlag());
-            stationJson.put("stationIdDZ",station.getStationIdDZ());
-            stationJson.put("protocol",station.getProtocol());
-            stationJson.put("protocolName",station.getProtocolName());
-            stationJson.put("position",station.getPosition());
-            stationJson.put("street",station.getStreet());
-            stationJson.put("district",station.getDistrict());
-            stationJson.put("range",station.getRange());
-            stationJson.put("countryCon",station.getCountryCon());
-            stationJson.put("cityCon",station.getCityCon());
-            stationJson.put("domainCon",station.getDomainCon());
-            stationJson.put("area",station.getArea());
-            stationJson.put("domain",station.getDomain());
+        List<Station> stations = stationDao.findByStationStatus(stationStatus);
+        return stations;
+    }
 
-            stationsArray.add(stationJson);
+    @Override
+    public List<Station> queryStationsByOnlineFlag(int onlineFlag) {
+
+        if (onlineFlag != StationConstant.STATION_ONLINE && onlineFlag != StationConstant.STATION_OFFLINE){
+            throw new RuntimeException();
         }
 
-        return stationsArray.toJSONString();
+        List<Station> stations = stationDao.findByOnlineFlag(onlineFlag);
+        return stations;
+    }
+
+    @Override
+    public List<Station> queryStationsByNameLike(String stationName) {
+        List<Station> stations = stationDao.findByStationNameLike(stationName);
+        return stations;
+    }
+
+    @Override
+    public List<Station> queryStationsByDistrict(String district) {
+        List<Station> stations = stationDao.findByDistrict(district);
+        return stations;
+    }
+
+    @Override
+    public List<Station> queryStationsByStreet(String street) {
+        List<Station> stations = stationDao.findByStreetLike(street);
+        return stations;
+    }
+
+    @Override
+    public List<Station> queryStationsByCityCon(int isCityCon) {
+
+        if (isCityCon != StationConstant.STATION_IS_CITY_CON && isCityCon != StationConstant.STATION_ISNOT_CITY_CON){
+            throw new RuntimeException();
+        }
+
+        List<Station> stations = stationDao.findByCityCon(isCityCon);
+        return stations;
+    }
+
+    @Override
+    public List<Station> queryStationsByDomainCon(int isDomainCon) {
+        if (isDomainCon != StationConstant.STATION_IS_DOMAIN_CON && isDomainCon != StationConstant.STATION_ISNOT_DOMAIN_CON){
+            throw new RuntimeException();
+        }
+
+        List<Station> stations = stationDao.findByDomainCon(isDomainCon);
+        return stations;
+    }
+
+    @Override
+    public List<Station> queryStationsByArea(int area) {
+        List<Station> stations = stationDao.findByArea(area);
+        return stations;
+    }
+
+    @Override
+    public List<Station> queryStationsByDomain(int domain) {
+        List<Station> stations = stationDao.findByDomain(domain);
+        return stations;
     }
 }
