@@ -10,9 +10,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +28,7 @@ public class GatherController {
     private GatherDataService gatherDataService;
 
     @ApiOperation(value = "返回所有的采集车信息",notes = "所有采集车信息")
-    @GetMapping(value = "/getallgather")
+    @RequestMapping(value = "/getallgather",method = RequestMethod.GET)
     public String getAllGather(){
         List<Gather> gatherList= gatherService.getAllGather();
         Map<String,List> carMap=new HashMap<String,List>();
@@ -50,10 +48,10 @@ public class GatherController {
         @ApiImplicitParam(name = "gather_id",value = "采集车id",dataType = "String",example = "123"),
         @ApiImplicitParam(name="data_time",value="查询时间",dataType = "String",example = "2018-12-24")
     })
-    @RequestMapping("/getgatherdata")
-    public String getGatherDataByGatherId(){
-        String json="{date:\"2018-09-07\",cars:[\"movingcar06\",\"movingcar05\"]}";
-        Map gatherQuery=JSONObject.parseObject(json);
+    @RequestMapping(value = "/getgatherdata",method = RequestMethod.POST)
+    public String getGatherDataByGatherId(@RequestParam(name = "json") String query){
+//        String json="{date:\"2018-09-07\",cars:[\"movingcar06\",\"movingcar05\"]}";
+        Map gatherQuery=JSONObject.parseObject(query);
         String date=(String)gatherQuery.get("date");
         List<String> cars=(List)gatherQuery.get("cars");
         Map<String,List> result=new HashMap<String, List>();
