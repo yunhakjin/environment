@@ -17,4 +17,9 @@ public interface NormService {
     public void delOne(String norm_id_code);
     public void updateOne(String norm_id_code,Norm norm);
     public Norm getOne(String norm_id_code);
+    public List<Norm> getAllByMflag();
+    public List<Norm> getAllByM5flag();
+    public List<Norm> getAllByHflag();
+    public List<Norm> getAllByDflag();
+    public List<Norm> getAllByMonthflag();
 }
