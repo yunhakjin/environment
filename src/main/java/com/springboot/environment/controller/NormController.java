@@ -1,5 +1,6 @@
 package com.springboot.environment.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.Norm;
 import com.springboot.environment.service.NormService;
 import io.swagger.annotations.Api;
@@ -9,7 +10,10 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value="/norm")
@@ -86,5 +90,55 @@ public class NormController {
         normService.delOne(norm_id_code);
     }
 
-
+    @ApiOperation(value="筛选全部指标",notes = "筛选全部指标")
+    @RequestMapping(value = "/querynorm",method = RequestMethod.GET)
+    public String getAllByMFlag(){
+        Map<String,List> resultMap=new HashMap<String,List>();
+        List<Map> mfactors=new ArrayList<Map>();
+        List<Map> m5factors=new ArrayList<Map>();
+        List<Map> hfactors=new ArrayList<Map>();
+        List<Map> dfactors=new ArrayList<Map>();
+        List<Map> monthfactors=new ArrayList<Map>();
+        List<Norm> mflags=normService.getAllByMflag();
+        for(Norm norm:mflags){
+            Map<String,String> map=new HashMap<String,String>();
+            map.put("norm_code",norm.getNorm_code());
+            map.put("norm_name",norm.getNorm_name());
+            mfactors.add(map);
+        }
+        List<Norm> m5flags=normService.getAllByM5flag();
+        for(Norm norm:m5flags){
+            Map<String,String> map=new HashMap<String,String>();
+            map.put("norm_code",norm.getNorm_code());
+            map.put("norm_name",norm.getNorm_name());
+            m5factors.add(map);
+        }
+        List<Norm> hflags=normService.getAllByHflag();
+        for(Norm norm:hflags){
+            Map<String,String> map=new HashMap<String,String>();
+            map.put("norm_code",norm.getNorm_code());
+            map.put("norm_name",norm.getNorm_name());
+            hfactors.add(map);
+        }
+        List<Norm> dflags=normService.getAllByDflag();
+        for(Norm norm:dflags){
+            Map<String,String> map=new HashMap<String,String>();
+            map.put("norm_code",norm.getNorm_code());
+            map.put("norm_name",norm.getNorm_name());
+            dfactors.add(map);
+        }
+        List<Norm> monthflags=normService.getAllByMonthflag();
+        for(Norm norm:monthflags){
+            Map<String,String> map=new HashMap<String,String>();
+            map.put("norm_code",norm.getNorm_code());
+            map.put("norm_name",norm.getNorm_name());
+            monthfactors.add(map);
+        }
+        resultMap.put("mfactors",mfactors);
+        resultMap.put("m5factors",m5factors);
+        resultMap.put("hfactors",hfactors);
+        resultMap.put("dfactors",dfactors);
+        resultMap.put("monthfactors",monthfactors);
+       return JSONObject.toJSONString(resultMap);
+    }
 }

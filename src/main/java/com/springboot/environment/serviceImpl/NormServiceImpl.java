@@ -46,4 +46,29 @@ public class NormServiceImpl implements NormService {
     public Norm getOne(String norm_id_code){
         return normDao.getOne(norm_id_code);
     }
+
+    @Override
+    public List<Norm> getAllByMflag() {
+        return normDao.getAllByMflag();
+    }
+
+    @Override
+    public List<Norm> getAllByM5flag() {
+        return normDao.getAllByM5flag();
+    }
+
+    @Override
+    public List<Norm> getAllByHflag() {
+        return normDao.getAllByHflag();
+    }
+
+    @Override
+    public List<Norm> getAllByDflag() {
+        return normDao.getAllByDflag();
+    }
+
+    @Override
+    public List<Norm> getAllByMonthflag() {
+        return normDao.getAllByMonthflag();
+    }
 }
