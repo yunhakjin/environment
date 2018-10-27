@@ -148,4 +148,9 @@ public class StationServiceImpl implements StationService {
         stationDao.deleteByStationId(stationId);
         return "删除成功";
     }
+
+    @Override
+    public Station queryStatiionByCode(String stationCode) {
+        return stationDao.findByStationCode(stationCode);
+    }
 }
