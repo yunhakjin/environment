@@ -3,6 +3,8 @@ package com.springboot.environment.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.Station;
+import com.springboot.environment.request.QueryStationsByKeyReq;
+import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 import com.springboot.environment.service.StationService;
 import com.springboot.environment.util.ConvertToJsonUtil;
 import com.springboot.environment.util.StationConstant;
@@ -14,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import javafx.scene.chart.ValueAxis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import sun.misc.Request;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -283,6 +286,35 @@ public class StationController {
     public String deleteByStationId(@PathVariable String stationId){
 
         return stationService.deleteStationByStationId(stationId);
+    }
+
+
+
+    @ApiOperation(value="根据key模糊查询站点信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "key",value="模糊查询的key值,可能是id也可能是name",dataType = "String")
+    })
+
+    @RequestMapping(value = "/queryStationsByKey", method = RequestMethod.POST)
+    public  String queryStationsByKey(@RequestBody QueryStationsByKeyReq queryStationsByKeyReq){
+
+        String key = queryStationsByKeyReq.getKey();
+        return stationService.queryStationsByKey(key);
+
+    }
+
+
+    @ApiOperation(value="根据功能区划分查询符合的站点的实时数据")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
+            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
+            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
+    })
+    @RequestMapping(value = "/querymDataByStationsArea", method = RequestMethod.POST)
+    public String querymDataByStationsArea(@RequestBody QuerymDataByStationsAreaReq querymDataByStationsAreaReq){
+
+        return stationService.querymDataByStationArea(querymDataByStationsAreaReq);
+
     }
 
 

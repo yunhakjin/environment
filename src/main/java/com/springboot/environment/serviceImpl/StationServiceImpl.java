@@ -1,13 +1,19 @@
 package com.springboot.environment.serviceImpl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.support.spring.JSONPResponseBodyAdvice;
 import com.springboot.environment.bean.Station;
 import com.springboot.environment.dao.StationDao;
+import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 import com.springboot.environment.service.StationService;
+import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.StationConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Transactional
@@ -147,5 +153,61 @@ public class StationServiceImpl implements StationService {
 
         stationDao.deleteByStationId(stationId);
         return "删除成功";
+    }
+
+    @Override
+    public String queryStationsByKey(String key) {
+
+        JSONObject all = new JSONObject();
+        List<Station> allStations = null;
+
+        if (key == "" || key == null){
+            allStations = stationDao.findAll();
+        }
+        else {
+            allStations = stationDao.queryStationsByKey(key);
+        }
+
+        JSONArray stationArray = new JSONArray();
+        for (Station station : allStations){
+            JSONObject stationObject = new JSONObject();
+            stationObject.put("station_id", station.getStationId());
+            stationObject.put("station_name", station.getStationName());
+
+            stationArray.add(stationObject);
+        }
+
+        all.put("stations", stationArray);
+
+        return all.toJSONString();
+    }
+
+    @Override
+    public String querymDataByStationArea(QuerymDataByStationsAreaReq req) {
+
+        if (req.getArea() < 0 || req.getArea() > 4){
+            return null;
+        }
+        //查询符合条件的站点数量
+        int stationNum = stationDao.queryStationNumByArea(req.getArea());
+
+        //分页查询符合条件的站点信息
+        if (req.getPageNum() < 1){
+            return null;
+        }
+        int startNum = (req.getPageNum() - 1) * req.getPageSize();
+
+        List<Station> stationList = stationDao.queryStationsByAreaAndPage(req.getArea(), startNum, req.getPageSize());
+
+        for(Station station : stationList){
+            //查询总数
+            Date date = new Date();
+            int mDataSumToday = stationDao.querymDataNumBetween(station.getStationId(), DateUtil.getDateStr(date), DateUtil.getTodayStr(date));
+
+
+
+        }
+
+        return null;
     }
 }

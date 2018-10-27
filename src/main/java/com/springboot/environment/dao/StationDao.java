@@ -1,5 +1,6 @@
 package com.springboot.environment.dao;
 
+import com.springboot.environment.bean.MData;
 import com.springboot.environment.bean.Station;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -132,5 +134,35 @@ public interface StationDao extends JpaRepository<Station, Integer> {
     @Modifying
     @Query(value = "delete from station where STATION_ID = ?1 ", nativeQuery = true)
     void deleteByStationId(String stationId);
+
+
+    @Query(value = "select * from station s where s.STATION_ID like %?1% or s.STATION_NAME like %?1%", nativeQuery = true)
+    List<Station> queryStationsByKey(String key);
+
+    @Query(value = "select count(*) from station s where s.AREA = ?1", nativeQuery = true)
+    int queryStationNumByArea(int area);
+
+    /**
+     * 分页查询站点信息
+     * @param area
+     * @param pageSize
+     * @param startNum
+     * @return
+     */
+    @Query(value = "select * from station s where s.AREA = ?1 order by asc limit ?2,?3 ", nativeQuery = true)
+    List<Station> queryStationsByAreaAndPage(int area, int startNum, int pageSize);
+
+
+    /**
+     * 特定时间段内的实时数据条数
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    @Query(value = "select count(*) from (select * from mdata m where m.station_id = ?1 and m.data_time between ?2 and ?3 group by m.data_time asc ) mdg", nativeQuery = true)
+    int querymDataNumBetween(String stationId, String startDate, String endDate);
+
+
+    
 
 }

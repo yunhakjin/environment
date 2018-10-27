@@ -1,6 +1,7 @@
 package com.springboot.environment.service;
 
 import com.springboot.environment.bean.Station;
+import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 
 import java.util.List;
 
@@ -34,6 +35,10 @@ public interface StationService {
                       String area, String domain);
 
     String deleteStationByStationId(String stationId);
+
+    String queryStationsByKey(String key);
+
+    String querymDataByStationArea(QuerymDataByStationsAreaReq req);
 
 
 }
