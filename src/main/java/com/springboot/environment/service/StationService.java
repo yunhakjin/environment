@@ -12,6 +12,8 @@ public interface StationService {
 
     List<Station> queryStationsByStatus(int stationStatus);
 
+    Station queryStatiionByCode(String stationCode);
+
     List<Station> queryStationsByOnlineFlag(int onlineFlag);
 
     List<Station> queryStationsByNameLike(String stationName);

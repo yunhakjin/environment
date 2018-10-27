@@ -47,4 +47,10 @@ public class DDataServiceImp implements DDataService {
         Pageable pageable=PageRequest.of(page,size);
         return dDataDao.getByStationAndTime(station_id,starttime,endtime,data_check,data_status,pageable);
     }
+
+    @Override
+    public List<DData> getByStationAndDate(String station_id, String date) {
+        return dDataDao.getByStationAndDate(station_id,date);
+    }
+
 }
