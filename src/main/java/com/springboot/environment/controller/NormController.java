@@ -92,7 +92,7 @@ public class NormController {
 
     @ApiOperation(value="筛选全部指标",notes = "筛选全部指标")
     @RequestMapping(value = "/querynorm",method = RequestMethod.GET)
-    public String getAllByMFlag(){
+    public Map getAllByMFlag(){
         Map<String,List> resultMap=new HashMap<String,List>();
         List<Map> mfactors=new ArrayList<Map>();
         List<Map> m5factors=new ArrayList<Map>();
@@ -139,6 +139,6 @@ public class NormController {
         resultMap.put("hfactors",hfactors);
         resultMap.put("dfactors",dfactors);
         resultMap.put("monthfactors",monthfactors);
-       return JSONObject.toJSONString(resultMap);
+       return resultMap;
     }
 }
