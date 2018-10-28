@@ -1,13 +1,11 @@
 package com.springboot.environment.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.DData;
 import com.springboot.environment.bean.HData;
 import com.springboot.environment.bean.M5Data;
 import com.springboot.environment.bean.MData;
-import com.springboot.environment.service.DDataService;
-import com.springboot.environment.service.HDataService;
-import com.springboot.environment.service.M5DataService;
-import com.springboot.environment.service.MDataService;
+import com.springboot.environment.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -17,13 +15,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/data")
 @Api("数据类api")
 public class DataController {
+    @Autowired
+    private StationService stationService;
     @Autowired
     private DDataService dDataService;
     @Autowired
@@ -115,5 +114,41 @@ public class DataController {
                                                 @PathVariable String start,
                                                 @PathVariable String end){
         return mDataService.getByStationAndTime(station_id,start,end,1,1,0,10);
+    }
+
+    /*单站点日昼夜数据查询*/
+    @ApiOperation(value="单站点日昼夜数据查询",notes = "需要传送包含站点id和查询时间的json")
+    @ApiImplicitParam(name = "query",value="包含站点id和查询时间的json",dataType = "String")
+    @RequestMapping(value = "/getddatabystationanddate",method = RequestMethod.GET)
+    public Map getDDataByStationAndDate(@RequestParam("query") String query){
+        Map params=JSONObject.parseObject(query);
+        Map<String,Object> resultMap=new HashMap<String,Object>();
+        String station_code=(String)params.get("station");
+        String station_name=stationService.queryStatiionByCode(station_code).getStationName();
+        String date=(String)params.get("date");
+        List<DData> dDataList=dDataService.getByStationAndDate(station_code,date);
+        List<Map> dataList=new ArrayList<Map>();
+        Map <String,Map> dataMap=new HashMap<String,Map>();
+        for(DData dData:dDataList){
+            String time=dData.getData_time().toString();
+            if(dataMap.containsKey(time)){
+                dataMap.get(time).put(dData.getNorm_code(),dData.getNorm_val());
+            }
+            else{
+                Map<String,String> innerMap=new HashMap<String,String>();
+                innerMap.put("time",time);
+                innerMap.put(dData.getNorm_code(),dData.getNorm_val());
+                //innnerMap.put("夜间值阈值",夜间值阈值)
+                //innnerMap.put("昼间值阈值",昼间值阈值)
+                dataMap.put(time,innerMap);
+            }
+        }
+        for(Map value:dataMap.values()){
+            dataList.add(value);
+        }
+        resultMap.put("station_name",station_name);
+        resultMap.put("date",date);
+        resultMap.put("data_list",dataList);
+        return resultMap;
     }
 }

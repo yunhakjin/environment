@@ -15,7 +15,12 @@ import javax.persistence.*;
 * norm_code: 指标代码(6位)
 * norm_name: 指标名称
 * norm_status:指标状态 有效 1 无效 0
-* application:所属应用（暂未使用）*/
+* application:所属应用（暂未使用）
+* mflag: 是否适用分钟数据 1 属于 0 不属于
+* m5flag: 是否适用5分钟数据
+* dflag: 是否适用天数据
+* hflag: 是否适用小时数据
+* monthflag: 是否适用月数据*/
 public class Norm {
     @Id
     @Column(name="norm_id_code")
@@ -70,4 +75,60 @@ public class Norm {
     public String getApplication() {
         return application;
     }
+
+    @Column(name = "mflag")
+    private int mflag;
+
+    public void setMflag(int mflag) {
+        this.mflag = mflag;
+    }
+
+    public int getMflag() {
+        return mflag;
+    }
+
+    @Column(name = "m5flag")
+    private int m5flag;
+
+    public void setM5flag(int m5flag) {
+        this.m5flag = m5flag;
+    }
+
+    public int getM5flag() {
+        return m5flag;
+    }
+
+    @Column(name = "hflag")
+    private int hflag;
+
+    public void setHflag(int hflag) {
+        this.hflag = hflag;
+    }
+
+    public int getHflag() {
+        return hflag;
+    }
+
+    @Column(name = "dflag")
+    private int dflag;
+
+    public void setDflag(int dflag) {
+        this.dflag = dflag;
+    }
+
+    public int getDflag() {
+        return dflag;
+    }
+
+    @Column(name = "monthflag")
+    private int monthflag;
+
+    public void setMonthflag(int monthflag) {
+        this.monthflag = monthflag;
+    }
+
+    public int getMonthflag() {
+        return monthflag;
+    }
+
 }

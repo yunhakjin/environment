@@ -49,7 +49,7 @@ public class GatherController {
         @ApiImplicitParam(name="data_time",value="查询时间",dataType = "String",example = "2018-12-24")
     })
     @RequestMapping(value = "/getgatherdata",method = RequestMethod.POST)
-    public String getGatherDataByGatherId(@RequestParam(name = "json") String query){
+    public String getGatherDataByGatherId(@RequestParam(name = "query") String query){
 //        String json="{date:\"2018-09-07\",cars:[\"movingcar06\",\"movingcar05\"]}";
         Map gatherQuery=JSONObject.parseObject(query);
         String date=(String)gatherQuery.get("date");
