@@ -118,26 +118,27 @@ public class DataController {
 
     /*单站点日昼夜数据查询*/
     @ApiOperation(value="单站点日昼夜数据查询",notes = "需要传送包含站点id和查询时间的json")
-    @ApiImplicitParam(name = "query",value="包含站点id和查询时间的json",dataType = "String")
-    @RequestMapping(value = "/getddatabystationanddate",method = RequestMethod.GET)
-    public Map getDDataByStationAndDate(@RequestParam("query") String query){
-        Map params=JSONObject.parseObject(query);
+    @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
+    @RequestMapping(value = "/getddatabystationanddate",method = RequestMethod.POST)
+    public Map getDDataByStationAndDate(@RequestBody Map<String,Object> params){
+        //String query={"query":{"station":"31010702335001","date":"2018-10-27"}}
+        params=(Map)params.get("query");
         Map<String,Object> resultMap=new HashMap<String,Object>();
         String station_code=(String)params.get("station");
         String station_name=stationService.queryStatiionByCode(station_code).getStationName();
         String date=(String)params.get("date");
-        List<DData> dDataList=dDataService.getByStationAndDate(station_code,date);
+        List<HData> hDataList=hDataService.getByStationAndDate(station_code,date);
         List<Map> dataList=new ArrayList<Map>();
         Map <String,Map> dataMap=new HashMap<String,Map>();
-        for(DData dData:dDataList){
-            String time=dData.getData_time().toString();
+        for(HData hData:hDataList){
+            String time=hData.getData_time().toString();
             if(dataMap.containsKey(time)){
-                dataMap.get(time).put(dData.getNorm_code(),dData.getNorm_val());
+                dataMap.get(time).put(hData.getNorm_code(),hData.getNorm_val());
             }
             else{
                 Map<String,String> innerMap=new HashMap<String,String>();
                 innerMap.put("time",time);
-                innerMap.put(dData.getNorm_code(),dData.getNorm_val());
+                innerMap.put(hData.getNorm_code(),hData.getNorm_val());
                 //innnerMap.put("夜间值阈值",夜间值阈值)
                 //innnerMap.put("昼间值阈值",昼间值阈值)
                 dataMap.put(time,innerMap);
