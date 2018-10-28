@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/data")
@@ -150,6 +151,106 @@ public class DataController {
         resultMap.put("station_name",station_name);
         resultMap.put("date",date);
         resultMap.put("data_list",dataList);
+        return resultMap;
+    }
+
+    /*多站点指定日期小时数据查询*/
+    @ApiOperation(value="多站点指定日期小时数据查询",notes = "需要传送包含站点id列表和查询时间的json")
+    @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
+    @RequestMapping(value = "/getmanyhdatabystationanddate",method = RequestMethod.POST)
+    public Map getManayHdataByStationAndDate(@RequestBody Map<String,Object> params){
+        //String query="{"query":{"stations": ["31010702335001","31010702335002"],"time":"2018-10-27"}}"
+        Map query=(Map)params.get("query");
+        Map<String,Map> resultMap=new HashMap<String,Map>();
+        List<String> stationList=(List)query.get("stations");
+        String date=(String)query.get("time");
+        List<Map> dataList=new ArrayList<Map>();
+        int count=0;
+        for(String station:stationList){
+            String station_id=station;
+            String station_name=stationService.queryStatiionByCode(station_id).getStationName();
+            List<HData> innerDataList=hDataService.getByStationAndDate(station_id,date);
+            List<Map> innerList=new ArrayList<Map>();
+            Map<String,Map> innerMap=new HashMap<String,Map>();
+            for(HData hData:innerDataList){
+                String dateKey=hData.getData_time().toString();
+                if(innerMap.containsKey(dateKey)){
+                    innerMap.get(dateKey).put(hData.getNorm_code(),hData.getNorm_val());
+                }
+                else{
+                    Map<String,String> normVal=new HashMap<String,String>();
+                    normVal.put("station_id",station_id);
+                    normVal.put("station_name",station_name);
+                    normVal.put("time",dateKey);
+                    normVal.put(hData.getNorm_code(),hData.getNorm_val());
+                    innerMap.put(dateKey,normVal);
+                }
+            }
+            innerMap=innerMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                     .collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue,(oldValue,newVvalue)->oldValue,LinkedHashMap::new));
+            for(Map value:innerMap.values()){
+                innerList.add(value);
+                count++;
+            }
+            Map<String,Object> tmp=new HashMap<String,Object>();
+            tmp.put("time",date);
+            tmp.put("data",innerList);
+            dataList.add(tmp);
+        }
+        Map<String,Object> map=new HashMap<String,Object>();
+        map.put("count",count);
+        map.put("datas",dataList);
+        resultMap.put("stationData",map);
+        return resultMap;
+    }
+
+    /*多站点指定日期日数据查询*/
+    @ApiOperation(value="多站点指定日期日数据查询",notes = "需要传送包含站点id列表和查询时间(月份)的json")
+    @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
+    @RequestMapping(value = "/getmanyddatabystationanddate",method = RequestMethod.POST)
+    public Map getManayDdataByStationAndDate(@RequestBody Map<String,Object> params){
+        //String query="{"query":{"stations": ["31010702335001","31010702335002"],"time":"2018-10"}}"
+        Map query=(Map)params.get("query");
+        Map<String,Map> resultMap=new HashMap<String,Map>();
+        List<String> stationList=(List)query.get("stations");
+        String date=(String)query.get("time");
+        List<Map> dataList=new ArrayList<Map>();
+        int count=0;
+        for(String station:stationList){
+            String station_id=station;
+            String station_name=stationService.queryStatiionByCode(station_id).getStationName();
+            List<DData> innerDataList=dDataService.getByStationAndDate(station_id,date);
+            List<Map> innerList=new ArrayList<Map>();
+            Map<String,Map> innerMap=new HashMap<String,Map>();
+            for(DData dData:innerDataList){
+                String dateKey=dData.getData_time().toString();
+                if(innerMap.containsKey(dateKey)){
+                    innerMap.get(dateKey).put(dData.getNorm_code(),dData.getNorm_val());
+                }
+                else{
+                    Map<String,String> normVal=new HashMap<String,String>();
+                    normVal.put("station_id",station_id);
+                    normVal.put("station_name",station_name);
+                    normVal.put("time",dateKey);
+                    normVal.put(dData.getNorm_code(),dData.getNorm_val());
+                    innerMap.put(dateKey,normVal);
+                }
+            }
+            innerMap=innerMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                    .collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue,(oldValue,newVvalue)->oldValue,LinkedHashMap::new));
+            for(Map value:innerMap.values()){
+                innerList.add(value);
+                count++;
+            }
+            Map<String,Object> tmp=new HashMap<String,Object>();
+            tmp.put("time",date);
+            tmp.put("data",innerList);
+            dataList.add(tmp);
+        }
+        Map<String,Object> map=new HashMap<String,Object>();
+        map.put("count",count);
+        map.put("datas",dataList);
+        resultMap.put("stationData",map);
         return resultMap;
     }
 }
