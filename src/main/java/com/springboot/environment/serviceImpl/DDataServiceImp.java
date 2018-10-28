@@ -49,8 +49,12 @@ public class DDataServiceImp implements DDataService {
     }
 
     @Override
-    public List<DData> getByStationAndDate(String station_id, String date) {
-        return dDataDao.getByStationAndDate(station_id,date);
+    public List<DData> getByStationAndMonth(String station_id, String month) {
+        return dDataDao.getByStationAndMonth(station_id,month);
     }
 
+    @Override
+    public List<DData> getByStationAndDay(String station_id, String date) {
+        return dDataDao.getByStationAndDay(station_id,date);
+    }
 }
