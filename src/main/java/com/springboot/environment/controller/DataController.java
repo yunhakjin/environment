@@ -5,6 +5,9 @@ import com.springboot.environment.bean.DData;
 import com.springboot.environment.bean.HData;
 import com.springboot.environment.bean.M5Data;
 import com.springboot.environment.bean.MData;
+import com.springboot.environment.request.QuerydDataByStationAreaReq;
+import com.springboot.environment.request.QueryhDataByStationAreaReq;
+import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 import com.springboot.environment.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -150,5 +153,44 @@ public class DataController {
         resultMap.put("date",date);
         resultMap.put("data_list",dataList);
         return resultMap;
+    }
+
+
+    @ApiOperation(value="根据功能区划分查询符合的站点的实时数据")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
+            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
+            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
+    })
+    @RequestMapping(value = "/querymDataByStationsArea", method = RequestMethod.POST)
+    public String querymDataByStationsArea(@RequestBody QuerymDataByStationsAreaReq querymDataByStationsAreaReq){
+
+        return stationService.querymDataByStationArea(querymDataByStationsAreaReq);
+
+    }
+
+    @ApiOperation(value="根据功能区划分查询符合的站点的小时数据")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
+            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
+            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
+    })
+    @RequestMapping(value = "/queryhDataByStationsArea", method = RequestMethod.POST)
+    public String queryhDataByStationArea(@RequestBody QueryhDataByStationAreaReq queryhDataByStationAreaReq){
+
+        return stationService.queryhDataByStationArea(queryhDataByStationAreaReq);
+    }
+
+
+    @ApiOperation(value="根据功能区划分查询符合的站点的日数据")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
+            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
+            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
+    })
+    @RequestMapping(value = "/querydDataByStationsArea", method = RequestMethod.POST)
+    public String querydDataByStationByArea(@RequestBody QuerydDataByStationAreaReq querydDataByStationAreaReq){
+
+        return stationService.querydDataByStationArea(querydDataByStationAreaReq);
     }
 }

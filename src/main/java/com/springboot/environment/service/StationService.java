@@ -1,6 +1,8 @@
 package com.springboot.environment.service;
 
 import com.springboot.environment.bean.Station;
+import com.springboot.environment.request.QuerydDataByStationAreaReq;
+import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 
 import java.util.List;
@@ -41,6 +43,10 @@ public interface StationService {
     String queryStationsByKey(String key);
 
     String querymDataByStationArea(QuerymDataByStationsAreaReq req);
+
+    String queryhDataByStationArea(QueryhDataByStationAreaReq req);
+
+    String querydDataByStationArea(QuerydDataByStationAreaReq req);
 
 
 }

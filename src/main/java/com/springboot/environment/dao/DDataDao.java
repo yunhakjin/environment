@@ -21,4 +21,20 @@ public interface DDataDao extends JpaRepository<DData,Integer> {
 
     @Query(value = "select * from ddata d where d.station_id=?1 and DATE_FORMAT(d.data_time,'%Y-%m-%d')=?2",nativeQuery = true)
     List<DData> getByStationAndDate(String station_id,String date);
+
+
+    /**
+     * 根据站点id查询最新的日数据信息
+     * @param stationId
+     * @return
+     */
+    @Query(value = "select * from ddata d where d.data_time = (select MAX(dd.data_time) from ddata dd where dd.station_id = ?1) and d.station_id = ?1", nativeQuery = true)
+    List<DData> queryMaxTimeDdataByStationId(String stationId);
+
+
+    /**
+     * 查询表中是否有指定站点的日数据
+     */
+    @Query(value = "select count(*) from ddata d where d.station_id = ?1", nativeQuery = true)
+    int queryDdataNumByStationId(String stationId);
 }

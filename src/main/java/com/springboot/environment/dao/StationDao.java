@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -135,34 +134,33 @@ public interface StationDao extends JpaRepository<Station, Integer> {
     @Query(value = "delete from station where STATION_ID = ?1 ", nativeQuery = true)
     void deleteByStationId(String stationId);
 
-
-    @Query(value = "select * from station s where s.STATION_ID like %?1% or s.STATION_NAME like %?1%", nativeQuery = true)
-    List<Station> queryStationsByKey(String key);
-
-    @Query(value = "select count(*) from station s where s.AREA = ?1", nativeQuery = true)
-    int queryStationNumByArea(int area);
-
     /**
-     * 分页查询站点信息
-     * @param area
-     * @param pageSize
-     * @param startNum
-     * @return
-     */
-    @Query(value = "select * from station s where s.AREA = ?1 order by asc limit ?2,?3 ", nativeQuery = true)
-    List<Station> queryStationsByAreaAndPage(int area, int startNum, int pageSize);
-
-
-    /**
-     * 特定时间段内的实时数据条数
+     * 查询当天有数据的站点的信息
      * @param startDate
      * @param endDate
      * @return
      */
-    @Query(value = "select count(*) from (select * from mdata m where m.station_id = ?1 and m.data_time between ?2 and ?3 group by m.data_time asc ) mdg", nativeQuery = true)
-    int querymDataNumBetween(String stationId, String startDate, String endDate);
+    @Query(value = "select * from mdata m where m.data_time between ?1 and ?2 group by m.station_id asc ", nativeQuery = true)
+    List<MData> queryStationNumByMdata(String startDate, String endDate);
 
 
-    
+    /**
+     * 根据环境区域查询站点个数
+     * @param area
+     * @return
+     */
+    @Query(value = "select count(*) from station s where s.AREA = ?1", nativeQuery = true)
+    int queryStationsNumByArea(int area);
+
+    /**
+     * 根据环境分页查询站点的信息
+     * @param area
+     * @param start
+     * @param end
+     * @return
+     */
+    @Query(value = "select * from station s where s.AREA = ?1 order by s.station asc limit ?2,?3", nativeQuery = true)
+    List<Station> queryStationsByAreaAndPage(int area, int start, int end);
+
 
 }

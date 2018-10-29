@@ -19,4 +19,30 @@ public interface MDataDao extends JpaRepository<MData,Integer> {
 
     @Query(value="select * from mdata d where d.station_id=?1 and d.data_time between ?2 and ?3 and data_check=?4 and data_status=?5",nativeQuery = true)
     Page<MData> getByStationAndTime(String station_id, String starttime, String endtime, int data_check, int data_status, Pageable pageable);
+
+    /**
+     * 特定时间段内的实时数据条数
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    @Query(value = "select count(*) from (select * from mdata m where m.station_id = ?1 and m.data_time between ?2 and ?3 group by m.data_time asc ) mdg", nativeQuery = true)
+    int querymDataNumBetween(String stationId, String startDate, String endDate);
+
+    /**
+     * 查询最新实时数据
+     * @param stationId
+     * @return
+     */
+    @Query(value = "select * from mdata m where m.data_time = (select MAX(md.data_time) from mdata md where md.station_id = ?1) and m.station_id = ?1", nativeQuery = true)
+    List<MData> queryMaxTimeMdataByStationId(String stationId);
+
+
+    /**
+     * 查询实时数据表中指定站点的数据条数
+     * @param stationId
+     * @return
+     */
+    @Query(value = "select count(*) from mdata m where m.station_id = ?1", nativeQuery = true)
+    int querymDataNumByStationId(String stationId);
 }

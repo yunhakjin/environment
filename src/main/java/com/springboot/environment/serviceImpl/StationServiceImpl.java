@@ -2,9 +2,16 @@ package com.springboot.environment.serviceImpl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.support.spring.JSONPResponseBodyAdvice;
+import com.springboot.environment.bean.DData;
+import com.springboot.environment.bean.HData;
+import com.springboot.environment.bean.MData;
 import com.springboot.environment.bean.Station;
+import com.springboot.environment.dao.DDataDao;
+import com.springboot.environment.dao.HDataDao;
+import com.springboot.environment.dao.MDataDao;
 import com.springboot.environment.dao.StationDao;
+import com.springboot.environment.request.QuerydDataByStationAreaReq;
+import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 import com.springboot.environment.service.StationService;
 import com.springboot.environment.util.DateUtil;
@@ -22,6 +29,15 @@ public class StationServiceImpl implements StationService {
 
     @Autowired
     StationDao stationDao;
+
+    @Autowired
+    MDataDao mDataDao;
+
+    @Autowired
+    HDataDao hDataDao;
+
+    @Autowired
+    DDataDao dDataDao;
 
 
     @Override
@@ -157,57 +173,272 @@ public class StationServiceImpl implements StationService {
 
     @Override
     public String queryStationsByKey(String key) {
-
-        JSONObject all = new JSONObject();
-        List<Station> allStations = null;
-
-        if (key == "" || key == null){
-            allStations = stationDao.findAll();
-        }
-        else {
-            allStations = stationDao.queryStationsByKey(key);
-        }
-
-        JSONArray stationArray = new JSONArray();
-        for (Station station : allStations){
-            JSONObject stationObject = new JSONObject();
-            stationObject.put("station_id", station.getStationId());
-            stationObject.put("station_name", station.getStationName());
-
-            stationArray.add(stationObject);
-        }
-
-        all.put("stations", stationArray);
-
-        return all.toJSONString();
+        return null;
     }
 
     @Override
     public String querymDataByStationArea(QuerymDataByStationsAreaReq req) {
 
-        if (req.getArea() < 0 || req.getArea() > 4){
+        JSONObject dataJson = new JSONObject();
+        JSONObject siteData = new JSONObject();
+        JSONArray dataArray = new JSONArray();
+
+
+        if (req.getArea() > 5 || req.getArea() < 0){
             return null;
         }
-        //查询符合条件的站点数量
-        int stationNum = stationDao.queryStationNumByArea(req.getArea());
-
-        //分页查询符合条件的站点信息
+        if (req.getPageSize() < 1){
+            return null;
+        }
         if (req.getPageNum() < 1){
             return null;
         }
-        int startNum = (req.getPageNum() - 1) * req.getPageSize();
 
-        List<Station> stationList = stationDao.queryStationsByAreaAndPage(req.getArea(), startNum, req.getPageSize());
+        //符合区域环境的总数
+        int count = stationDao.queryStationsNumByArea(req.getArea());
 
-        for(Station station : stationList){
-            //查询总数
-            Date date = new Date();
-            int mDataSumToday = stationDao.querymDataNumBetween(station.getStationId(), DateUtil.getDateStr(date), DateUtil.getTodayStr(date));
+        //分页查询站点
+        int start = (req.getPageNum() - 1) * req.getPageSize();
+        int end = req.getPageSize();
+        List<Station> stations = stationDao.queryStationsByAreaAndPage(req.getArea(), start, end);
 
 
+        for (Station station : stations){
 
+            JSONObject stationJSON = new JSONObject();
+
+            //查询数据表中是否有该站点的数据信息
+            int existMdata = mDataDao.querymDataNumByStationId(station.getStationId());
+
+            if (existMdata == 0){
+                stationJSON.put("station_name", station.getStationName());
+                stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("latest_time", "");
+                stationJSON.put("count_r", 0);
+                stationJSON.put("LA", "");
+                stationJSON.put("LEQ", "");
+                stationJSON.put("LMX","");
+            }
+            else {
+                List<MData> mDatas = mDataDao.queryMaxTimeMdataByStationId(station.getStationId());
+
+                //查询当天站点收到的数据的数量
+                Date date = new Date();
+                int nowDayMdataNum = mDataDao.querymDataNumBetween(station.getStationId(), DateUtil.getTodayStr(date), DateUtil.getDateStr(date));
+
+                String LA = null;
+                String LEQ = null;
+                String LMX = null;
+
+                for (MData mData : mDatas){
+                    if (mData.getNorm_code().equals("n00000")){
+                        LA = mData.getNorm_val();
+                    }
+                    if (mData.getNorm_code().equals("n00006")){
+                        LEQ = mData.getNorm_val();
+                    }
+                    if (mData.getNorm_code().equals("n00010")){
+                        LMX = mData.getNorm_val();
+                    }
+                }
+                stationJSON.put("station_name", station.getStationName());
+                stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("latest_time", mDatas.get(0).getData_time());
+                stationJSON.put("count_r", nowDayMdataNum);
+                stationJSON.put("LA", LA);
+                stationJSON.put("LEQ", LEQ);
+                stationJSON.put("LMX",LMX);
+            }
+
+            dataArray.add(stationJSON);
         }
 
-        return null;
+        siteData.put("count", count);
+        siteData.put("data", dataArray);
+
+        dataJson.put("sitesDataReal", siteData);
+        //打印语句上线要删除
+        System.out.println(dataJson.toJSONString());
+        return dataJson.toJSONString();
+    }
+
+    @Override
+    public String queryhDataByStationArea(QueryhDataByStationAreaReq req) {
+
+        JSONObject dataJson = new JSONObject();
+        JSONObject siteData = new JSONObject();
+        JSONArray dataArray = new JSONArray();
+
+        if (req.getArea() > 5 || req.getArea() < 0){
+            return null;
+        }
+        if (req.getPageSize() < 1){
+            return null;
+        }
+        if (req.getPageNum() < 1){
+            return null;
+        }
+
+        //符合区域环境的总数
+        int count = stationDao.queryStationsNumByArea(req.getArea());
+
+        //分页查询站点
+        int start = (req.getPageNum() - 1) * req.getPageSize();
+        int end = req.getPageSize();
+        List<Station> stations = stationDao.queryStationsByAreaAndPage(req.getArea(), start, end);
+
+        for (Station station : stations){
+            JSONObject stationJSON = new JSONObject();
+
+            int existHdata = hDataDao.queryHdataNumByStationId(station.getStationId());
+
+            if (existHdata == 0 ){
+                //没有该站点的数据记录
+                stationJSON.put("station_name", station.getStationName());
+                stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("calibration_value","");
+                stationJSON.put("flag", "");
+                stationJSON.put("latest_time_h","");
+                stationJSON.put("count_h", "");
+                stationJSON.put("effective_rate_h", "");
+                stationJSON.put("LEQ_h", "");
+                stationJSON.put("LMX_h", "");
+            }
+            else {
+                //查询当天的小时数据的条数
+                Date date = new Date();
+                int nowdayHdataNum = hDataDao.queryhDataNumBetween(station.getStationId(), DateUtil.getTodayStr(date), DateUtil.getDateStr(date));
+
+                List<HData> hDatas = hDataDao.queryMaxTimeHdataByStationId(station.getStationId());
+
+                String calibration_value = null;
+                String flag = null;
+                String effective_rate_h  = null;
+                String LEQ_h = null;
+                String LMX_h = null;
+
+                for (HData hdata : hDatas){
+                    if (hdata.getNorm_code().equals("n00100")){
+                        calibration_value = hdata.getNorm_val();
+                        flag = hdata.getNorm_flag();
+                    }
+                    if (hdata.getNorm_code().equals("n00006")){
+                        LEQ_h = hdata.getNorm_val();
+                    }
+                    if (hdata.getNorm_code().equals("n00010")){
+                        LMX_h = hdata.getNorm_val();
+                    }
+                }
+
+                stationJSON.put("station_name", station.getStationName());
+                stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("calibration_value",calibration_value);
+                stationJSON.put("flag", flag);
+                stationJSON.put("latest_time_h",hDatas.get(0).getData_time());
+                stationJSON.put("count_h", nowdayHdataNum);
+                stationJSON.put("effective_rate_h", effective_rate_h);
+                stationJSON.put("LEQ_h", LEQ_h);
+                stationJSON.put("LMX_h", LMX_h);
+            }
+
+            dataArray.add(stationJSON);
+        }
+
+        siteData.put("count", count);
+        siteData.put("data", dataArray);
+
+        dataJson.put("sitesDataHour", siteData);
+
+        System.out.println(dataJson.toJSONString());
+        return dataJson.toJSONString();
+    }
+
+    @Override
+    public String querydDataByStationArea(QuerydDataByStationAreaReq req) {
+
+        JSONObject dataJson = new JSONObject();
+        JSONObject siteData = new JSONObject();
+        JSONArray dataArray = new JSONArray();
+
+        if (req.getArea() > 5 || req.getArea() < 0){
+            return null;
+        }
+        if (req.getPageSize() < 1){
+            return null;
+        }
+        if (req.getPageNum() < 1){
+            return null;
+        }
+
+        //符合区域环境的总数
+        int count = stationDao.queryStationsNumByArea(req.getArea());
+
+        //分页查询站点
+        int start = (req.getPageNum() - 1) * req.getPageSize();
+        int end = req.getPageSize();
+        List<Station> stations = stationDao.queryStationsByAreaAndPage(req.getArea(), start, end);
+
+        for(Station station : stations){
+
+            JSONObject stationJSON = new JSONObject();
+
+            int existDdata = dDataDao.queryDdataNumByStationId(station.getStationId());
+
+            if (existDdata == 0 ){
+                stationJSON.put("station_name", station.getStationName());
+                stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("Ld", "");
+                stationJSON.put("effective_rate_Ld", "");
+                stationJSON.put("Ln", "");
+                stationJSON.put("effective_rate_Ln", "");
+                stationJSON.put("Lnm", "");
+            }
+            else {
+
+                //查询最新的日数据
+                List<DData> dDatas = dDataDao.queryMaxTimeDdataByStationId(station.getStationId());
+
+                String Ld = null;
+                String effective_rate_Ld = null;
+                String Ln = null;
+                String effective_rate_Ln = null;
+                String Lnm = null;
+
+                for (DData dData : dDatas){
+                    if (dData.getNorm_code().equals("n00008")){
+                        Ld = dData.getNorm_val();
+                    }
+                    if (dData.getNorm_code().equals("n00009")){
+                        Ln = dData.getNorm_val();
+                    }
+                    if (dData.getNorm_code().equals("n00021")){
+                        Lnm = dData.getNorm_val();
+                    }
+                }
+
+                stationJSON.put("station_name", station.getStationName());
+                stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("Ld", Ld);
+                stationJSON.put("effective_rate_Ld", "");
+                stationJSON.put("Ln", Ln);
+                stationJSON.put("effective_rate_Ln", "");
+                stationJSON.put("Lnm", Lnm);
+            }
+
+            dataArray.add(stationJSON);
+        }
+
+        siteData.put("count", count);
+        siteData.put("data", dataArray);
+
+        dataJson.put("sitesDataDay", siteData);
+        System.out.println(dataJson.toJSONString());
+
+        return dataJson.toJSONString();
+    }
+
+    @Override
+    public Station queryStatiionByCode(String stationCode) {
+        return stationDao.findByStationCode(stationCode);
     }
 }

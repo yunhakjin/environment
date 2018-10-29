@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.Station;
 import com.springboot.environment.request.QueryStationsByKeyReq;
+import com.springboot.environment.request.QuerydDataByStationAreaReq;
+import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 import com.springboot.environment.service.StationService;
 import com.springboot.environment.util.ConvertToJsonUtil;
@@ -302,21 +304,5 @@ public class StationController {
         return stationService.queryStationsByKey(key);
 
     }
-
-
-    @ApiOperation(value="根据功能区划分查询符合的站点的实时数据")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
-            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
-            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
-    })
-    @RequestMapping(value = "/querymDataByStationsArea", method = RequestMethod.POST)
-    public String querymDataByStationsArea(@RequestBody QuerymDataByStationsAreaReq querymDataByStationsAreaReq){
-
-        return stationService.querymDataByStationArea(querymDataByStationsAreaReq);
-
-    }
-
-
 
 }
