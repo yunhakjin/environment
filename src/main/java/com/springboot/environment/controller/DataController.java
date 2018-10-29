@@ -314,20 +314,25 @@ public class DataController {
     @RequestMapping(value = "/getmanyddatabystationanddate",method = RequestMethod.POST)
     public Map getManayDdataByStationAndDate(@RequestBody Map<String,Object> params){
         //String query="{"query":{"stations": ["31010702335001","31010702335002"],"time":"2018-10"}}"
+        List<Norm> normList=normService.getAllByDflag();
         Map query=(Map)params.get("query");
         Map<String,Map> resultMap=new HashMap<String,Map>();
         List<String> stationList=(List)query.get("stations");
-        String month=(String)query.get("time");
+        String querytime=(String)query.get("time");
         List<Map> dataList=new ArrayList<Map>();
         int count=0;
+        SimpleDateFormat sdf=new SimpleDateFormat("dd");
+        SimpleDateFormat sdf2=new SimpleDateFormat("yyyy-mm-dd");
+        String year=querytime.split("-")[0];
+        String month=querytime.split("-")[1];
         for(String station:stationList){
             String station_id=station;
             String station_name=stationService.queryStatiionByCode(station_id).getStationName();
-            List<DData> innerDataList=dDataService.getByStationAndMonth(station_id,month);
+            List<DData> innerDataList=dDataService.getByStationAndMonth(station_id,querytime);
             List<Map> innerList=new ArrayList<Map>();
             Map<String,Map> innerMap=new HashMap<String,Map>();
             for(DData dData:innerDataList){
-                String dateKey=dData.getData_time().toString();
+                String dateKey=sdf.format(dData.getData_time());
                 if(innerMap.containsKey(dateKey)){
                     innerMap.get(dateKey).put(dData.getNorm_code(),dData.getNorm_val());
                 }
@@ -335,9 +340,115 @@ public class DataController {
                     Map<String,String> normVal=new HashMap<String,String>();
                     normVal.put("station_id",station_id);
                     normVal.put("station_name",station_name);
-                    normVal.put("time",dateKey);
+                    normVal.put("time",sdf2.format(dData.getData_time()));
                     normVal.put(dData.getNorm_code(),dData.getNorm_val());
                     innerMap.put(dateKey,normVal);
+                }
+            }
+            if(month.equals("02")){
+                if(Integer.valueOf(year)%4==0){
+                    for(int i=1;i<10;i++){
+                        if(!innerMap.containsKey("0"+i)){
+                            Map<String,String> map=new HashMap<String,String>();
+                            map.put("station_id",station_id);
+                            map.put("station_name",station_name);
+                            map.put("time",year+"-"+month+"-"+"0"+i);
+                            for(Norm norm:normList){
+                                map.put(norm.getNorm_code(),"");
+                            }
+                            innerMap.put("0"+i,map);
+                        }
+                    }
+                    for(int i=10;i<30;i++){
+                        if(!innerMap.containsKey(i)){
+                            Map<String,String> map=new HashMap<String,String>();
+                            map.put("station_id",station_id);
+                            map.put("station_name",station_name);
+                            map.put("time",year+"-"+month+"-"+i);
+                            for(Norm norm:normList){
+                                map.put(norm.getNorm_code(),"");
+                            }
+                            innerMap.put(String.valueOf(i),map);
+                        }
+                    }
+                }
+                else{
+                    for(int i=1;i<10;i++){
+                        if(!innerMap.containsKey("0"+i)){
+                            Map<String,String> map=new HashMap<String,String>();
+                            map.put("station_id",station_id);
+                            map.put("station_name",station_name);
+                            map.put("time",year+"-"+month+"-"+"0"+i);
+                            for(Norm norm:normList){
+                                map.put(norm.getNorm_code(),"");
+                            }
+                            innerMap.put("0"+i,map);
+                        }
+                    }
+                    for(int i=10;i<29;i++){
+                        if(!innerMap.containsKey(i)){
+                            Map<String,String> map=new HashMap<String,String>();
+                            map.put("station_id",station_id);
+                            map.put("station_name",station_name);
+                            map.put("time",year+"-"+month+"-"+i);
+                            for(Norm norm:normList){
+                                map.put(norm.getNorm_code(),"");
+                            }
+                            innerMap.put(String.valueOf(i),map);
+                        }
+                    }
+                }
+            }
+            else if(month.equals("01")||month.equals("03")||month.equals("05")||month.equals("07")||month.equals("08")||month.equals("10")||month.equals("12")){
+                for(int i=1;i<10;i++){
+                    if(!innerMap.containsKey("0"+i)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station_id);
+                        map.put("station_name",station_name);
+                        map.put("time",year+"-"+month+"-"+"0"+i);
+                        for(Norm norm:normList){
+                            map.put(norm.getNorm_code(),"");
+                        }
+                        innerMap.put("0"+i,map);
+                    }
+                }
+                for(int i=10;i<32;i++){
+                    if(!innerMap.containsKey(i)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station_id);
+                        map.put("station_name",station_name);
+                        map.put("time",year+"-"+month+"-"+i);
+                        for(Norm norm:normList){
+                            map.put(norm.getNorm_code(),"");
+                        }
+                        innerMap.put(String.valueOf(i),map);
+                    }
+                }
+            }
+            else{
+                for(int i=1;i<10;i++){
+                    if(!innerMap.containsKey("0"+i)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station_id);
+                        map.put("station_name",station_name);
+                        map.put("time",year+"-"+month+"-"+"0"+i);
+                        for(Norm norm:normList){
+                            map.put(norm.getNorm_code(),"");
+                        }
+                        innerMap.put("0"+i,map);
+                    }
+                }
+                for(int i=10;i<31;i++){
+                    if(!innerMap.containsKey(i)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station_id);
+                        map.put("station_name",station_name);
+                        map.put("time",year+"-"+month+"-"+i);
+                        for(Norm norm:normList){
+                            map.put(norm.getNorm_code(),"");
+                        }
+                        innerMap.put(String.valueOf(i),map);
+                    }
                 }
             }
             innerMap=innerMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
@@ -347,7 +458,7 @@ public class DataController {
                 count++;
             }
             Map<String,Object> tmp=new HashMap<String,Object>();
-            tmp.put("time",month);
+            tmp.put("time",querytime);
             tmp.put("data",innerList);
             dataList.add(tmp);
         }
