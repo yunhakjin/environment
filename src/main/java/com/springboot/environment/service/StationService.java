@@ -3,6 +3,7 @@ package com.springboot.environment.service;
 import com.springboot.environment.bean.Station;
 
 import java.util.List;
+import java.util.Map;
 
 public interface StationService {
 
@@ -38,4 +39,7 @@ public interface StationService {
     String deleteStationByStationId(String stationId);
 
 
+    Map getDomainFromStation();
+
+    Map getStationsByAreasAndFuncCodes(Map<String, Object> params);
 }

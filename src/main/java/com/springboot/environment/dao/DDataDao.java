@@ -24,4 +24,6 @@ public interface DDataDao extends JpaRepository<DData,Integer> {
 
     @Query(value = "select * from ddata d where d.station_id=?1 and DATE_FORMAT(d.data_time,'%Y-%m-%d')=?2",nativeQuery = true)
     List<DData> getByStationAndDay(String station_id,String date);
+
+
 }

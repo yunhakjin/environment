@@ -468,4 +468,35 @@ public class DataController {
         resultMap.put("stationData",map);
         return resultMap;
     }
+
+
+    /*
+    * 选择4到10个站点之后点击查询，然后返回这几个站点的最新一条实时数据（分钟） 比较页1
+    * */
+    @GetMapping("getMDataByStationsID")
+    public Map<String,Object> getMDataByStationsID(){
+        return mDataService.getMDataByStationsID();
+    }
+
+    /*
+    * 根据查询粒度返回需要的站点数据，（年，月，天） 比较页2---月数据--返回30天
+    * */
+    @ApiOperation(value = "根据查询粒度返回需要的站点月数据",notes = "比较页2---月数据--返回30天")
+    @ApiImplicitParam(name = "params",value="包含查询站点的id和查询的月份json",dataType = "JSON")
+    @RequestMapping(value = "/getStationsData",method = RequestMethod.POST)
+    public Map getStationsData(@RequestBody Map<String,Object> params){
+        return dDataService.getStationsData(params);
+    }
+
+    /*
+    * 根据查询粒度返回需要的站点数据，（年，月，天） 比较页2--天数据--返回24个小时
+    * */
+    @ApiOperation(value = "根据查询粒度返回需要的站点日数据",notes = "比较页2---日数据--返回24个小时")
+    @ApiImplicitParam(name = "params",value="包含查询站点的id和查询的月份json",dataType = "JSON")
+    @RequestMapping(value = "/getStationsDataByDays",method = RequestMethod.POST)
+    public Map<String,Object> getStationsDataByDays(@RequestBody Map<String,Object> params){
+        //return dDataService.getStationsDataByDays();
+        return hDataService.getStationsDataByDays(params);
+    }
+
 }

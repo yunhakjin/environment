@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Api("站点信息类相关api")
@@ -285,6 +286,17 @@ public class StationController {
         return stationService.deleteStationByStationId(stationId);
     }
 
+    @ApiOperation(value = "查询所有的功能区",notes = "查询所有的功能区")
+    @GetMapping(value = "/getfunc")
+    public Map<String,Object> getFuncFromStation(){
+        return stationService.getDomainFromStation();
+    }
 
+    @ApiOperation(value = "根据区域与功能区筛选站点",notes = "根据所选区域与功能区筛选站点")
+    @ApiImplicitParam(name = "params",value="包含所选功能区与站点区域",dataType = "JSON")
+    @RequestMapping(value = "/getStationsByAreasAndFuncCodes",method = RequestMethod.POST)
+    public Map<String,Object> getStationsByAreasAndFuncCodes(@RequestBody Map<String,Object> params){
+        return stationService.getStationsByAreasAndFuncCodes(params);
+    }
 
 }

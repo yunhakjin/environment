@@ -28,6 +28,7 @@ public interface StationDao extends JpaRepository<Station, Integer> {
      * @param stationId
      * @return
      */
+    
     Station findByStationId(String stationId);
 
     /**
@@ -133,5 +134,12 @@ public interface StationDao extends JpaRepository<Station, Integer> {
     @Query(value = "delete from station where STATION_ID = ?1 ", nativeQuery = true)
     void deleteByStationId(String stationId);
 
+    @Query(value = "select * from station where district =?1",nativeQuery = true)
+    List<Station> getAreasByAreasName(Object o);
 
+    @Query(value = "select * from station where station_code =?1",nativeQuery = true)
+    Station findStationByStationId(String station_id);
+
+    @Query(value = "select distinct domain from station ",nativeQuery = true)
+    List<String> getFuncCodes();
 }
