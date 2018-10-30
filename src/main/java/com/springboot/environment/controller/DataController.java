@@ -235,7 +235,7 @@ public class DataController {
     @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
     @RequestMapping(value = "/getmanyhdatabystationanddate",method = RequestMethod.POST)
     public Map getManayHdataByStationAndDate(@RequestBody Map<String,Object> params){
-        //String query="{"query":{"stations": ["31010702335001","31010702335002"],"time":"2018-10-27"}}"
+        //String query="{"query":{"stations": ["31010702335001","31010702335002"],"time":"2018-10-30"}}"
         List<Norm> normList=normService.getAllByHflag();
         Map query=(Map)params.get("query");
         Map<String,Map> resultMap=new HashMap<String,Map>();
@@ -279,7 +279,7 @@ public class DataController {
                 }
             }
             for(int i=10;i<24;i++){
-                if(!innerMap.containsKey(i)){
+                if(!innerMap.containsKey(String.valueOf(i))){
                     Map<String,String> map=new HashMap<String, String>();
                     for(Norm norm:normList){
                         map.put(norm.getNorm_code(),"");
@@ -360,7 +360,7 @@ public class DataController {
                         }
                     }
                     for(int i=10;i<30;i++){
-                        if(!innerMap.containsKey(i)){
+                        if(!innerMap.containsKey(String.valueOf(i))){
                             Map<String,String> map=new HashMap<String,String>();
                             map.put("station_id",station_id);
                             map.put("station_name",station_name);
@@ -386,7 +386,7 @@ public class DataController {
                         }
                     }
                     for(int i=10;i<29;i++){
-                        if(!innerMap.containsKey(i)){
+                        if(!innerMap.containsKey(String.valueOf(i))){
                             Map<String,String> map=new HashMap<String,String>();
                             map.put("station_id",station_id);
                             map.put("station_name",station_name);
@@ -413,7 +413,7 @@ public class DataController {
                     }
                 }
                 for(int i=10;i<32;i++){
-                    if(!innerMap.containsKey(i)){
+                    if(!innerMap.containsKey(String.valueOf(i))){
                         Map<String,String> map=new HashMap<String,String>();
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
@@ -439,7 +439,7 @@ public class DataController {
                     }
                 }
                 for(int i=10;i<31;i++){
-                    if(!innerMap.containsKey(i)){
+                    if(!innerMap.containsKey(String.valueOf(i))){
                         Map<String,String> map=new HashMap<String,String>();
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
