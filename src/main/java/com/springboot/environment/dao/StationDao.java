@@ -117,6 +117,14 @@ public interface StationDao extends JpaRepository<Station, Integer> {
     List<Station> findByStationNameLike(String stationName);
 
     /**
+     * 站点code的模糊查询
+     * @param station_code
+     * @return
+     */
+    @Query(value = "select * from station s where s.station_code like %?1%",nativeQuery = true)
+    List<Station> finByStationCodeLike(String station_code);
+
+    /**
      * 站点所属街道的模糊查询
      * @param street
      * @return
