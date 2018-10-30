@@ -19,7 +19,7 @@ public class CorsFilter implements Filter{
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) res;
-        response.setHeader("Access-Control-Allow-Origin", "*");//可以在这里设置可以接受的端口，比如127.0.0.1:8080
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");//可以在这里设置可以接受的端口，比如127.0.0.1:8080
         response.setHeader("Access-Control-Allow-Methods", "*");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "*");
