@@ -159,8 +159,25 @@ public interface StationDao extends JpaRepository<Station, Integer> {
      * @param end
      * @return
      */
-    @Query(value = "select * from station s where s.AREA = ?1 order by s.station asc limit ?2,?3", nativeQuery = true)
+    @Query(value = "select * from station s where s.AREA = ?1 order by s.station_id asc limit ?2,?3", nativeQuery = true)
     List<Station> queryStationsByAreaAndPage(int area, int start, int end);
+
+
+    /**
+     * 所有站点信息的分页查询
+     * @param start
+     * @param end
+     * @return
+     */
+    @Query(value = "select * from station s order by s.station_id asc limit ?1,?2", nativeQuery = true)
+    List<Station> queryStationsByPage(int start, int end);
+
+    /**
+     * 查询所有站点的个数
+     * @return
+     */
+    @Query(value = "select count(*) from station s", nativeQuery = true)
+    int queryAllStationNum();
 
 
 }
