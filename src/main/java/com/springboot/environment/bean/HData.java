@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name="mdata")
+@Table(name="hdata")
 @JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 public class HData implements Serializable {
     private static final long serialVersionUID = -509438491019594820L;

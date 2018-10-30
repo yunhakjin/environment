@@ -1,10 +1,7 @@
 package com.springboot.environment.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.springboot.environment.bean.DData;
-import com.springboot.environment.bean.HData;
-import com.springboot.environment.bean.M5Data;
-import com.springboot.environment.bean.MData;
+import com.springboot.environment.bean.*;
 import com.springboot.environment.request.QuerydDataByStationAreaReq;
 import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
@@ -121,36 +118,113 @@ public class DataController {
 
     /*单站点日昼夜数据查询*/
     @ApiOperation(value="单站点日昼夜数据查询",notes = "需要传送包含站点id和查询时间的json")
-    @ApiImplicitParam(name = "query",value="包含站点id和查询时间的json",dataType = "String")
-    @RequestMapping(value = "/getddatabystationanddate",method = RequestMethod.GET)
-    public Map getDDataByStationAndDate(@RequestParam("query") String query){
-        Map params=JSONObject.parseObject(query);
+    @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
+    @RequestMapping(value = "/getddatabystationanddate",method = RequestMethod.POST)
+    public Map getDDataByStationAndDate(@RequestBody Map<String,Object> params){
+        //String query={"query":{"station":"31010702335001","date":"2018-10-27"}}
+        List<Norm> normList=normService.getAllByHflag();
+        int count=0;
+        SimpleDateFormat sdf=new SimpleDateFormat("HH");
+        SimpleDateFormat sdf2=new SimpleDateFormat("HH:mm:ss");
+        params=(Map)params.get("query");
         Map<String,Object> resultMap=new HashMap<String,Object>();
         String station_code=(String)params.get("station");
         String station_name=stationService.queryStatiionByCode(station_code).getStationName();
         String date=(String)params.get("date");
-        List<DData> dDataList=dDataService.getByStationAndDate(station_code,date);
+        List<HData> hDataList=hDataService.getByStationAndDate(station_code,date);
         List<Map> dataList=new ArrayList<Map>();
         Map <String,Map> dataMap=new HashMap<String,Map>();
+        List<DData> dDataList=dDataService.getByStationAndDay(station_code,date);
+        String dlimit="";
+        String nlimit="";
         for(DData dData:dDataList){
-            String time=dData.getData_time().toString();
-            if(dataMap.containsKey(time)){
-                dataMap.get(time).put(dData.getNorm_code(),dData.getNorm_val());
+            if(dData.getNorm_code().equals("n00008")){
+                dlimit=dData.getNorm_val();
+            }
+            else if(dData.getNorm_code().equals("n00009")){
+                nlimit=dData.getNorm_val();
+            }
+       }
+        for(HData hData:hDataList){
+            String timeKey=sdf.format(hData.getData_time());
+            String time=sdf2.format(hData.getData_time());
+            if(dataMap.containsKey(timeKey)){
+                dataMap.get(timeKey).put(hData.getNorm_code(),hData.getNorm_val());
             }
             else{
                 Map<String,String> innerMap=new HashMap<String,String>();
                 innerMap.put("time",time);
-                innerMap.put(dData.getNorm_code(),dData.getNorm_val());
-                //innnerMap.put("夜间值阈值",夜间值阈值)
-                //innnerMap.put("昼间值阈值",昼间值阈值)
-                dataMap.put(time,innerMap);
+                innerMap.put(hData.getNorm_code(),hData.getNorm_val());
+                dataMap.put(timeKey,innerMap);
             }
         }
+        for(int i=4;i<=16;i++){
+            Map<String,String> tmpmap=new HashMap<String, String>();
+            if(i<10){
+                if(!dataMap.containsKey("0"+i)){
+                    tmpmap.put("dlimit",dlimit);
+                    for(Norm norm:normList){
+                        tmpmap.put(norm.getNorm_code(),"");
+                    }
+                    tmpmap.put("time","0"+i+":00:00");
+                    dataMap.put("0"+i,tmpmap);
+                }
+                else{
+                    dataMap.get("0"+i).put("dlimit",dlimit);
+                }
+            }
+            else{
+                if(!dataMap.containsKey(String.valueOf(i))){
+                    tmpmap.put("dlimit",dlimit);
+                    for(Norm norm:normList){
+                        tmpmap.put(norm.getNorm_code(),"");
+                    }
+                    tmpmap.put("time",i+":00:00");
+                    dataMap.put(String.valueOf(i),tmpmap);
+                }
+                else{
+                    dataMap.get(String.valueOf(i)).put("dlimit",dlimit);
+                }
+            }
+        }
+        for(int i=0;i<=4;i++){
+            Map<String,String> tmpmap=new HashMap<String, String>();
+            if(!dataMap.containsKey("0"+i)){
+                tmpmap.put("nlimit",nlimit);
+                for(Norm norm:normList){
+                    tmpmap.put(norm.getNorm_code(),"");
+                }
+                tmpmap.put("time","0"+i+":00:00");
+                dataMap.put("0"+i,tmpmap);
+            }
+            else{
+                dataMap.get("0"+i).put("nlimit",nlimit);
+            }
+        }
+        for(int i=17;i<24;i++){
+            Map<String,String> tmpmap=new HashMap<String, String>();
+            if(!dataMap.containsKey(String.valueOf(i))){
+                tmpmap.put("nlimit",nlimit);
+                for(Norm norm:normList){
+                    tmpmap.put(norm.getNorm_code(),"");
+                }
+                tmpmap.put("time",i+":00:00");
+                dataMap.put(String.valueOf(i),tmpmap);
+            }
+            else{
+                dataMap.get(String.valueOf(i)).put("nlimit",nlimit);
+            }
+        }
+
+        dataMap=dataMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue,(oldValue,newVvalue)->oldValue,LinkedHashMap::new));
         for(Map value:dataMap.values()){
             dataList.add(value);
+            count++;
         }
         resultMap.put("station_name",station_name);
         resultMap.put("date",date);
+        resultMap.put("count",count);
         resultMap.put("data_list",dataList);
         return resultMap;
     }
@@ -193,4 +267,274 @@ public class DataController {
 
         return stationService.querydDataByStationArea(querydDataByStationAreaReq);
     }
+
+    /*多站点指定日期小时数据查询*/
+    @ApiOperation(value="多站点指定日期小时数据查询",notes = "需要传送包含站点id列表和查询时间的json")
+    @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
+    @RequestMapping(value = "/getmanyhdatabystationanddate",method = RequestMethod.POST)
+    public Map getManayHdataByStationAndDate(@RequestBody Map<String,Object> params){
+        //String query="{"query":{"stations": ["31010702335001","31010702335002"],"time":"2018-10-27"}}"
+        List<Norm> normList=normService.getAllByHflag();
+        Map query=(Map)params.get("query");
+        Map<String,Map> resultMap=new HashMap<String,Map>();
+        List<String> stationList=(List)query.get("stations");
+        String date=(String)query.get("time");
+        List<Map> dataList=new ArrayList<Map>();
+        SimpleDateFormat sdf=new SimpleDateFormat("HH");
+        SimpleDateFormat sdf2=new SimpleDateFormat("HH:mm:ss");
+        int count=0;
+        for(String station:stationList){
+            String station_id=station;
+            String station_name=stationService.queryStatiionByCode(station_id).getStationName();
+            List<HData> innerDataList=hDataService.getByStationAndDate(station_id,date);
+            List<Map> innerList=new ArrayList<Map>();
+            Map<String,Map> innerMap=new HashMap<String,Map>();
+            for(HData hData:innerDataList){
+                String dateKey=sdf.format(hData.getData_time());
+                String time=sdf2.format(hData.getData_time());
+                if(innerMap.containsKey(dateKey)){
+                    innerMap.get(dateKey).put(hData.getNorm_code(),hData.getNorm_val());
+                }
+                else{
+                    Map<String,String> normVal=new HashMap<String,String>();
+                    normVal.put("station_id",station_id);
+                    normVal.put("station_name",station_name);
+                    normVal.put("time",time);
+                    normVal.put(hData.getNorm_code(),hData.getNorm_val());
+                    innerMap.put(dateKey,normVal);
+                }
+            }
+            for(int i=0;i<10;i++){
+                if(!innerMap.containsKey("0"+i)){
+                    Map<String,String> map=new HashMap<String, String>();
+                    for(Norm norm:normList){
+                        map.put(norm.getNorm_code(),"");
+                    }
+                    map.put("station_id",station_id);
+                    map.put("station_name",station_name);
+                    map.put("time","0"+i+":00:00");
+                    innerMap.put("0"+i,map);
+                }
+            }
+            for(int i=10;i<24;i++){
+                if(!innerMap.containsKey(i)){
+                    Map<String,String> map=new HashMap<String, String>();
+                    for(Norm norm:normList){
+                        map.put(norm.getNorm_code(),"");
+                    }
+                    map.put("station_id",station_id);
+                    map.put("station_name",station_name);
+                    map.put("time",i+":00:00");
+                    innerMap.put(String.valueOf(i),map);
+                }
+            }
+            innerMap=innerMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                     .collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue,(oldValue,newVvalue)->oldValue,LinkedHashMap::new));
+            for(Map value:innerMap.values()){
+                innerList.add(value);
+                count++;
+            }
+            Map<String,Object> tmp=new HashMap<String,Object>();
+            tmp.put("time",date);
+            tmp.put("data",innerList);
+            dataList.add(tmp);
+        }
+        Map<String,Object> map=new HashMap<String,Object>();
+        map.put("count",count);
+        map.put("datas",dataList);
+        resultMap.put("stationData",map);
+        return resultMap;
+    }
+
+    /*多站点指定日期日数据查询*/
+    @ApiOperation(value="多站点指定日期日数据查询",notes = "需要传送包含站点id列表和查询时间(月份)的json")
+    @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
+    @RequestMapping(value = "/getmanyddatabystationanddate",method = RequestMethod.POST)
+    public Map getManayDdataByStationAndDate(@RequestBody Map<String,Object> params){
+        //String query="{"query":{"stations": ["31010702335001","31010702335002"],"time":"2018-10"}}"
+        List<Norm> normList=normService.getAllByDflag();
+        Map query=(Map)params.get("query");
+        Map<String,Map> resultMap=new HashMap<String,Map>();
+        List<String> stationList=(List)query.get("stations");
+        String querytime=(String)query.get("time");
+        List<Map> dataList=new ArrayList<Map>();
+        int count=0;
+        SimpleDateFormat sdf=new SimpleDateFormat("dd");
+        SimpleDateFormat sdf2=new SimpleDateFormat("yyyy-mm-dd");
+        String year=querytime.split("-")[0];
+        String month=querytime.split("-")[1];
+        for(String station:stationList){
+            String station_id=station;
+            String station_name=stationService.queryStatiionByCode(station_id).getStationName();
+            List<DData> innerDataList=dDataService.getByStationAndMonth(station_id,querytime);
+            List<Map> innerList=new ArrayList<Map>();
+            Map<String,Map> innerMap=new HashMap<String,Map>();
+            for(DData dData:innerDataList){
+                String dateKey=sdf.format(dData.getData_time());
+                if(innerMap.containsKey(dateKey)){
+                    innerMap.get(dateKey).put(dData.getNorm_code(),dData.getNorm_val());
+                }
+                else{
+                    Map<String,String> normVal=new HashMap<String,String>();
+                    normVal.put("station_id",station_id);
+                    normVal.put("station_name",station_name);
+                    normVal.put("time",sdf2.format(dData.getData_time()));
+                    normVal.put(dData.getNorm_code(),dData.getNorm_val());
+                    innerMap.put(dateKey,normVal);
+                }
+            }
+            if(month.equals("02")){
+                if(Integer.valueOf(year)%4==0){
+                    for(int i=1;i<10;i++){
+                        if(!innerMap.containsKey("0"+i)){
+                            Map<String,String> map=new HashMap<String,String>();
+                            map.put("station_id",station_id);
+                            map.put("station_name",station_name);
+                            map.put("time",year+"-"+month+"-"+"0"+i);
+                            for(Norm norm:normList){
+                                map.put(norm.getNorm_code(),"");
+                            }
+                            innerMap.put("0"+i,map);
+                        }
+                    }
+                    for(int i=10;i<30;i++){
+                        if(!innerMap.containsKey(i)){
+                            Map<String,String> map=new HashMap<String,String>();
+                            map.put("station_id",station_id);
+                            map.put("station_name",station_name);
+                            map.put("time",year+"-"+month+"-"+i);
+                            for(Norm norm:normList){
+                                map.put(norm.getNorm_code(),"");
+                            }
+                            innerMap.put(String.valueOf(i),map);
+                        }
+                    }
+                }
+                else{
+                    for(int i=1;i<10;i++){
+                        if(!innerMap.containsKey("0"+i)){
+                            Map<String,String> map=new HashMap<String,String>();
+                            map.put("station_id",station_id);
+                            map.put("station_name",station_name);
+                            map.put("time",year+"-"+month+"-"+"0"+i);
+                            for(Norm norm:normList){
+                                map.put(norm.getNorm_code(),"");
+                            }
+                            innerMap.put("0"+i,map);
+                        }
+                    }
+                    for(int i=10;i<29;i++){
+                        if(!innerMap.containsKey(i)){
+                            Map<String,String> map=new HashMap<String,String>();
+                            map.put("station_id",station_id);
+                            map.put("station_name",station_name);
+                            map.put("time",year+"-"+month+"-"+i);
+                            for(Norm norm:normList){
+                                map.put(norm.getNorm_code(),"");
+                            }
+                            innerMap.put(String.valueOf(i),map);
+                        }
+                    }
+                }
+            }
+            else if(month.equals("01")||month.equals("03")||month.equals("05")||month.equals("07")||month.equals("08")||month.equals("10")||month.equals("12")){
+                for(int i=1;i<10;i++){
+                    if(!innerMap.containsKey("0"+i)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station_id);
+                        map.put("station_name",station_name);
+                        map.put("time",year+"-"+month+"-"+"0"+i);
+                        for(Norm norm:normList){
+                            map.put(norm.getNorm_code(),"");
+                        }
+                        innerMap.put("0"+i,map);
+                    }
+                }
+                for(int i=10;i<32;i++){
+                    if(!innerMap.containsKey(i)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station_id);
+                        map.put("station_name",station_name);
+                        map.put("time",year+"-"+month+"-"+i);
+                        for(Norm norm:normList){
+                            map.put(norm.getNorm_code(),"");
+                        }
+                        innerMap.put(String.valueOf(i),map);
+                    }
+                }
+            }
+            else{
+                for(int i=1;i<10;i++){
+                    if(!innerMap.containsKey("0"+i)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station_id);
+                        map.put("station_name",station_name);
+                        map.put("time",year+"-"+month+"-"+"0"+i);
+                        for(Norm norm:normList){
+                            map.put(norm.getNorm_code(),"");
+                        }
+                        innerMap.put("0"+i,map);
+                    }
+                }
+                for(int i=10;i<31;i++){
+                    if(!innerMap.containsKey(i)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station_id);
+                        map.put("station_name",station_name);
+                        map.put("time",year+"-"+month+"-"+i);
+                        for(Norm norm:normList){
+                            map.put(norm.getNorm_code(),"");
+                        }
+                        innerMap.put(String.valueOf(i),map);
+                    }
+                }
+            }
+            innerMap=innerMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                    .collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue,(oldValue,newVvalue)->oldValue,LinkedHashMap::new));
+            for(Map value:innerMap.values()){
+                innerList.add(value);
+                count++;
+            }
+            Map<String,Object> tmp=new HashMap<String,Object>();
+            tmp.put("time",querytime);
+            tmp.put("data",innerList);
+            dataList.add(tmp);
+        }
+        Map<String,Object> map=new HashMap<String,Object>();
+        map.put("count",count);
+        map.put("datas",dataList);
+        resultMap.put("stationData",map);
+        return resultMap;
+    }
+
+
+    /*
+    * 选择4到10个站点之后点击查询，然后返回这几个站点的最新一条实时数据（分钟） 比较页1
+    * */
+    @GetMapping("getMDataByStationsID")
+    public Map<String,Object> getMDataByStationsID(){
+        return mDataService.getMDataByStationsID();
+    }
+
+    /*
+    * 根据查询粒度返回需要的站点数据，（年，月，天） 比较页2---月数据--返回30天
+    * */
+    @ApiOperation(value = "根据查询粒度返回需要的站点月数据",notes = "比较页2---月数据--返回30天")
+    @ApiImplicitParam(name = "params",value="包含查询站点的id和查询的月份json",dataType = "JSON")
+    @RequestMapping(value = "/getStationsData",method = RequestMethod.POST)
+    public Map getStationsData(@RequestBody Map<String,Object> params){
+        return dDataService.getStationsData(params);
+    }
+
+    /*
+    * 根据查询粒度返回需要的站点数据，（年，月，天） 比较页2--天数据--返回24个小时
+    * */
+    @ApiOperation(value = "根据查询粒度返回需要的站点日数据",notes = "比较页2---日数据--返回24个小时")
+    @ApiImplicitParam(name = "params",value="包含查询站点的id和查询的月份json",dataType = "JSON")
+    @RequestMapping(value = "/getStationsDataByDays",method = RequestMethod.POST)
+    public Map<String,Object> getStationsDataByDays(@RequestBody Map<String,Object> params){
+        //return dDataService.getStationsDataByDays();
+        return hDataService.getStationsDataByDays(params);
+    }
+
 }
