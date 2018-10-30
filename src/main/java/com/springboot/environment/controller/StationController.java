@@ -16,8 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @Api("站点信息类相关api")
@@ -297,6 +296,33 @@ public class StationController {
     @RequestMapping(value = "/getStationsByAreasAndFuncCodes",method = RequestMethod.POST)
     public Map<String,Object> getStationsByAreasAndFuncCodes(@RequestBody Map<String,Object> params){
         return stationService.getStationsByAreasAndFuncCodes(params);
+    }
+
+    @ApiOperation(value = "根据站点编号和站点名称模糊查询")
+    @ApiImplicitParam(name = "params",value = "模糊查询的字符串",dataType = "String")
+    @RequestMapping(value = "/getStationLike",method = RequestMethod.POST)
+    public Map getStationsLike(@RequestBody Map<String,String> params){
+        String query=params.get("key");
+        Set<Map> stationSet=new HashSet<>();
+        List<Station> stationList=stationService.queryStationsByNameLike(query);
+        for(Station station:stationList){
+            Map<String,String> map=new HashMap<String,String>();
+            map.put("station_id",station.getStationCode());
+            map.put("station_name",station.getStationName());
+            stationSet.add(map);
+        }
+        stationList=stationService.queryStationsByCodeLike(query);
+        for(Station station:stationList){
+            Map<String,String> map=new HashMap<String,String>();
+            map.put("station_id",station.getStationCode());
+            map.put("station_name",station.getStationName());
+            stationSet.add(map);
+        }
+        List<Map> resultList=new ArrayList<Map>();
+        resultList.addAll(stationSet);
+        Map<String,List> resultMap=new HashMap<String,List>();
+        resultMap.put("stations",resultList);
+        return  resultMap;
     }
 
 }

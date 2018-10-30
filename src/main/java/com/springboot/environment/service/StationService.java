@@ -19,6 +19,8 @@ public interface StationService {
 
     List<Station> queryStationsByNameLike(String stationName);
 
+    List<Station> queryStationsByCodeLike(String stationCode);
+
     List<Station> queryStationsByDistrict(String district);
 
     List<Station> queryStationsByStreet(String street);

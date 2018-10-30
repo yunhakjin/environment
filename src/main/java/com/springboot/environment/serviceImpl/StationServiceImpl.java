@@ -66,6 +66,11 @@ public class StationServiceImpl implements StationService {
     }
 
     @Override
+    public List<Station> queryStationsByCodeLike(String stationCode) {
+        return stationDao.finByStationCodeLike(stationCode);
+    }
+
+    @Override
     public List<Station> queryStationsByDistrict(String district) {
         List<Station> stations = stationDao.findByDistrict(district);
         return stations;
