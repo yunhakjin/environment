@@ -13,4 +13,6 @@ public interface DDataService {
     public void delDData(String Data_id);
     public Page<DData> getByStationAndTime(String station_id,String starttime,String endtime,int data_check,int data_status,int page,int size);
     public List<DData> getByStationAndDate(String station_id,String date);
+
+    String queryDdataByStationIdAndDatetime(String stationId, String date);
 }

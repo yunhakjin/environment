@@ -5,6 +5,7 @@ import com.springboot.environment.bean.DData;
 import com.springboot.environment.bean.HData;
 import com.springboot.environment.bean.M5Data;
 import com.springboot.environment.bean.MData;
+import com.springboot.environment.request.QueryDataByStationIdAndDatetimeReq;
 import com.springboot.environment.request.QuerydDataByStationAreaReq;
 import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
@@ -192,5 +193,18 @@ public class DataController {
     public String querydDataByStationByArea(@RequestBody QuerydDataByStationAreaReq querydDataByStationAreaReq){
 
         return stationService.querydDataByStationArea(querydDataByStationAreaReq);
+    }
+
+
+    @ApiOperation(value="查询单站点指定时间的数据")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "station_id",value="站点id",dataType = "String"),
+            @ApiImplicitParam(name = "data_type",value="站点数据类型",dataType = "int"),
+            @ApiImplicitParam(name = "date",value="给定的时间",dataType = "String")
+    })
+    @RequestMapping(value = "/queryDataByStationIdAndDatetime", method = RequestMethod.POST)
+    public String queryDataByStationIdAndDatetime(@RequestBody QueryDataByStationIdAndDatetimeReq queryDataByStationIdAndDatetimeReq){
+
+        return null;
     }
 }

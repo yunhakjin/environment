@@ -37,5 +37,10 @@ public class M5DataServiceImp implements M5DataService {
         Pageable pageable=PageRequest.of(page,size);
         return m5DataDao.getByStationAndTime(station_id,starttime,endtime,data_check,data_status,pageable);
     }
+
+    @Override
+    public String queryM5dataByStationIdAndDatetime(String stationId, String date) {
+        return null;
+    }
 }
 

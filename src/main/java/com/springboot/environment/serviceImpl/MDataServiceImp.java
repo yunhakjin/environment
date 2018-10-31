@@ -39,4 +39,9 @@ public class MDataServiceImp implements MDataService {
         Pageable pageable=PageRequest.of(page,size);
         return mDataDao.getByStationAndTime(station_id,starttime,endtime,data_check,data_status,pageable);
     }
+
+    @Override
+    public String queryMdataByStationIdAndDatetime(String stationId, String date) {
+        return null;
+    }
 }

@@ -53,4 +53,9 @@ public class DDataServiceImp implements DDataService {
         return dDataDao.getByStationAndDate(station_id,date);
     }
 
+    @Override
+    public String queryDdataByStationIdAndDatetime(String stationId, String date) {
+        return null;
+    }
+
 }

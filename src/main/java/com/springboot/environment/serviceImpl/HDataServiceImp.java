@@ -37,4 +37,9 @@ public class HDataServiceImp implements HDataService {
         Pageable pageable=PageRequest.of(page,size);
         return hDataDao.getByStationAndTime(station_id,starttime,endtime,data_check,data_status,pageable);
     }
+
+    @Override
+    public String queryHdataByStationIdAndDatetime(String stationId, String date) {
+        return null;
+    }
 }

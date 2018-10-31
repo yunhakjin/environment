@@ -1,5 +1,6 @@
 package com.springboot.environment.serviceImpl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.DData;
@@ -173,7 +174,34 @@ public class StationServiceImpl implements StationService {
 
     @Override
     public String queryStationsByKey(String key) {
-        return null;
+
+        JSONObject dataJSON = new JSONObject();
+        JSONArray stationArray = new JSONArray();
+
+        List<Station> stations = null;
+
+        //没有输入模糊值则查询失败
+        if (key == null || key.equals("")){
+            return null;
+        }
+
+        stations = stationDao.findStationsByIdAndNameLike(key);
+
+        if (stations.size() > 0){
+            for (Station station : stations){
+                JSONObject stationJSON = new JSONObject();
+                stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("station_name", station.getStationName());
+                stationArray.add(stationJSON);
+            }
+
+        }
+        dataJSON.put("stations", stationArray);
+        System.out.println(dataJSON.toJSONString());
+
+        return dataJSON.toJSONString();
+
+
     }
 
     @Override
