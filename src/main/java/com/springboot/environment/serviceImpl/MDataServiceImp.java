@@ -46,6 +46,11 @@ public class MDataServiceImp implements MDataService {
     }
 
     @Override
+    public String queryMdataByStationIdAndDatetime(String stationId, String date) {
+        return null;
+    }
+
+    @Override
     public Map getMDataByStationsID() {
         String stationsID ="{ stations:[\"31010702330055\",\"31010702330053\"]}";
         //String json="{date:\"2018-09-07\",cars:[\"movingcar06\",\"movingcar05\"]}";

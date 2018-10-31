@@ -61,6 +61,16 @@ public class DDataServiceImp implements DDataService {
     }
 
     @Override
+    public List<DData> getByStationAndDate(String station_id, String date) {
+        return null;
+    }
+
+    @Override
+    public String queryDdataByStationIdAndDatetime(String stationId, String date) {
+        return null;
+    }
+
+    @Override
     public List<DData> getByStationAndMonth(String station_id, String month) {
         return dDataDao.getByStationAndMonth(station_id,month);
     }
@@ -108,37 +118,45 @@ public class DDataServiceImp implements DDataService {
         Map<String, Object> time2Map = new LinkedHashMap<String, Object>();//time2
         time1Map.put("time",time1);
         time2Map.put("time",time2);
-
+        SimpleDateFormat sdf=new SimpleDateFormat("dd");
+        SimpleDateFormat sdf2=new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf3=new SimpleDateFormat("MM");
 
         Map<String,Map> innertrackMap=new HashMap<String,Map>();
         Map<String,Map> innertrack2Map=new HashMap<String,Map>();
         for(int i=0;i<dDatas_time1.size();i++){
-            String trackTime=dDatas_time1.get(i).getData_time().toString();
+            //String trackTime=dDatas_time1.get(i).getData_time().toString().substring(0,10);
+            String trackTime=sdf.format(dDatas_time1.get(i).getData_time());
             Map<String,String> normVal=new HashMap<String,String>();
             if(innertrackMap.containsKey(trackTime)){
                 normVal.put(dDatas_time1.get(i).getNorm_code(),dDatas_time1.get(i).getNorm_val());
                 innertrackMap.get(trackTime).putAll(normVal);
             }
             else{
-                normVal.put("time",trackTime);
+                normVal.put("time",sdf2.format(dDatas_time1.get(i).getData_time()));
+                System.out.println(dDatas_time1.get(i).getData_time());
+                System.out.println(sdf2.format(dDatas_time1.get(i).getData_time()));
                 normVal.put(dDatas_time1.get(i).getNorm_code(),dDatas_time1.get(i).getNorm_val());
                 innertrackMap.put(trackTime,normVal);
             }
         }
         for(int i=0;i<dDatas_time2.size();i++){
-            String trackTime=dDatas_time2.get(i).getData_time().toString();
+            //String trackTime=dDatas_time2.get(i).getData_time().toString().substring(0,10);
+            String trackTime=sdf.format(dDatas_time2.get(i).getData_time());
             Map<String,String> normVal=new HashMap<String,String>();
             if(innertrack2Map.containsKey(trackTime)){
                 normVal.put(dDatas_time2.get(i).getNorm_code(),dDatas_time2.get(i).getNorm_val());
                 innertrack2Map.get(trackTime).putAll(normVal);
             }
             else{
-                normVal.put("time",trackTime);
+                normVal.put("time",sdf2.format(dDatas_time2.get(i).getData_time()));
+                System.out.println(dDatas_time2.get(i).getData_time());
+                System.out.println(sdf2.format(dDatas_time2.get(i).getData_time()));
                 normVal.put(dDatas_time2.get(i).getNorm_code(),dDatas_time2.get(i).getNorm_val());
                 innertrack2Map.put(trackTime,normVal);
             }
         }
-
+        System.out.println(innertrack2Map);
         List<Map> innerTrackList=new ArrayList<Map>();
         List<Map> innerTrackList2=new ArrayList<Map>();
 
@@ -149,9 +167,7 @@ public class DDataServiceImp implements DDataService {
                 for(int i=1;i<10;i++){
                     if(!innertrackMap.containsKey("0"+i)){
                         Map<String,String> map=new HashMap<String,String>();
-                        map.put("station_id",station_id);
-                        map.put("station_name",station_name);
-                        map.put("time",year1+"-"+month1+"-"+"0"+i);
+                        map.put("time",year1+"-"+month1+"-"+"0"+i+"");
                         for(Norm norm:normList1){
                             map.put(norm.getNorm_code(),"");
                         }
@@ -159,10 +175,8 @@ public class DDataServiceImp implements DDataService {
                     }
                 }
                 for(int i=10;i<30;i++){
-                    if(!innertrackMap.containsKey(i)){
+                    if(!innertrackMap.containsKey(i+"")){
                         Map<String,String> map=new HashMap<String,String>();
-                        map.put("station_id",station_id);
-                        map.put("station_name",station_name);
                         map.put("time",year1+"-"+month1+"-"+i);
                         for(Norm norm:normList1){
                             map.put(norm.getNorm_code(),"");
@@ -175,8 +189,6 @@ public class DDataServiceImp implements DDataService {
                 for(int i=1;i<10;i++){
                     if(!innertrackMap.containsKey("0"+i)){
                         Map<String,String> map=new HashMap<String,String>();
-                        map.put("station_id",station_id);
-                        map.put("station_name",station_name);
                         map.put("time",year1+"-"+month1+"-"+"0"+i);
                         for(Norm norm:normList1){
                             map.put(norm.getNorm_code(),"");
@@ -185,10 +197,8 @@ public class DDataServiceImp implements DDataService {
                     }
                 }
                 for(int i=10;i<29;i++){
-                    if(!innertrackMap.containsKey(i)){
+                    if(!innertrackMap.containsKey(i+"")){
                         Map<String,String> map=new HashMap<String,String>();
-                        map.put("station_id",station_id);
-                        map.put("station_name",station_name);
                         map.put("time",year1+"-"+month1+"-"+i);
                         for(Norm norm:normList1){
                             map.put(norm.getNorm_code(),"");
@@ -202,8 +212,6 @@ public class DDataServiceImp implements DDataService {
             for(int i=1;i<10;i++){
                 if(!innertrackMap.containsKey("0"+i)){
                     Map<String,String> map=new HashMap<String,String>();
-                    map.put("station_id",station_id);
-                    map.put("station_name",station_name);
                     map.put("time",year1+"-"+month1+"-"+"0"+i);
                     for(Norm norm:normList1){
                         map.put(norm.getNorm_code(),"");
@@ -212,10 +220,8 @@ public class DDataServiceImp implements DDataService {
                 }
             }
             for(int i=10;i<32;i++){
-                if(!innertrackMap.containsKey(i)){
+                if(!innertrackMap.containsKey(i+"")){
                     Map<String,String> map=new HashMap<String,String>();
-                    map.put("station_id",station_id);
-                    map.put("station_name",station_name);
                     map.put("time",year1+"-"+month1+"-"+i);
                     for(Norm norm:normList1){
                         map.put(norm.getNorm_code(),"");
@@ -228,8 +234,6 @@ public class DDataServiceImp implements DDataService {
             for(int i=1;i<10;i++){
                 if(!innertrackMap.containsKey("0"+i)){
                     Map<String,String> map=new HashMap<String,String>();
-                    map.put("station_id",station_id);
-                    map.put("station_name",station_name);
                     map.put("time",year1+"-"+month1+"-"+"0"+i);
                     for(Norm norm:normList1){
                         map.put(norm.getNorm_code(),"");
@@ -238,10 +242,8 @@ public class DDataServiceImp implements DDataService {
                 }
             }
             for(int i=10;i<31;i++){
-                if(!innertrackMap.containsKey(i)){
+                if(!innertrackMap.containsKey(i+"")){
                     Map<String,String> map=new HashMap<String,String>();
-                    map.put("station_id",station_id);
-                    map.put("station_name",station_name);
                     map.put("time",year1+"-"+month1+"-"+i);
                     for(Norm norm:normList1){
                         map.put(norm.getNorm_code(),"");
@@ -251,14 +253,17 @@ public class DDataServiceImp implements DDataService {
             }
         }
 //=======================================================================
+//
+//    @Override
+//    public String queryDdataByStationIdAndDatetime(String stationId, String date) {
+//        return null;
+//    }
 
         if(month2.equals("02")){
             if(Integer.valueOf(year2)%4==0){
                 for(int i=1;i<10;i++){
                     if(!innertrack2Map.containsKey("0"+i)){
                         Map<String,String> map=new HashMap<String,String>();
-                        map.put("station_id",station_id);
-                        map.put("station_name",station_name);
                         map.put("time",year2+"-"+month2+"-"+"0"+i);
                         for(Norm norm:normList2){
                             map.put(norm.getNorm_code(),"");
@@ -267,10 +272,8 @@ public class DDataServiceImp implements DDataService {
                     }
                 }
                 for(int i=10;i<30;i++){
-                    if(!innertrack2Map.containsKey(i)){
+                    if(!innertrack2Map.containsKey(i+"")){
                         Map<String,String> map=new HashMap<String,String>();
-                        map.put("station_id",station_id);
-                        map.put("station_name",station_name);
                         map.put("time",year2+"-"+month2+"-"+i);
                         for(Norm norm:normList2){
                             map.put(norm.getNorm_code(),"");
@@ -283,8 +286,6 @@ public class DDataServiceImp implements DDataService {
                 for(int i=1;i<10;i++){
                     if(!innertrack2Map.containsKey("0"+i)){
                         Map<String,String> map=new HashMap<String,String>();
-                        map.put("station_id",station_id);
-                        map.put("station_name",station_name);
                         map.put("time",year2+"-"+month2+"-"+"0"+i);
                         for(Norm norm:normList2){
                             map.put(norm.getNorm_code(),"");
@@ -293,10 +294,8 @@ public class DDataServiceImp implements DDataService {
                     }
                 }
                 for(int i=10;i<29;i++){
-                    if(!innertrack2Map.containsKey(i)){
+                    if(!innertrack2Map.containsKey(i+"")){
                         Map<String,String> map=new HashMap<String,String>();
-                        map.put("station_id",station_id);
-                        map.put("station_name",station_name);
                         map.put("time",year2+"-"+month2+"-"+i);
                         for(Norm norm:normList2){
                             map.put(norm.getNorm_code(),"");
@@ -310,8 +309,6 @@ public class DDataServiceImp implements DDataService {
             for(int i=1;i<10;i++){
                 if(!innertrack2Map.containsKey("0"+i)){
                     Map<String,String> map=new HashMap<String,String>();
-                    map.put("station_id",station_id);
-                    map.put("station_name",station_name);
                     map.put("time",year2+"-"+month2+"-"+"0"+i);
                     for(Norm norm:normList2){
                         map.put(norm.getNorm_code(),"");
@@ -320,10 +317,8 @@ public class DDataServiceImp implements DDataService {
                 }
             }
             for(int i=10;i<32;i++){
-                if(!innertrack2Map.containsKey(i)){
+                if(!innertrack2Map.containsKey(i+"")){
                     Map<String,String> map=new HashMap<String,String>();
-                    map.put("station_id",station_id);
-                    map.put("station_name",station_name);
                     map.put("time",year2+"-"+month2+"-"+i);
                     for(Norm norm:normList2){
                         map.put(norm.getNorm_code(),"");
@@ -336,8 +331,6 @@ public class DDataServiceImp implements DDataService {
             for(int i=1;i<10;i++){
                 if(!innertrack2Map.containsKey("0"+i)){
                     Map<String,String> map=new HashMap<String,String>();
-                    map.put("station_id",station_id);
-                    map.put("station_name",station_name);
                     map.put("time",year2+"-"+month2+"-"+"0"+i);
                     for(Norm norm:normList2){
                         map.put(norm.getNorm_code(),"");
@@ -346,10 +339,8 @@ public class DDataServiceImp implements DDataService {
                 }
             }
             for(int i=10;i<31;i++){
-                if(!innertrack2Map.containsKey(i)){
+                if(!innertrack2Map.containsKey(i+"")){
                     Map<String,String> map=new HashMap<String,String>();
-                    map.put("station_id",station_id);
-                    map.put("station_name",station_name);
                     map.put("time",year2+"-"+month2+"-"+i);
                     for(Norm norm:normList2){
                         map.put(norm.getNorm_code(),"");

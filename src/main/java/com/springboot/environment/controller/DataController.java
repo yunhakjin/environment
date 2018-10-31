@@ -1,10 +1,15 @@
 package com.springboot.environment.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.springboot.environment.bean.*;
+import com.springboot.environment.bean.DData;
+import com.springboot.environment.bean.HData;
+import com.springboot.environment.bean.M5Data;
+import com.springboot.environment.bean.MData;
+import com.springboot.environment.request.QueryDataByStationIdAndDatetimeReq;
 import com.springboot.environment.request.QuerydDataByStationAreaReq;
 import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
+import com.springboot.environment.bean.*;
 import com.springboot.environment.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -15,12 +20,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/data")
 @Api("数据类api")
 public class DataController {
+    @Autowired
+    private NormService normService;
     @Autowired
     private StationService stationService;
     @Autowired
@@ -256,16 +266,57 @@ public class DataController {
     }
 
 
+//    @ApiOperation(value="根据功能区划分查询符合的站点的日数据")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
+//            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
+//            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
+//    })
+//    @RequestMapping(value = "/querydDataByStationsArea", method = RequestMethod.POST)
+//    public String querydDataByStationByArea(@RequestBody QuerydDataByStationAreaReq querydDataByStationAreaReq){
+//
+//        return stationService.querydDataByStationArea(querydDataByStationAreaReq);
+//    }
+
+
+
     @ApiOperation(value="根据功能区划分查询符合的站点的日数据")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
-            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
-            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
+//            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
+//            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
+//            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
+            @ApiImplicitParam(name = "params",value="当前的页号",dataType = "String")
     })
     @RequestMapping(value = "/querydDataByStationsArea", method = RequestMethod.POST)
-    public String querydDataByStationByArea(@RequestBody QuerydDataByStationAreaReq querydDataByStationAreaReq){
+    public String querydDataByStationByArea(@RequestBody Map<String, Object> params){
+
+//        System.out.println(request.getParameterMap().get("area_id"));
+//
+//        int area = Integer.parseInt(request.getParameter("area_id"));
+//        int pageSize = Integer.parseInt(request.getParameter("each_page_num"));
+//        int pageNum = Integer.parseInt(request.getParameter("current_page"));
+
+        System.out.println(params.toString());
+        int area = (Integer)params.get("area_id");
+        int pageSize = (Integer) params.get("each_page_num");
+        int pageNum = (Integer) params.get("current_page");
+
+        QuerydDataByStationAreaReq querydDataByStationAreaReq = new QuerydDataByStationAreaReq(area, pageSize, pageNum);
 
         return stationService.querydDataByStationArea(querydDataByStationAreaReq);
+    }
+
+
+    @ApiOperation(value="查询单站点指定时间的数据")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "station_id",value="站点id",dataType = "String"),
+            @ApiImplicitParam(name = "data_type",value="站点数据类型",dataType = "int"),
+            @ApiImplicitParam(name = "date",value="给定的时间",dataType = "String")
+    })
+    @RequestMapping(value = "/queryDataByStationIdAndDatetime", method = RequestMethod.POST)
+    public String queryDataByStationIdAndDatetime(@RequestBody QueryDataByStationIdAndDatetimeReq queryDataByStationIdAndDatetimeReq){
+
+        return null;
     }
 
     /*多站点指定日期小时数据查询*/
@@ -273,7 +324,7 @@ public class DataController {
     @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
     @RequestMapping(value = "/getmanyhdatabystationanddate",method = RequestMethod.POST)
     public Map getManayHdataByStationAndDate(@RequestBody Map<String,Object> params){
-        //String query="{"query":{"stations": ["31010702335001","31010702335002"],"time":"2018-10-27"}}"
+        //String query="{"query":{"stations": ["31010702335001","31010702335002"],"time":"2018-10-30"}}"
         List<Norm> normList=normService.getAllByHflag();
         Map query=(Map)params.get("query");
         Map<String,Map> resultMap=new HashMap<String,Map>();
@@ -317,7 +368,7 @@ public class DataController {
                 }
             }
             for(int i=10;i<24;i++){
-                if(!innerMap.containsKey(i)){
+                if(!innerMap.containsKey(String.valueOf(i))){
                     Map<String,String> map=new HashMap<String, String>();
                     for(Norm norm:normList){
                         map.put(norm.getNorm_code(),"");
@@ -360,7 +411,7 @@ public class DataController {
         List<Map> dataList=new ArrayList<Map>();
         int count=0;
         SimpleDateFormat sdf=new SimpleDateFormat("dd");
-        SimpleDateFormat sdf2=new SimpleDateFormat("yyyy-mm-dd");
+        SimpleDateFormat sdf2=new SimpleDateFormat("yyyy-MM-dd");
         String year=querytime.split("-")[0];
         String month=querytime.split("-")[1];
         for(String station:stationList){
@@ -398,7 +449,7 @@ public class DataController {
                         }
                     }
                     for(int i=10;i<30;i++){
-                        if(!innerMap.containsKey(i)){
+                        if(!innerMap.containsKey(String.valueOf(i))){
                             Map<String,String> map=new HashMap<String,String>();
                             map.put("station_id",station_id);
                             map.put("station_name",station_name);
@@ -424,7 +475,7 @@ public class DataController {
                         }
                     }
                     for(int i=10;i<29;i++){
-                        if(!innerMap.containsKey(i)){
+                        if(!innerMap.containsKey(String.valueOf(i))){
                             Map<String,String> map=new HashMap<String,String>();
                             map.put("station_id",station_id);
                             map.put("station_name",station_name);
@@ -451,7 +502,7 @@ public class DataController {
                     }
                 }
                 for(int i=10;i<32;i++){
-                    if(!innerMap.containsKey(i)){
+                    if(!innerMap.containsKey(String.valueOf(i))){
                         Map<String,String> map=new HashMap<String,String>();
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
@@ -477,7 +528,7 @@ public class DataController {
                     }
                 }
                 for(int i=10;i<31;i++){
-                    if(!innerMap.containsKey(i)){
+                    if(!innerMap.containsKey(String.valueOf(i))){
                         Map<String,String> map=new HashMap<String,String>();
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);

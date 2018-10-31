@@ -11,6 +11,8 @@ public interface MDataService {
     public List<MData> getMDataByData_id(String Data_id);
     public Page<MData> getByStationAndTime(String station_id,String starttime,String endtime,int data_check,int data_status,int page,int size);
 
+    String queryMdataByStationIdAndDatetime(String stationId, String date);
+
     Map getMDataByStationsID();
 }
 

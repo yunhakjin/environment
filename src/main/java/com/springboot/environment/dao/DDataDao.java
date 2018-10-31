@@ -40,6 +40,10 @@ public interface DDataDao extends JpaRepository<DData,Integer> {
      */
     @Query(value = "select count(*) from ddata d where d.station_id = ?1", nativeQuery = true)
     int queryDdataNumByStationId(String stationId);
+
+
+
+    @Query(value = "select * from station;", nativeQuery = true)
     List<DData> getByStationAndDay(String station_id,String date);
 
 

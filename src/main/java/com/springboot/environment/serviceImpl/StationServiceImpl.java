@@ -1,5 +1,6 @@
 package com.springboot.environment.serviceImpl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.DData;
@@ -260,7 +261,34 @@ public class StationServiceImpl implements StationService {
 
     @Override
     public String queryStationsByKey(String key) {
-        return null;
+
+        JSONObject dataJSON = new JSONObject();
+        JSONArray stationArray = new JSONArray();
+
+        List<Station> stations = null;
+
+        //没有输入模糊值则查询失败
+        if (key == null || key.equals("")){
+            return null;
+        }
+
+        stations = stationDao.findStationsByIdAndNameLike(key);
+
+        if (stations.size() > 0){
+            for (Station station : stations){
+                JSONObject stationJSON = new JSONObject();
+                stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("station_name", station.getStationName());
+                stationArray.add(stationJSON);
+            }
+
+        }
+        dataJSON.put("stations", stationArray);
+        System.out.println(dataJSON.toJSONString());
+
+        return dataJSON.toJSONString();
+
+
     }
 
     @Override
@@ -282,20 +310,35 @@ public class StationServiceImpl implements StationService {
         }
 
         //符合区域环境的总数
-        int count = stationDao.queryStationsNumByArea(req.getArea());
+        int count ;
+
+        if (req.getArea() == 5 ){
+
+            count = stationDao.queryAllStationNum();
+        }
+        else {
+            count = stationDao.queryStationsNumByArea(req.getArea());
+        }
 
         //分页查询站点
         int start = (req.getPageNum() - 1) * req.getPageSize();
         int end = req.getPageSize();
-        List<Station> stations = stationDao.queryStationsByAreaAndPage(req.getArea(), start, end);
 
+        List<Station> stations = null;
+
+        if (req.getArea() == 5){
+            stations = stationDao.queryStationsByPage(start, end);
+        }
+        else {
+            stations = stationDao.queryStationsByAreaAndPage(req.getArea(), start, end);
+        }
 
         for (Station station : stations){
 
             JSONObject stationJSON = new JSONObject();
 
             //查询数据表中是否有该站点的数据信息
-            int existMdata = mDataDao.querymDataNumByStationId(station.getStationId());
+            int existMdata = mDataDao.querymDataNumByStationId(station.getStationCode());
 
             if (existMdata == 0){
                 stationJSON.put("station_name", station.getStationName());
@@ -307,11 +350,11 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("LMX","");
             }
             else {
-                List<MData> mDatas = mDataDao.queryMaxTimeMdataByStationId(station.getStationId());
+                List<MData> mDatas = mDataDao.queryMaxTimeMdataByStationId(station.getStationCode());
 
                 //查询当天站点收到的数据的数量
                 Date date = new Date();
-                int nowDayMdataNum = mDataDao.querymDataNumBetween(station.getStationId(), DateUtil.getTodayStr(date), DateUtil.getDateStr(date));
+                int nowDayMdataNum = mDataDao.querymDataNumBetween(station.getStationCode(), DateUtil.getTodayStr(date), DateUtil.getDateStr(date));
 
                 String LA = null;
                 String LEQ = null;
@@ -330,7 +373,7 @@ public class StationServiceImpl implements StationService {
                 }
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
-                stationJSON.put("latest_time", mDatas.get(0).getData_time());
+                stationJSON.put("latest_time", DateUtil.getDateStr(mDatas.get(0).getData_time()));
                 stationJSON.put("count_r", nowDayMdataNum);
                 stationJSON.put("LA", LA);
                 stationJSON.put("LEQ", LEQ);
@@ -367,17 +410,32 @@ public class StationServiceImpl implements StationService {
         }
 
         //符合区域环境的总数
-        int count = stationDao.queryStationsNumByArea(req.getArea());
+        int count ;
+
+        if (req.getArea() == 5 ){
+
+            count = stationDao.queryAllStationNum();
+        }
+        else {
+            count = stationDao.queryStationsNumByArea(req.getArea());
+        }
 
         //分页查询站点
         int start = (req.getPageNum() - 1) * req.getPageSize();
         int end = req.getPageSize();
-        List<Station> stations = stationDao.queryStationsByAreaAndPage(req.getArea(), start, end);
+        List<Station> stations = null;
+
+        if (req.getArea() == 5){
+            stations = stationDao.queryStationsByPage(start, end);
+        }
+        else {
+            stations = stationDao.queryStationsByAreaAndPage(req.getArea(), start, end);
+        }
 
         for (Station station : stations){
             JSONObject stationJSON = new JSONObject();
 
-            int existHdata = hDataDao.queryHdataNumByStationId(station.getStationId());
+            int existHdata = hDataDao.queryHdataNumByStationId(station.getStationCode());
 
             if (existHdata == 0 ){
                 //没有该站点的数据记录
@@ -394,9 +452,9 @@ public class StationServiceImpl implements StationService {
             else {
                 //查询当天的小时数据的条数
                 Date date = new Date();
-                int nowdayHdataNum = hDataDao.queryhDataNumBetween(station.getStationId(), DateUtil.getTodayStr(date), DateUtil.getDateStr(date));
+                int nowdayHdataNum = hDataDao.queryhDataNumBetween(station.getStationCode(), DateUtil.getTodayStr(date), DateUtil.getDateStr(date));
 
-                List<HData> hDatas = hDataDao.queryMaxTimeHdataByStationId(station.getStationId());
+                List<HData> hDatas = hDataDao.queryMaxTimeHdataByStationId(station.getStationCode());
 
                 String calibration_value = null;
                 String flag = null;
@@ -421,7 +479,7 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("station_id", station.getStationId());
                 stationJSON.put("calibration_value",calibration_value);
                 stationJSON.put("flag", flag);
-                stationJSON.put("latest_time_h",hDatas.get(0).getData_time());
+                stationJSON.put("latest_time_h",DateUtil.getDateStr(hDatas.get(0).getData_time()));
                 stationJSON.put("count_h", nowdayHdataNum);
                 stationJSON.put("effective_rate_h", effective_rate_h);
                 stationJSON.put("LEQ_h", LEQ_h);
@@ -458,18 +516,34 @@ public class StationServiceImpl implements StationService {
         }
 
         //符合区域环境的总数
-        int count = stationDao.queryStationsNumByArea(req.getArea());
+        int count ;
+
+        if (req.getArea() == 5 ){
+
+            count = stationDao.queryAllStationNum();
+        }
+        else {
+            count = stationDao.queryStationsNumByArea(req.getArea());
+        }
 
         //分页查询站点
         int start = (req.getPageNum() - 1) * req.getPageSize();
         int end = req.getPageSize();
-        List<Station> stations = stationDao.queryStationsByAreaAndPage(req.getArea(), start, end);
+
+        List<Station> stations = null;
+
+        if (req.getArea() == 5){
+            stations = stationDao.queryStationsByPage(start, end);
+        }
+        else {
+            stations = stationDao.queryStationsByAreaAndPage(req.getArea(), start, end);
+        }
 
         for(Station station : stations){
 
             JSONObject stationJSON = new JSONObject();
 
-            int existDdata = dDataDao.queryDdataNumByStationId(station.getStationId());
+            int existDdata = dDataDao.queryDdataNumByStationId(station.getStationCode());
 
             if (existDdata == 0 ){
                 stationJSON.put("station_name", station.getStationName());
@@ -483,7 +557,7 @@ public class StationServiceImpl implements StationService {
             else {
 
                 //查询最新的日数据
-                List<DData> dDatas = dDataDao.queryMaxTimeDdataByStationId(station.getStationId());
+                List<DData> dDatas = dDataDao.queryMaxTimeDdataByStationId(station.getStationCode());
 
                 String Ld = null;
                 String effective_rate_Ld = null;

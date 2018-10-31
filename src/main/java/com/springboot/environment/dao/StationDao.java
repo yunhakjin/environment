@@ -1,5 +1,6 @@
 package com.springboot.environment.dao;
 
+import com.springboot.environment.bean.MData;
 import com.springboot.environment.bean.Station;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -28,6 +29,7 @@ public interface StationDao extends JpaRepository<Station, Integer> {
      * @param stationId
      * @return
      */
+
     Station findByStationId(String stationId);
 
     /**
@@ -141,8 +143,6 @@ public interface StationDao extends JpaRepository<Station, Integer> {
     @Query(value = "delete from station where STATION_ID = ?1 ", nativeQuery = true)
     void deleteByStationId(String stationId);
 
-    @Query(value = "select * from station where district =?1",nativeQuery = true)
-    List<Station> getAreasByAreasName(Object o);
     /**
      * 查询当天有数据的站点的信息
      * @param startDate
@@ -151,7 +151,16 @@ public interface StationDao extends JpaRepository<Station, Integer> {
      */
     @Query(value = "select * from mdata m where m.data_time between ?1 and ?2 group by m.station_id asc ", nativeQuery = true)
     List<MData> queryStationNumByMdata(String startDate, String endDate);
+    @Query(value = "select * from station where district =?1",nativeQuery = true)
+    List<Station> getAreasByAreasName(Object o);
 
+    @Query(value = "select * from station where station_code =?1",nativeQuery = true)
+    Station findStationByStationId(String station_id);
+
+    @Query(value = "select distinct domain from station ",nativeQuery = true)
+    List<String> getFuncCodes();
+    @Query(value = "select * from station s where s.STATION_ID like %?1% or s.STATION_NAME like %?1%", nativeQuery = true)
+    List<Station> queryStationsByKey(String key);
 
     /**
      * 根据环境区域查询站点个数
@@ -168,13 +177,34 @@ public interface StationDao extends JpaRepository<Station, Integer> {
      * @param end
      * @return
      */
-    @Query(value = "select * from station s where s.AREA = ?1 order by s.station asc limit ?2,?3", nativeQuery = true)
+    @Query(value = "select * from station s where s.AREA = ?1 order by s.station_id asc limit ?2,?3", nativeQuery = true)
     List<Station> queryStationsByAreaAndPage(int area, int start, int end);
 
 
-    @Query(value = "select * from station where station_code =?1",nativeQuery = true)
-    Station findStationByStationId(String station_id);
+    /**
+     * 所有站点信息的分页查询
+     * @param start
+     * @param end
+     * @return
+     */
+    @Query(value = "select * from station s order by s.station_id asc limit ?1,?2", nativeQuery = true)
+    List<Station> queryStationsByPage(int start, int end);
 
-    @Query(value = "select distinct domain from station ",nativeQuery = true)
-    List<String> getFuncCodes();
+    /**
+     * 查询所有站点的个数
+     * @return
+     */
+    @Query(value = "select count(*) from station s", nativeQuery = true)
+    int queryAllStationNum();
+
+    /**
+     * 根据站点id或name模糊查询
+     * @param key
+     * @return
+     */
+    @Query(value = "select * from station s where s.station_id like '%?1%' or s.station_name like '%?1%'", nativeQuery = true)
+    List<Station> findStationsByIdAndNameLike(String key);
+
+
+
 }
