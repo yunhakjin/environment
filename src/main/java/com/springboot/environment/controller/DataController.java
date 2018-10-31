@@ -322,7 +322,7 @@ public class DataController {
         List<Map> dataList=new ArrayList<Map>();
         int count=0;
         SimpleDateFormat sdf=new SimpleDateFormat("dd");
-        SimpleDateFormat sdf2=new SimpleDateFormat("yyyy-mm-dd");
+        SimpleDateFormat sdf2=new SimpleDateFormat("yyyy-MM-dd");
         String year=querytime.split("-")[0];
         String month=querytime.split("-")[1];
         for(String station:stationList){
