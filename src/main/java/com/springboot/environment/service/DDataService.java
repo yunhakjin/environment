@@ -4,6 +4,7 @@ import com.springboot.environment.bean.DData;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DDataService {
     public List<DData> getAll();
@@ -12,5 +13,9 @@ public interface DDataService {
     public void saveDData(DData dData);
     public void delDData(String Data_id);
     public Page<DData> getByStationAndTime(String station_id,String starttime,String endtime,int data_check,int data_status,int page,int size);
-    public List<DData> getByStationAndDate(String station_id,String date);
+    public List<DData> getByStationAndMonth(String station_id,String month);
+    public List<DData> getByStationAndDay(String station_id,String date);
+
+    Map getStationsData(Map<String, Object> params);
 }
+
