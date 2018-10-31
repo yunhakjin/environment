@@ -22,7 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Transactional
 @Service
@@ -83,6 +86,11 @@ public class StationServiceImpl implements StationService {
     public List<Station> queryStationsByNameLike(String stationName) {
         List<Station> stations = stationDao.findByStationNameLike(stationName);
         return stations;
+    }
+
+    @Override
+    public List<Station> queryStationsByCodeLike(String stationCode) {
+        return stationDao.finByStationCodeLike(stationCode);
     }
 
     @Override
@@ -163,13 +171,92 @@ public class StationServiceImpl implements StationService {
 
     @Override
     public String deleteStationByStationId(String stationId) {
-        Station station = stationDao.findByStationId(stationId);
+        Station station = stationDao.findStationByStationId(stationId);
         if (station == null){
             return "该站点信息不存在";
         }
 
         stationDao.deleteByStationId(stationId);
         return "删除成功";
+    }
+
+    @Override
+    public Map getDomainFromStation() {
+        Map<String, List> map = new LinkedHashMap<String, List>();
+        List<String> funcCodes=stationDao.getFuncCodes();
+        map.put("funcCodes",funcCodes);
+        return map;
+    }
+
+    @Override
+    public Map getStationsByAreasAndFuncCodes(Map<String, Object> params) {
+        Map<String, List> map = new LinkedHashMap<String, List>();
+
+
+        Map<String,Object> query=(Map<String, Object>) params.get("query");
+        System.out.println(query);
+
+
+        ArrayList areas=(ArrayList) query.get("areas");
+        ArrayList funcCodes=(ArrayList) query.get("funcCodes");
+        System.out.println(areas+" "+funcCodes);
+        String areas_checkedAll=query.get("areas_checkedAll")+"";
+        String funcCodes_checkedAll=query.get("funcCodes_checkedAll")+"";
+        System.out.println(areas_checkedAll+" "+funcCodes_checkedAll);
+        List<Map> innerMapList=new ArrayList<Map>();
+        if(areas_checkedAll.equals("false")){
+            //循环列表中的areas--不是全部的areas，需要遍历，然后判断funcCodes--不是全部的func，需要遍历
+            if(funcCodes_checkedAll.equals("false")){
+                for(int i=0;i<areas.size();i++){
+                    List<Station> stations=stationDao.getAreasByAreasName(areas.get(i));
+                    for (Station station:stations) {
+                        for(int j=0;j<funcCodes.size();j++){//从获得的stationslist中查找功能让区为get(j)的站点，并把这个站点加入到list中
+                            if(funcCodes.get(j).equals((station.getDomain()+""))){
+                                Map<String, String> innerMap = new LinkedHashMap<String, String>();
+                                innerMap.put("station_id",station.getStationCode());
+                                innerMap.put("station_name",station.getStationName());
+                                innerMapList.add(innerMap);
+                            }
+                        }
+                    }
+                }
+            }else{//列表中不是全部的areas，但是是全部的func
+                for(int i=0;i<areas.size();i++){
+                    List<Station> stations=stationDao.getAreasByAreasName(areas.get(i));
+                    for (Station station:stations) {
+                        Map<String, String> innerMap = new LinkedHashMap<String, String>();
+                        innerMap.put("station_id",station.getStationId());
+                        innerMap.put("station_name",station.getStationName());
+                        innerMapList.add(innerMap);
+                    }
+                }
+            }
+        }else {
+            //获取所有的areas，然后再判断funcCodes
+            List<Station> stations=stationDao.findAll();
+            if(funcCodes_checkedAll.equals("false")){
+                for (Station station:stations) {
+                    for(int j=0;j<funcCodes.size();j++){//从获得的stationslist中查找功能让区为get(j)的站点，并把这个站点加入到list中
+                        if(funcCodes.get(j).equals((station.getDomain()+""))){
+                            Map<String, String> innerMap = new LinkedHashMap<String, String>();
+                            innerMap.put("station_id",station.getStationCode());
+                            innerMap.put("station_name",station.getStationName());
+                            innerMapList.add(innerMap);
+                        }
+                    }
+                }
+            }else{
+                for (Station station:stations) {
+                    Map<String, String> innerMap = new LinkedHashMap<String, String>();
+                    innerMap.put("station_id",station.getStationCode());
+                    innerMap.put("station_name",station.getStationName());
+                    innerMapList.add(innerMap);
+                }
+            }
+        }
+        System.out.println(innerMapList.size());
+        map.put("stations",innerMapList);
+        return map;
     }
 
     @Override

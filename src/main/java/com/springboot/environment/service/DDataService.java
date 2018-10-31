@@ -4,6 +4,7 @@ import com.springboot.environment.bean.DData;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DDataService {
     public List<DData> getAll();
@@ -15,4 +16,9 @@ public interface DDataService {
     public List<DData> getByStationAndDate(String station_id,String date);
 
     String queryDdataByStationIdAndDatetime(String stationId, String date);
+    public List<DData> getByStationAndMonth(String station_id,String month);
+    public List<DData> getByStationAndDay(String station_id,String date);
+
+    Map getStationsData(Map<String, Object> params);
 }
+

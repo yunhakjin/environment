@@ -29,6 +29,7 @@ public interface StationDao extends JpaRepository<Station, Integer> {
      * @param stationId
      * @return
      */
+
     Station findByStationId(String stationId);
 
     /**
@@ -117,6 +118,14 @@ public interface StationDao extends JpaRepository<Station, Integer> {
     List<Station> findByStationNameLike(String stationName);
 
     /**
+     * 站点code的模糊查询
+     * @param station_code
+     * @return
+     */
+    @Query(value = "select * from station s where s.station_code like %?1%",nativeQuery = true)
+    List<Station> finByStationCodeLike(String station_code);
+
+    /**
      * 站点所属街道的模糊查询
      * @param street
      * @return
@@ -142,7 +151,16 @@ public interface StationDao extends JpaRepository<Station, Integer> {
      */
     @Query(value = "select * from mdata m where m.data_time between ?1 and ?2 group by m.station_id asc ", nativeQuery = true)
     List<MData> queryStationNumByMdata(String startDate, String endDate);
+    @Query(value = "select * from station where district =?1",nativeQuery = true)
+    List<Station> getAreasByAreasName(Object o);
 
+    @Query(value = "select * from station where station_code =?1",nativeQuery = true)
+    Station findStationByStationId(String station_id);
+
+    @Query(value = "select distinct domain from station ",nativeQuery = true)
+    List<String> getFuncCodes();
+    @Query(value = "select * from station s where s.STATION_ID like %?1% or s.STATION_NAME like %?1%", nativeQuery = true)
+    List<Station> queryStationsByKey(String key);
 
     /**
      * 根据环境区域查询站点个数
@@ -186,6 +204,7 @@ public interface StationDao extends JpaRepository<Station, Integer> {
      */
     @Query(value = "select * from station s where s.station_id like '%?1%' or s.station_name like '%?1%'", nativeQuery = true)
     List<Station> findStationsByIdAndNameLike(String key);
+
 
 
 }

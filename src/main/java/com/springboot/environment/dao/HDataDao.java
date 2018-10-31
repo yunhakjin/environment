@@ -47,4 +47,8 @@ public interface HDataDao extends JpaRepository<HData,Integer> {
      */
     @Query(value = "select * from hdata h where h.data_time = (select MAX(hd.data_time) from hdata hd where hd.station_id = ?1) and h.station_id = ?1", nativeQuery = true)
     List<HData> queryMaxTimeHdataByStationId(String stationId);
+
+    @Query(value = "select * from hdata d where d.station_id=?1 and DATE_FORMAT(d.data_time,'%Y-%m-%d')=?2",nativeQuery = true)
+    List<HData> getByStationAndDate(String station_id,String date);
+
 }

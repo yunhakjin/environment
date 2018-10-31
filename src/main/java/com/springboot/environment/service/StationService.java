@@ -6,6 +6,7 @@ import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 
 import java.util.List;
+import java.util.Map;
 
 public interface StationService {
 
@@ -20,6 +21,8 @@ public interface StationService {
     List<Station> queryStationsByOnlineFlag(int onlineFlag);
 
     List<Station> queryStationsByNameLike(String stationName);
+
+    List<Station> queryStationsByCodeLike(String stationCode);
 
     List<Station> queryStationsByDistrict(String district);
 
@@ -49,4 +52,7 @@ public interface StationService {
     String querydDataByStationArea(QuerydDataByStationAreaReq req);
 
 
+    Map getDomainFromStation();
+
+    Map getStationsByAreasAndFuncCodes(Map<String, Object> params);
 }
