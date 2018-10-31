@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -265,14 +266,42 @@ public class DataController {
     }
 
 
+//    @ApiOperation(value="根据功能区划分查询符合的站点的日数据")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
+//            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
+//            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
+//    })
+//    @RequestMapping(value = "/querydDataByStationsArea", method = RequestMethod.POST)
+//    public String querydDataByStationByArea(@RequestBody QuerydDataByStationAreaReq querydDataByStationAreaReq){
+//
+//        return stationService.querydDataByStationArea(querydDataByStationAreaReq);
+//    }
+
+
+
     @ApiOperation(value="根据功能区划分查询符合的站点的日数据")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
-            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
-            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
+//            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
+//            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
+//            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
+            @ApiImplicitParam(name = "params",value="当前的页号",dataType = "String")
     })
     @RequestMapping(value = "/querydDataByStationsArea", method = RequestMethod.POST)
-    public String querydDataByStationByArea(@RequestBody QuerydDataByStationAreaReq querydDataByStationAreaReq){
+    public String querydDataByStationByArea(@RequestBody Map<String, Object> params){
+
+//        System.out.println(request.getParameterMap().get("area_id"));
+//
+//        int area = Integer.parseInt(request.getParameter("area_id"));
+//        int pageSize = Integer.parseInt(request.getParameter("each_page_num"));
+//        int pageNum = Integer.parseInt(request.getParameter("current_page"));
+
+        System.out.println(params.toString());
+        int area = (Integer)params.get("area_id");
+        int pageSize = (Integer) params.get("each_page_num");
+        int pageNum = (Integer) params.get("current_page");
+
+        QuerydDataByStationAreaReq querydDataByStationAreaReq = new QuerydDataByStationAreaReq(area, pageSize, pageNum);
 
         return stationService.querydDataByStationArea(querydDataByStationAreaReq);
     }

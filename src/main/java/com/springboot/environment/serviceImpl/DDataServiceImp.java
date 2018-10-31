@@ -61,6 +61,16 @@ public class DDataServiceImp implements DDataService {
     }
 
     @Override
+    public List<DData> getByStationAndDate(String station_id, String date) {
+        return null;
+    }
+
+    @Override
+    public String queryDdataByStationIdAndDatetime(String stationId, String date) {
+        return null;
+    }
+
+    @Override
     public List<DData> getByStationAndMonth(String station_id, String month) {
         return dDataDao.getByStationAndMonth(station_id,month);
     }
@@ -243,11 +253,11 @@ public class DDataServiceImp implements DDataService {
             }
         }
 //=======================================================================
-
-    @Override
-    public String queryDdataByStationIdAndDatetime(String stationId, String date) {
-        return null;
-    }
+//
+//    @Override
+//    public String queryDdataByStationIdAndDatetime(String stationId, String date) {
+//        return null;
+//    }
 
         if(month2.equals("02")){
             if(Integer.valueOf(year2)%4==0){

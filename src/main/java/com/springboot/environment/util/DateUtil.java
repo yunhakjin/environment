@@ -30,19 +30,19 @@ public class DateUtil {
         return simpleDateFormat.format(date);
     }
 
-    public static void main(String[] args) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-        String date = "2018/10/24/ 13:00";
-        try {
-            Date newDate = simpleDateFormat.parse(date);
-
-            String str = getDateStr(newDate);
-            System.out.println(str);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-    }
+//    public static void main(String[] args) {
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+//        String date = "2018/10/24/ 13:00";
+//        try {
+//            Date newDate = simpleDateFormat.parse(date);
+//
+//            String str = getDateStr(newDate);
+//            System.out.println(str);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 }
 
 
