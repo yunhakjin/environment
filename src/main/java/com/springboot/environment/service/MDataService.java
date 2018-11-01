@@ -14,5 +14,6 @@ public interface MDataService {
     String queryMdataByStationIdAndDatetime(String stationId, String date);
 
     Map getMDataByStationsID();
+
 }
 

@@ -1,18 +1,23 @@
 package com.springboot.environment.serviceImpl;
 
-import com.springboot.environment.bean.HData;
-import com.springboot.environment.bean.Norm;
-import com.springboot.environment.bean.Station;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.springboot.environment.bean.*;
 import com.springboot.environment.dao.HDataDao;
 import com.springboot.environment.dao.NormDao;
 import com.springboot.environment.dao.StationDao;
 import com.springboot.environment.service.HDataService;
+import com.springboot.environment.util.DateUtil;
+import com.springboot.environment.util.NormConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -51,6 +56,74 @@ public class HDataServiceImp implements HDataService {
 
     @Override
     public String queryHdataByStationIdAndDatetime(String stationId, String date) {
+
+        try {
+
+            String dayStartTime = DateUtil.getThisDayStartTime(date);
+            String dayEndTIme = DateUtil.getThisDayEndTime(date);
+
+            List<HData> hDatas = hDataDao.queryHdataByStationIdAndTime(stationId, dayStartTime, dayEndTIme);
+
+            JSONArray hdataArray = new JSONArray();
+            JSONObject hdataJSON = new JSONObject();
+            JSONObject dataJSON = new JSONObject();
+
+            //如果指定时间内有数据
+            if (hDatas.size() > 0 ){
+                Map<Date, List<HData>> map = Maps.newTreeMap();
+                for (HData hData : hDatas) {
+                    if (map.containsKey(hData.getData_time())) {
+                        map.get(hData.getData_time()).add(hData);
+                    } else {
+                        List<HData> hDataList = Lists.newArrayList();
+                        hDataList.add(hData);
+                        map.put(hData.getData_time(), hDataList);
+                    }
+                }
+
+                System.out.println(map.toString());
+
+                for (List<HData> hDataList : map.values()) {
+                    JSONObject object = new JSONObject();
+                    object.put("time", DateUtil.getHourAndMinute(hDataList.get(0).getData_time()));
+                    for (HData hData : hDataList) {
+                        if (NormConstant.map.containsKey(hData.getNorm_code())) {
+                            object.put(NormConstant.map.get(hData.getNorm_code()), hData.getNorm_val());
+                        }
+                    }
+                    hdataArray.add(object);
+                }
+
+                //获取最新数据的val值
+                String latestCal = null;
+                List<HData> latestHData = ((TreeMap<Date, List<HData>>) map).lastEntry().getValue();
+                System.out.println("最新的时间为:" + latestHData.get(0).getData_time());
+                for (HData hData : latestHData){
+                    if (hData.getNorm_code().equals("n00100")){
+                        latestCal = hData.getNorm_val();
+                    }
+                }
+                dataJSON.put("count", map.size());
+                dataJSON.put("data", hdataArray);
+                dataJSON.put("latest_calibration_value", latestCal);
+                hdataJSON.put("siteData", dataJSON);
+
+                System.out.println(hdataJSON.toJSONString());
+                return hdataJSON.toJSONString();
+            }
+
+            else {
+                dataJSON.put("count", 0);
+                dataJSON.put("data", "");
+                dataJSON.put("latest_calibration_value", "");
+                hdataJSON.put("siteData", dataJSON);
+
+                System.out.println(hdataJSON.toJSONString());
+                return hdataJSON.toJSONString();
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

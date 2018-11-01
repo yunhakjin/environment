@@ -45,4 +45,15 @@ public interface MDataDao extends JpaRepository<MData,Integer> {
      */
     @Query(value = "select count(*) from mdata m where m.station_id = ?1", nativeQuery = true)
     int querymDataNumByStationId(String stationId);
+
+
+    /**
+     * 根据站点id和指定时间查询实时数据
+     * @param statonId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    @Query(value = "select * from mdata m where m.station_id = ?1 and m.data_time between ?2 and ?3", nativeQuery = true)
+    List<MData> queryMdataByStationIdAndTime(String statonId, String startTime, String endTime);
 }

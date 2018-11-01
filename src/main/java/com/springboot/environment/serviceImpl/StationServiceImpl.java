@@ -285,6 +285,7 @@ public class StationServiceImpl implements StationService {
         }
         dataJSON.put("stations", stationArray);
         System.out.println(dataJSON.toJSONString());
+        System.out.println(stations.size());
 
         return dataJSON.toJSONString();
 

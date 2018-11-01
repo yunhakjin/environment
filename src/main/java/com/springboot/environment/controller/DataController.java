@@ -1,6 +1,7 @@
 package com.springboot.environment.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.springboot.environment.Enum.DataTypeEnum;
 import com.springboot.environment.bean.DData;
 import com.springboot.environment.bean.HData;
 import com.springboot.environment.bean.M5Data;
@@ -309,14 +310,34 @@ public class DataController {
 
     @ApiOperation(value="查询单站点指定时间的数据")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "station_id",value="站点id",dataType = "String"),
-            @ApiImplicitParam(name = "data_type",value="站点数据类型",dataType = "int"),
-            @ApiImplicitParam(name = "date",value="给定的时间",dataType = "String")
+//            @ApiImplicitParam(name = "station_id",value="站点id",dataType = "String"),
+//            @ApiImplicitParam(name = "data_type",value="站点数据类型",dataType = "int"),
+//            @ApiImplicitParam(name = "date",value="给定的时间",dataType = "String")
+            @ApiImplicitParam(name = "params",value="参数列表",dataType = "String")
     })
     @RequestMapping(value = "/queryDataByStationIdAndDatetime", method = RequestMethod.POST)
-    public String queryDataByStationIdAndDatetime(@RequestBody QueryDataByStationIdAndDatetimeReq queryDataByStationIdAndDatetimeReq){
+    public String queryDataByStationIdAndDatetime(@RequestBody Map<String, Object> params){
 
-        return null;
+        System.out.println(params.toString());
+        String stationId= params.get("station_id").toString();
+        int dataType = (Integer) params.get("data_type");
+        String date = params.get("date").toString();
+
+        if (dataType == DataTypeEnum.MDATA.getCode()){
+            return mDataService.queryMdataByStationIdAndDatetime(stationId, date);
+        }
+        else if(dataType == DataTypeEnum.M5DATA.getCode()){
+            return m5DataService.queryM5dataByStationIdAndDatetime(stationId, date);
+        }
+        else if(dataType == DataTypeEnum.HDATA.getCode()){
+            return hDataService.queryHdataByStationIdAndDatetime(stationId, date);
+        }
+        else if(dataType == DataTypeEnum.DDATA.getCode()){
+            return dDataService.queryDdataByStationIdAndDatetime(stationId, date);
+        }
+        else {
+            return null;
+        }
     }
 
     /*多站点指定日期小时数据查询*/

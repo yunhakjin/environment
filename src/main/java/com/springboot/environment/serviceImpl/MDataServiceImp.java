@@ -3,17 +3,23 @@ package com.springboot.environment.serviceImpl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.springboot.environment.bean.DData;
 import com.springboot.environment.bean.MData;
 import com.springboot.environment.dao.DDataDao;
 import com.springboot.environment.dao.MDataDao;
 import com.springboot.environment.service.MDataService;
+import com.springboot.environment.util.DateUtil;
+import com.springboot.environment.util.NormConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +53,63 @@ public class MDataServiceImp implements MDataService {
 
     @Override
     public String queryMdataByStationIdAndDatetime(String stationId, String date) {
+
+        try {
+            String startDate = DateUtil.getDateBefore1hour(date);
+            String endDate = date;
+
+            List<MData> mDatas = mDataDao.queryMdataByStationIdAndTime(stationId, startDate, endDate);
+
+            //设置比较的起始时间
+            JSONArray mdataArray = new JSONArray();
+            JSONObject mdataJSON = new JSONObject();
+            JSONObject dataJSON = new JSONObject();
+
+            //如果查询后有数据
+            if (mDatas.size() > 0) {
+                Map<Date, List<MData>> map = Maps.newTreeMap();
+                for (MData mData : mDatas) {
+                    if (map.containsKey(mData.getData_time())) {
+                        map.get(mData.getData_time()).add(mData);
+                    } else {
+                        List<MData> mDataList = Lists.newArrayList();
+                        mDataList.add(mData);
+                        map.put(mData.getData_time(), mDataList);
+                    }
+                }
+
+                System.out.println(map.toString());
+
+                for (List<MData> mDataList : map.values()) {
+                    JSONObject object = new JSONObject();
+                    object.put("time", DateUtil.getHourAndMinuteAndSecond(mDataList.get(0).getData_time()));
+                    for (MData mData : mDataList) {
+                        if (NormConstant.map.containsKey(mData.getNorm_code())) {
+                            object.put(NormConstant.map.get(mData.getNorm_code()), mData.getNorm_val());
+                        }
+                    }
+                    mdataArray.add(object);
+                }
+                dataJSON.put("count", map.size());
+                dataJSON.put("data", mdataArray);
+                mdataJSON.put("siteData", dataJSON);
+
+                System.out.println(mdataJSON.toJSONString());
+                return mdataJSON.toJSONString();
+            }
+            else {
+                dataJSON.put("count", 0);
+                dataJSON.put("data", "");
+                mdataJSON.put("siteData", dataJSON);
+
+                System.out.println(mdataJSON.toJSONString());
+                return mdataJSON.toJSONString();
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 

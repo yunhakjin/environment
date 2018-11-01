@@ -12,6 +12,7 @@ public interface HDataService {
     public Page<HData> getByStationAndTime(String station_id,String starttime,String endtime,int data_check,int data_status,int page,int size);
 
     String queryHdataByStationIdAndDatetime(String stationId, String date);
+
     public List<HData> getByStationAndDate(String station_id,String date);
 
     Map getStationsDataByDays(Map<String, Object> params);

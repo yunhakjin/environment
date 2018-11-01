@@ -332,13 +332,15 @@ public class StationController {
 
     @ApiOperation(value="根据key模糊查询站点信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "key",value="模糊查询的key值,可能是id也可能是name",dataType = "String")
+            @ApiImplicitParam(name = "params",value="模糊查询的key值,可能是id也可能是name",dataType = "String")
     })
 
     @RequestMapping(value = "/queryStationsByKey", method = RequestMethod.POST)
-    public  String queryStationsByKey(@RequestBody QueryStationsByKeyReq queryStationsByKeyReq){
+    public  String queryStationsByKey(@RequestBody Map<String, Object> params){
 
-        String key = queryStationsByKeyReq.getKey();
+        System.out.println(params.toString());
+        String key = params.get("key").toString();
+
         return stationService.queryStationsByKey(key);
 
     }

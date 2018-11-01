@@ -51,4 +51,15 @@ public interface HDataDao extends JpaRepository<HData,Integer> {
     @Query(value = "select * from hdata d where d.station_id=?1 and DATE_FORMAT(d.data_time,'%Y-%m-%d')=?2",nativeQuery = true)
     List<HData> getByStationAndDate(String station_id,String date);
 
+    /**
+     * 查询指定站点指定时间的小时数据
+     * @param stationId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    @Query(value = "select * from hdata h where h.station_id = ?1 and h.data_time between ?2 and ?3", nativeQuery = true)
+    List<HData> queryHdataByStationIdAndTime(String stationId, String startTime, String endTime);
+
+
 }
