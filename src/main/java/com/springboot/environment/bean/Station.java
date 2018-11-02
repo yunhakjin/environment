@@ -76,7 +76,7 @@ public class Station implements Serializable {
     /**
      * 站点位置
      */
-    @Column(name = "STATION_POSITION", nullable = false)
+    @Column(name = "POSITION", nullable = false)
     private String position;
     /**
      * 站点所属街道

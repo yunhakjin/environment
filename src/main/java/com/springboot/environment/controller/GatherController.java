@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/gather")
@@ -71,11 +72,19 @@ public class GatherController {
 //                    List<Integer> pos=new ArrayList<Integer>();
 //                    pos.add(Integer.valueOf(position.get(0)));
 //                    pos.add(Integer.valueOf(position.get(1)));
-                    normVal.put("position",position);
+                    List<Double> pos=new ArrayList<Double>();
+                    if(!position.isEmpty()){
+                        pos.add(Double.parseDouble(position.get(0)));
+                        pos.add(Double.parseDouble(position.get(1)));
+                    }
+                    normVal.put("position",pos);
                     normVal.put(gatherDataList.get(j).getNorm_code(),gatherDataList.get(j).getNorm_val());
                     innertrackMap.put(trackTime,normVal);
                 }
             }
+            innertrackMap=innertrackMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                    .collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue,(oldValue, newVvalue)->oldValue,LinkedHashMap::new));
+
             List<Map> innerTrackList=new ArrayList<Map>();
             for(Map value:innertrackMap.values()){
                 innerTrackList.add(value);
