@@ -604,8 +604,5 @@ public class StationServiceImpl implements StationService {
         return stationDao.findByStationCode(stationCode);
     }
 
-    @Override
-    public Station queryStatiionByCode(String stationCode) {
-        return stationDao.findByStationCode(stationCode);
-    }
+
 }
