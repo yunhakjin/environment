@@ -10,6 +10,7 @@ import com.springboot.environment.dao.M5DataDao;
 import com.springboot.environment.service.M5DataService;
 import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.NormConstant;
+import com.springboot.environment.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -62,7 +63,7 @@ public class M5DataServiceImp implements M5DataService {
             JSONObject dataJSON = new JSONObject();
 
             //如果指定时间内有数据
-            if (m5Datas.size() > 0 ){
+            if (!StringUtil.isNullOrEmpty(m5Datas)){
                 Map<Date, List<M5Data>> map = Maps.newTreeMap();
                 for (M5Data m5Data : m5Datas) {
                     if (map.containsKey(m5Data.getData_time())) {

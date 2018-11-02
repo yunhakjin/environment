@@ -1,18 +1,27 @@
 package com.springboot.environment.serviceImpl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.springboot.environment.bean.DData;
+import com.springboot.environment.bean.HData;
 import com.springboot.environment.bean.Norm;
 import com.springboot.environment.bean.Station;
 import com.springboot.environment.dao.DDataDao;
 import com.springboot.environment.dao.NormDao;
 import com.springboot.environment.dao.StationDao;
 import com.springboot.environment.service.DDataService;
+import com.springboot.environment.util.DateUtil;
+import com.springboot.environment.util.NormConstant;
+import com.springboot.environment.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -67,6 +76,74 @@ public class DDataServiceImp implements DDataService {
 
     @Override
     public String queryDdataByStationIdAndDatetime(String stationId, String date) {
+
+        try {
+
+            String monthBeginTime = DateUtil.getMonthFirstDay(date);
+            String monthEndTime = DateUtil.getMonthEndDay(date);
+
+            List<DData> dDatas = dDataDao.queryDdataByStationIdAndTime(stationId, monthBeginTime, monthEndTime);
+
+            JSONArray ddataArray = new JSONArray();
+            JSONObject ddataJSON = new JSONObject();
+            JSONObject dataJSON = new JSONObject();
+
+            //如果指定时间内有数据
+            if (!StringUtil.isNullOrEmpty(dDatas)){
+                Map<Date, List<DData>> map = Maps.newTreeMap();
+                for (DData dData : dDatas) {
+                    if (map.containsKey(dData.getData_time())) {
+                        map.get(dData.getData_time()).add(dData);
+                    } else {
+                        List<DData> dDataList = Lists.newArrayList();
+                        dDataList.add(dData);
+                        map.put(dData.getData_time(), dDataList);
+                    }
+                }
+
+                System.out.println(map.toString());
+
+                for (List<DData> dDataList : map.values()) {
+                    JSONObject object = new JSONObject();
+                    object.put("time", DateUtil.getYearMonthDay(dDataList.get(0).getData_time()));
+                    for (DData dData : dDataList) {
+                        if (NormConstant.map.containsKey(dData.getNorm_code())) {
+                            object.put(NormConstant.map.get(dData.getNorm_code()), dData.getNorm_val());
+                        }
+                    }
+                    ddataArray.add(object);
+                }
+
+                //获取最新数据的val值
+                String latestCal = null;
+                List<DData> latestDData = ((TreeMap<Date, List<DData>>) map).lastEntry().getValue();
+                System.out.println("最新的时间为:" + latestDData.get(0).getData_time());
+                for (DData dData : latestDData){
+                    if (dData.getNorm_code().equals("n00100")){
+                        latestCal = dData.getNorm_val();
+                    }
+                }
+                dataJSON.put("count", map.size());
+                dataJSON.put("data", ddataArray);
+                dataJSON.put("latest_calibration_value", latestCal);
+                ddataJSON.put("siteData", dataJSON);
+
+                System.out.println(ddataJSON.toJSONString());
+                return ddataJSON.toJSONString();
+            }
+
+            else {
+                dataJSON.put("count", 0);
+                dataJSON.put("data", "");
+                dataJSON.put("latest_calibration_value", "");
+                ddataJSON.put("siteData", dataJSON);
+
+                System.out.println(ddataJSON.toJSONString());
+                return ddataJSON.toJSONString();
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

@@ -11,6 +11,7 @@ import com.springboot.environment.dao.StationDao;
 import com.springboot.environment.service.HDataService;
 import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.NormConstant;
+import com.springboot.environment.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -69,7 +70,7 @@ public class HDataServiceImp implements HDataService {
             JSONObject dataJSON = new JSONObject();
 
             //如果指定时间内有数据
-            if (hDatas.size() > 0 ){
+            if (!StringUtil.isNullOrEmpty(hDatas)){
                 Map<Date, List<HData>> map = Maps.newTreeMap();
                 for (HData hData : hDatas) {
                     if (map.containsKey(hData.getData_time())) {

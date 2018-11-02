@@ -2,6 +2,7 @@ package com.springboot.environment.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class DateUtil {
@@ -94,10 +95,38 @@ public class DateUtil {
 
     }
 
+    /**
+     * 得到月初的一天
+     * @param date
+     * @return
+     */
+    public static String getMonthFirstDay(String date) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        Date nowDate = sdf.parse(date);
+        String firstDay = new SimpleDateFormat("yyyy-MM-01 00:00:00").format(nowDate);
+        return firstDay;
+    }
+
+    public static String getMonthEndDay(String date) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        Date nowDay = sdf.parse(date);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(nowDay);
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        calendar.set(Calendar.HOUR_OF_DAY,23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(calendar.getTimeInMillis()));
+    }
+
+    public static String getYearMonthDay(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(date);
+    }
+
     public static void main(String[] args) throws ParseException {
 
-        System.out.println(getDateStr(new Date()));
-        System.out.println(getThisDayStartTime(getDateStr(new Date())));
+        System.out.println(getMonthEndDay("2018-10"));
     }
 
 

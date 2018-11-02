@@ -17,6 +17,7 @@ import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 import com.springboot.environment.service.StationService;
 import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.StationConstant;
+import com.springboot.environment.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -274,11 +275,12 @@ public class StationServiceImpl implements StationService {
 
         stations = stationDao.findStationsByIdAndNameLike(key);
 
-        if (stations.size() > 0){
+        if (!StringUtil.isNullOrEmpty(stations)){
             for (Station station : stations){
                 JSONObject stationJSON = new JSONObject();
                 stationJSON.put("station_id", station.getStationId());
                 stationJSON.put("station_name", station.getStationName());
+                stationJSON.put("station_code", station.getStationCode());
                 stationArray.add(stationJSON);
             }
 
@@ -344,6 +346,7 @@ public class StationServiceImpl implements StationService {
             if (existMdata == 0){
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("station_code", station.getStationCode());
                 stationJSON.put("latest_time", "");
                 stationJSON.put("count_r", 0);
                 stationJSON.put("LA", "");
@@ -374,6 +377,7 @@ public class StationServiceImpl implements StationService {
                 }
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("station_code", station.getStationCode());
                 stationJSON.put("latest_time", DateUtil.getDateStr(mDatas.get(0).getData_time()));
                 stationJSON.put("count_r", nowDayMdataNum);
                 stationJSON.put("LA", LA);
@@ -442,6 +446,7 @@ public class StationServiceImpl implements StationService {
                 //没有该站点的数据记录
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("station_code", station.getStationCode());
                 stationJSON.put("calibration_value","");
                 stationJSON.put("flag", "");
                 stationJSON.put("latest_time_h","");
@@ -478,6 +483,7 @@ public class StationServiceImpl implements StationService {
 
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("station_code", station.getStationCode());
                 stationJSON.put("calibration_value",calibration_value);
                 stationJSON.put("flag", flag);
                 stationJSON.put("latest_time_h",DateUtil.getDateStr(hDatas.get(0).getData_time()));
@@ -549,6 +555,7 @@ public class StationServiceImpl implements StationService {
             if (existDdata == 0 ){
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("station_code", station.getStationCode());
                 stationJSON.put("Ld", "");
                 stationJSON.put("effective_rate_Ld", "");
                 stationJSON.put("Ln", "");
@@ -580,6 +587,7 @@ public class StationServiceImpl implements StationService {
 
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("station_code", station.getStationCode());
                 stationJSON.put("Ld", Ld);
                 stationJSON.put("effective_rate_Ld", "");
                 stationJSON.put("Ln", Ln);

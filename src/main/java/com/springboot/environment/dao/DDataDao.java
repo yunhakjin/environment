@@ -47,4 +47,15 @@ public interface DDataDao extends JpaRepository<DData,Integer> {
     List<DData> getByStationAndDay(String station_id,String date);
 
 
+    /**
+     * 查询指定站点和指定月份的日数据
+     * @param stationId
+     * @param monthBeginTIme
+     * @param monthEndTime
+     * @return
+     */
+    @Query(value = "select * from ddata d where d.station_id = ?1 and d.data_time between ?2 and ?3", nativeQuery = true)
+    List<DData> queryDdataByStationIdAndTime(String stationId, String monthBeginTIme, String monthEndTime);
+
+
 }

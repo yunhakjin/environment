@@ -243,59 +243,44 @@ public class DataController {
 
     @ApiOperation(value="根据功能区划分查询符合的站点的实时数据")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
-            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
-            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
+            @ApiImplicitParam(name = "params",value="参数列表",dataType = "String")
     })
     @RequestMapping(value = "/querymDataByStationsArea", method = RequestMethod.POST)
-    public String querymDataByStationsArea(@RequestBody QuerymDataByStationsAreaReq querymDataByStationsAreaReq){
+    public String querymDataByStationsArea(@RequestBody Map<String, Object> params){
 
+        System.out.println(params.toString());
+        int area = (Integer)params.get("area_id");
+        int pageSize = (Integer) params.get("each_page_num");
+        int pageNum = (Integer) params.get("current_page");
+
+        QuerymDataByStationsAreaReq querymDataByStationsAreaReq = new QuerymDataByStationsAreaReq(area, pageSize, pageNum);
         return stationService.querymDataByStationArea(querymDataByStationsAreaReq);
 
     }
 
     @ApiOperation(value="根据功能区划分查询符合的站点的小时数据")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
-            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
-            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
+            @ApiImplicitParam(name = "params",value="参数列表",dataType = "String")
     })
     @RequestMapping(value = "/queryhDataByStationsArea", method = RequestMethod.POST)
-    public String queryhDataByStationArea(@RequestBody QueryhDataByStationAreaReq queryhDataByStationAreaReq){
+    public String queryhDataByStationArea(@RequestBody Map<String, Object> params){
 
+        System.out.println(params.toString());
+        int area = (Integer)params.get("area_id");
+        int pageSize = (Integer) params.get("each_page_num");
+        int pageNum = (Integer) params.get("current_page");
+
+        QueryhDataByStationAreaReq queryhDataByStationAreaReq = new QueryhDataByStationAreaReq(area, pageSize, pageNum);
         return stationService.queryhDataByStationArea(queryhDataByStationAreaReq);
     }
 
 
-//    @ApiOperation(value="根据功能区划分查询符合的站点的日数据")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
-//            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
-//            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
-//    })
-//    @RequestMapping(value = "/querydDataByStationsArea", method = RequestMethod.POST)
-//    public String querydDataByStationByArea(@RequestBody QuerydDataByStationAreaReq querydDataByStationAreaReq){
-//
-//        return stationService.querydDataByStationArea(querydDataByStationAreaReq);
-//    }
-
-
-
     @ApiOperation(value="根据功能区划分查询符合的站点的日数据")
     @ApiImplicitParams({
-//            @ApiImplicitParam(name = "area_id",value="功能区的id",dataType = "int"),
-//            @ApiImplicitParam(name = "each_page_num",value="分页的页大小",dataType = "int"),
-//            @ApiImplicitParam(name = "current_page",value="当前的页号",dataType = "int")
             @ApiImplicitParam(name = "params",value="当前的页号",dataType = "String")
     })
     @RequestMapping(value = "/querydDataByStationsArea", method = RequestMethod.POST)
     public String querydDataByStationByArea(@RequestBody Map<String, Object> params){
-
-//        System.out.println(request.getParameterMap().get("area_id"));
-//
-//        int area = Integer.parseInt(request.getParameter("area_id"));
-//        int pageSize = Integer.parseInt(request.getParameter("each_page_num"));
-//        int pageNum = Integer.parseInt(request.getParameter("current_page"));
 
         System.out.println(params.toString());
         int area = (Integer)params.get("area_id");
@@ -310,9 +295,6 @@ public class DataController {
 
     @ApiOperation(value="查询单站点指定时间的数据")
     @ApiImplicitParams({
-//            @ApiImplicitParam(name = "station_id",value="站点id",dataType = "String"),
-//            @ApiImplicitParam(name = "data_type",value="站点数据类型",dataType = "int"),
-//            @ApiImplicitParam(name = "date",value="给定的时间",dataType = "String")
             @ApiImplicitParam(name = "params",value="参数列表",dataType = "String")
     })
     @RequestMapping(value = "/queryDataByStationIdAndDatetime", method = RequestMethod.POST)

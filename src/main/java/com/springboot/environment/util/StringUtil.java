@@ -1,5 +1,7 @@
 package com.springboot.environment.util;
 
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -13,5 +15,29 @@ public class StringUtil {
 
         Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
         return pattern.matcher(str).matches();
+    }
+
+    /**
+     * 判断list是否为空
+     * @param list
+     * @return
+     */
+    public static boolean isNullOrEmpty(List list){
+        if (list.size() == 0 || list == null){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 判断map是否为空
+     * @param map
+     * @return
+     */
+    public static boolean isNullOrEmpty(Map map){
+        if (map.size() == 0 || map == null){
+            return true;
+        }
+        return false;
     }
 }

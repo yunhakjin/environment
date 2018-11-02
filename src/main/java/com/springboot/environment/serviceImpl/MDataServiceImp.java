@@ -12,11 +12,13 @@ import com.springboot.environment.dao.MDataDao;
 import com.springboot.environment.service.MDataService;
 import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.NormConstant;
+import com.springboot.environment.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -66,7 +68,7 @@ public class MDataServiceImp implements MDataService {
             JSONObject dataJSON = new JSONObject();
 
             //如果查询后有数据
-            if (mDatas.size() > 0) {
+            if (!StringUtil.isNullOrEmpty(mDatas)) {
                 Map<Date, List<MData>> map = Maps.newTreeMap();
                 for (MData mData : mDatas) {
                     if (map.containsKey(mData.getData_time())) {
@@ -77,8 +79,6 @@ public class MDataServiceImp implements MDataService {
                         map.put(mData.getData_time(), mDataList);
                     }
                 }
-
-                System.out.println(map.toString());
 
                 for (List<MData> mDataList : map.values()) {
                     JSONObject object = new JSONObject();
@@ -105,11 +105,9 @@ public class MDataServiceImp implements MDataService {
                 System.out.println(mdataJSON.toJSONString());
                 return mdataJSON.toJSONString();
             }
-
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
