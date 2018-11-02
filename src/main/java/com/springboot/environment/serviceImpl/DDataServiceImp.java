@@ -107,8 +107,8 @@ public class DDataServiceImp implements DDataService {
                     JSONObject object = new JSONObject();
                     object.put("time", DateUtil.getYearMonthDay(dDataList.get(0).getData_time()));
                     for (DData dData : dDataList) {
-                        if (NormConstant.map.containsKey(dData.getNorm_code())) {
-                            object.put(NormConstant.map.get(dData.getNorm_code()), dData.getNorm_val());
+                        if (dData.getNorm_code() != null && dData.getNorm_val() != null) {
+                            object.put(dData.getNorm_code(), dData.getNorm_val());
                         }
                     }
                     ddataArray.add(object);

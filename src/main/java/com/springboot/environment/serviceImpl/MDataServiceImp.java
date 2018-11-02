@@ -84,8 +84,8 @@ public class MDataServiceImp implements MDataService {
                     JSONObject object = new JSONObject();
                     object.put("time", DateUtil.getHourAndMinuteAndSecond(mDataList.get(0).getData_time()));
                     for (MData mData : mDataList) {
-                        if (NormConstant.map.containsKey(mData.getNorm_code())) {
-                            object.put(NormConstant.map.get(mData.getNorm_code()), mData.getNorm_val());
+                        if (mData.getNorm_code() != null && mData.getNorm_val() != null) {
+                            object.put(mData.getNorm_code(), mData.getNorm_val());
                         }
                     }
                     mdataArray.add(object);

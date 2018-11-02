@@ -88,8 +88,8 @@ public class HDataServiceImp implements HDataService {
                     JSONObject object = new JSONObject();
                     object.put("time", DateUtil.getHourAndMinute(hDataList.get(0).getData_time()));
                     for (HData hData : hDataList) {
-                        if (NormConstant.map.containsKey(hData.getNorm_code())) {
-                            object.put(NormConstant.map.get(hData.getNorm_code()), hData.getNorm_val());
+                        if (hData.getNorm_code() != null && hData.getNorm_val() != null) {
+                            object.put(hData.getNorm_code(), hData.getNorm_val());
                         }
                     }
                     hdataArray.add(object);

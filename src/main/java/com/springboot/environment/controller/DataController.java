@@ -301,9 +301,9 @@ public class DataController {
     public String queryDataByStationIdAndDatetime(@RequestBody Map<String, Object> params){
 
         System.out.println(params.toString());
-        String stationId= params.get("station_id").toString();
+        String stationId= params.get("station_code").toString();
         int dataType = (Integer) params.get("data_type");
-        String date = params.get("date").toString();
+        String date = params.get("time").toString();
 
         if (dataType == DataTypeEnum.MDATA.getCode()){
             return mDataService.queryMdataByStationIdAndDatetime(stationId, date);

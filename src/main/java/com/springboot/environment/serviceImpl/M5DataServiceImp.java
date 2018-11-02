@@ -81,8 +81,8 @@ public class M5DataServiceImp implements M5DataService {
                     JSONObject object = new JSONObject();
                     object.put("time", DateUtil.getHourAndMinuteAndSecond(m5DataList.get(0).getData_time()));
                     for (M5Data m5Data : m5DataList) {
-                        if (NormConstant.map.containsKey(m5Data.getNorm_code())) {
-                            object.put(NormConstant.map.get(m5Data.getNorm_code()), m5Data.getNorm_val());
+                        if (m5Data.getNorm_code() != null && m5Data.getNorm_val() != null) {
+                            object.put(m5Data.getNorm_code(), m5Data.getNorm_val());
                         }
                     }
                     m5dataArray.add(object);

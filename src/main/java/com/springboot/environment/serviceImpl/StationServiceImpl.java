@@ -341,9 +341,10 @@ public class StationServiceImpl implements StationService {
             JSONObject stationJSON = new JSONObject();
 
             //查询数据表中是否有该站点的数据信息
-            int existMdata = mDataDao.querymDataNumByStationId(station.getStationCode());
 
-            if (existMdata == 0){
+            List<MData> mDatas = mDataDao.queryMaxTimeMdataByStationId(station.getStationCode());
+
+            if (StringUtil.isNullOrEmpty(mDatas)){
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
                 stationJSON.put("station_code", station.getStationCode());
@@ -354,8 +355,6 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("LMX","");
             }
             else {
-                List<MData> mDatas = mDataDao.queryMaxTimeMdataByStationId(station.getStationCode());
-
                 //查询当天站点收到的数据的数量
                 Date date = new Date();
                 int nowDayMdataNum = mDataDao.querymDataNumBetween(station.getStationCode(), DateUtil.getTodayStr(date), DateUtil.getDateStr(date));
@@ -440,9 +439,8 @@ public class StationServiceImpl implements StationService {
         for (Station station : stations){
             JSONObject stationJSON = new JSONObject();
 
-            int existHdata = hDataDao.queryHdataNumByStationId(station.getStationCode());
-
-            if (existHdata == 0 ){
+            List<HData> hDatas = hDataDao.queryMaxTimeHdataByStationId(station.getStationCode());
+            if (StringUtil.isNullOrEmpty(hDatas)){
                 //没有该站点的数据记录
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
@@ -459,8 +457,6 @@ public class StationServiceImpl implements StationService {
                 //查询当天的小时数据的条数
                 Date date = new Date();
                 int nowdayHdataNum = hDataDao.queryhDataNumBetween(station.getStationCode(), DateUtil.getTodayStr(date), DateUtil.getDateStr(date));
-
-                List<HData> hDatas = hDataDao.queryMaxTimeHdataByStationId(station.getStationCode());
 
                 String calibration_value = null;
                 String flag = null;
@@ -550,9 +546,8 @@ public class StationServiceImpl implements StationService {
 
             JSONObject stationJSON = new JSONObject();
 
-            int existDdata = dDataDao.queryDdataNumByStationId(station.getStationCode());
-
-            if (existDdata == 0 ){
+            List<DData> dDatas = dDataDao.queryMaxTimeDdataByStationId(station.getStationCode());
+            if (StringUtil.isNullOrEmpty(dDatas)){
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
                 stationJSON.put("station_code", station.getStationCode());
@@ -565,8 +560,6 @@ public class StationServiceImpl implements StationService {
             else {
 
                 //查询最新的日数据
-                List<DData> dDatas = dDataDao.queryMaxTimeDdataByStationId(station.getStationCode());
-
                 String Ld = null;
                 String effective_rate_Ld = null;
                 String Ln = null;
@@ -600,7 +593,6 @@ public class StationServiceImpl implements StationService {
 
         siteData.put("count", count);
         siteData.put("data", dataArray);
-
         dataJson.put("sitesDataDay", siteData);
         System.out.println(dataJson.toJSONString());
 
