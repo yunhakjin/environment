@@ -141,8 +141,14 @@ public class DataController {
         Map<String,Object> resultMap=new HashMap<String,Object>();
         String station_code=(String)params.get("station");
         String station_name=stationService.queryStatiionByCode(station_code).getStationName();
+        if(station_name==null){
+            return null;
+        }
         String date=(String)params.get("date");
         List<HData> hDataList=hDataService.getByStationAndDate(station_code,date);
+        if(hDataList.isEmpty()){
+            return null;
+        }
         List<Map> dataList=new ArrayList<Map>();
         Map <String,Map> dataMap=new HashMap<String,Map>();
 //        List<DData> dDataList=dDataService.getByStationAndDay(station_code,date);
@@ -337,10 +343,12 @@ public class DataController {
         SimpleDateFormat sdf=new SimpleDateFormat("HH");
         SimpleDateFormat sdf2=new SimpleDateFormat("HH:mm:ss");
         int count=0;
+        int error_count=0;
         for(String station:stationList){
             String station_id=station;
             String station_name=stationService.queryStatiionByCode(station_id).getStationName();
             List<HData> innerDataList=hDataService.getByStationAndDate(station_id,date);
+            if(innerDataList.isEmpty()) error_count++;
             List<Map> innerList=new ArrayList<Map>();
             Map<String,Map> innerMap=new HashMap<String,Map>();
             for(HData hData:innerDataList){
@@ -393,6 +401,7 @@ public class DataController {
             tmp.put("data",innerList);
             dataList.add(tmp);
         }
+        if(error_count!=0) return null;
         Map<String,Object> map=new HashMap<String,Object>();
         map.put("count",count);
         map.put("datas",dataList);
@@ -417,10 +426,12 @@ public class DataController {
         SimpleDateFormat sdf2=new SimpleDateFormat("yyyy-MM-dd");
         String year=querytime.split("-")[0];
         String month=querytime.split("-")[1];
+        int error_count=0;
         for(String station:stationList){
             String station_id=station;
             String station_name=stationService.queryStatiionByCode(station_id).getStationName();
             List<DData> innerDataList=dDataService.getByStationAndMonth(station_id,querytime);
+            if(innerDataList.isEmpty()) error_count++;
             List<Map> innerList=new ArrayList<Map>();
             Map<String,Map> innerMap=new HashMap<String,Map>();
             for(DData dData:innerDataList){
@@ -553,6 +564,9 @@ public class DataController {
             tmp.put("time",querytime);
             tmp.put("data",innerList);
             dataList.add(tmp);
+        }
+        if(error_count!=0){
+            return null;
         }
         Map<String,Object> map=new HashMap<String,Object>();
         map.put("count",count);
