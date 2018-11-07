@@ -163,7 +163,7 @@ public class DDataServiceImp implements DDataService {
        * */
     @Override
     public Map getStationsData(Map<String, Object> params) {
-        String stationRequest = "{station_id:\"31010702330055\", type:2,  timeRange:{ time1:\"2018-08\",   time2:\"2018-09\"   }}";
+        //String stationRequest = "{station_id:\"31010702330055\", type:2,  timeRange:{ time1:\"2018-08\",   time2:\"2018-09\"   }}";
         String s=params+"";
         System.out.println(s);
 
