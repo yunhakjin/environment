@@ -140,9 +140,10 @@ public class DataController {
         params=(Map)params.get("query");
         Map<String,Object> resultMap=new HashMap<String,Object>();
         String station_code=(String)params.get("station");
-        String station_name=stationService.queryStatiionByCode(station_code).getStationName();
-        if(station_name==null){
-            return null;
+        Station station=stationService.queryStatiionByCode(station_code);
+        String station_name="";
+        if(station!=null) {
+            station_name=station.getStationName();
         }
         String date=(String)params.get("date");
         List<HData> hDataList=hDataService.getByStationAndDate(station_code,date);
@@ -151,17 +152,6 @@ public class DataController {
         }
         List<Map> dataList=new ArrayList<Map>();
         Map <String,Map> dataMap=new HashMap<String,Map>();
-//        List<DData> dDataList=dDataService.getByStationAndDay(station_code,date);
-//        String dlimit="";
-//        String nlimit="";
-//        for(DData dData:dDataList){
-//            if(dData.getNorm_code().equals("n00008")){
-//                dlimit=dData.getNorm_val();
-//            }
-//            else if(dData.getNorm_code().equals("n00009")){
-//                nlimit=dData.getNorm_val();
-//            }
-//       }
         for(HData hData:hDataList){
             String timeKey=sdf.format(hData.getData_time());
             String time=sdf2.format(hData.getData_time());
@@ -401,7 +391,7 @@ public class DataController {
             tmp.put("data",innerList);
             dataList.add(tmp);
         }
-        if(error_count!=0) return null;
+        if(error_count==stationList.size()) return null;
         Map<String,Object> map=new HashMap<String,Object>();
         map.put("count",count);
         map.put("datas",dataList);
@@ -565,7 +555,7 @@ public class DataController {
             tmp.put("data",innerList);
             dataList.add(tmp);
         }
-        if(error_count!=0){
+        if(error_count==stationList.size()){
             return null;
         }
         Map<String,Object> map=new HashMap<String,Object>();
