@@ -175,7 +175,7 @@ public class HDataServiceImp implements HDataService {
                 innertrackMap.get(trackTime).putAll(normVal);
             }
             else{
-                normVal.put("time",dDatas_time2.get(i).getData_time().toString());
+                normVal.put("time",dDatas_time1.get(i).getData_time().toString());
                 normVal.put(dDatas_time1.get(i).getNorm_code(),dDatas_time1.get(i).getNorm_val());
                 innertrackMap.put(trackTime,normVal);
             }
