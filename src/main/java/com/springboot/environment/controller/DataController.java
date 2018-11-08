@@ -64,26 +64,6 @@ public class DataController {
         return dDataService.getByStationAndTime(station_id,start,end,1,1,0,2);
     }
 
-    /*查询指定站点，指定时间的小时数据
-     * page:起始页
-     * size:每一页的数据条数*/
-    @ApiOperation(value="查询指定站点，指定时间的小时数据",notes = "需要定义站点id,查询的起止时间，以及数据状态，暂时默认都为1")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "station_id",value="站点id",dataType = "String"),
-            @ApiImplicitParam(name = "starttime",value="查询开始时间",dataType = "String"),
-            @ApiImplicitParam(name = "endtime",value="查询结束时间",dataType = "String"),
-            @ApiImplicitParam(name = "data_check",value="数据是否审核",dataType = "int"),
-            @ApiImplicitParam(name = "data_status",value="数据状态是否在线",dataType = "int"),
-            @ApiImplicitParam(name = "page",value="起始页",dataType = "int"),
-            @ApiImplicitParam(name = "size",value="总的页数",dataType = "int")
-    }
-    )
-    @GetMapping("getHDataByStationAndDate/{station_id}/{start}/{end}")
-    public Page<HData> getHDataByStationAndDate(@PathVariable String station_id,
-                                           @PathVariable String start,
-                                           @PathVariable String end){
-        return hDataService.getByStationAndTime(station_id,start,end,1,1,0,2);
-    }
 
     /*查询指定站点，指定时间的五分钟数据
      * page:起始页

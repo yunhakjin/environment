@@ -50,9 +50,8 @@ public class HDataServiceImp implements HDataService {
     }
 
     @Override
-    public Page<HData> getByStationAndTime(String station_id, String starttime, String endtime, int data_check, int data_status, int page, int size) {
-        Pageable pageable=PageRequest.of(page,size);
-        return hDataDao.getByStationAndTime(station_id,starttime,endtime,data_check,data_status,pageable);
+    public List<HData> getByStationAndTime(String station_id, String starttime, String endtime) {
+        return hDataDao.getByStationAndTime(station_id,starttime,endtime);
     }
 
     @Override
