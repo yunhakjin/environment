@@ -55,4 +55,6 @@ public interface StationService {
     Map getDomainFromStation();
 
     Map getStationsByAreasAndFuncCodes(Map<String, Object> params);
+
+    List<String> getAllStreet();
 }
