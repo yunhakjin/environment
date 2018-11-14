@@ -205,6 +205,9 @@ public interface StationDao extends JpaRepository<Station, Integer> {
     @Query(value = "select * from station s where s.station_id like %?1% or s.station_name like %?1%", nativeQuery = true)
     List<Station> findStationsByIdAndNameLike(String key);
 
+    /*返回所有的街道*/
+    @Query(value="select distinct s.street from station s group by s.street",nativeQuery = true)
+    List<String> getAllStreet();
 
 
 }

@@ -29,7 +29,6 @@ public class GatherController {
     @RequestMapping(value = "/getallgather",method = RequestMethod.GET)
     public Map getAllGather(){
         List<Gather> gatherList= gatherService.getAllGather();
-        if(gatherList.isEmpty()) return null;
         Map<String,List> carMap=new HashMap<String,List>();
         List<Map> carList=new ArrayList<>();
         carMap.put("carList",carList);
@@ -38,8 +37,6 @@ public class GatherController {
             gather.put("carName",gatherList.get(i).getGather_id());
             carList.add(gather);
         }
-//        String result=JSONObject.toJSONString(carMap);
-////        return result;
         return carMap;
     }
 
@@ -54,13 +51,11 @@ public class GatherController {
         List<String> cars=(List)gatherQuery.get("cars");
         Map<String,List> result=new HashMap<String, List>();
         List<Map> trackList=new ArrayList<Map>();
-        int error_count=0;
         for(int i=0;i<cars.size();i++){
             Map<String,Object> trackMap=new HashMap<String,Object>();
             String car=cars.get(i);
             trackMap.put("carName",car);
             List<GatherData> gatherDataList=gatherDataService.getAllByGather_idAndData_time(car,date);
-            if(gatherDataList.isEmpty()) error_count++;
             Map<String,Map> innertrackMap=new HashMap<String,Map>();
             for(int j=0;j<gatherDataList.size();j++){
                 String trackTime=gatherDataList.get(j).getData_time().toString();
@@ -72,9 +67,6 @@ public class GatherController {
                 else{
                     normVal.put("time",trackTime);
                     List<String> position= Arrays.asList(gatherDataList.get(j).getGather_position().replace('(',' ').replace(')',' ').split(","));
-//                    List<Integer> pos=new ArrayList<Integer>();
-//                    pos.add(Integer.valueOf(position.get(0)));
-//                    pos.add(Integer.valueOf(position.get(1)));
                     List<Double> pos=new ArrayList<Double>();
                     if(!position.isEmpty()){
                         pos.add(Double.parseDouble(position.get(0)));
@@ -95,7 +87,7 @@ public class GatherController {
             trackMap.put("trackList",innerTrackList);
             trackList.add(trackMap);
         }
-        if(error_count!=0) return null;
+
         result.put("trackList",trackList);
         return result;
     }

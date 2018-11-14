@@ -345,4 +345,10 @@ public class StationController {
 
     }
 
+    @ApiOperation(value="返回所有街道")
+    @RequestMapping(value = "/getAllStreet",method = RequestMethod.GET)
+    public List<String> getAllStreet(){
+        return stationService.getAllStreet();
+    }
+
 }
