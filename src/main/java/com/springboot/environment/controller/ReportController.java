@@ -332,8 +332,6 @@ public class ReportController {
         List<Map> resultList=new ArrayList<Map>();
         String start=params.get("start");
         String end=params.get("end");
-        System.out.println(start);
-        System.out.println(end);
         List<Station> stationList=stationService.findALl();
         SimpleDateFormat sdf_month=new SimpleDateFormat("MM");
         SimpleDateFormat sdf_date=new SimpleDateFormat("dd");
@@ -366,6 +364,7 @@ public class ReportController {
                     normVal.put("area_id",area);
                     normVal.put("remark",remark);
                     normVal.put(hData.getNorm_code(),hData.getNorm_val());
+                    timeMap.put(dateKey,normVal);
                 }
             }
             timeMap=timeMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
@@ -376,7 +375,6 @@ public class ReportController {
             }
         }
         if(count==0) return null;
-        System.out.println(count);
         resultMap.put("areaDataSummary",resultList);
         return resultMap;
     }
@@ -420,6 +418,7 @@ public class ReportController {
                     normVal.put("small_car",String.valueOf((int)(Math.random()*50)));
                     normVal.put("remark",remark);
                     normVal.put(hData.getNorm_code(),hData.getNorm_val());
+                    timeMap.put(dateKey,normVal);
                 }
             }
             timeMap=timeMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
@@ -471,6 +470,7 @@ public class ReportController {
                     normVal.put("area_id",area);
                     normVal.put("remark",remark);
                     normVal.put(hData.getNorm_code(),hData.getNorm_val());
+                    timeMap.put(dateKey,normVal);
                 }
             }
             timeMap=timeMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
