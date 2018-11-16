@@ -608,4 +608,77 @@ public class StationServiceImpl implements StationService {
     public List<String> getAllStreet() {
         return stationDao.getAllStreet();
     }
+
+    public void insertStation(Station station,String setupdate) {
+        String application=station.getApplication();
+        int area=station.getArea();
+        int city_con=station.getCityCon();
+        int country_con=station.getCountryCon();
+        String district=station.getDistrict();
+        int domain=station.getDomain();
+        int domain_con=station.getDomainCon();
+        String station_code=station.getStationCode();
+        String station_id=station.getStationId();
+        String station_id_dz=station.getStationIdDZ();
+        String station_name=station.getStationName();
+        int station_status=station.getStationStatus();
+        int online_flag=station.getOnlineFlag();
+        int protocol=station.getProtocol();
+        String protocol_name=station.getStationName();
+        String street=station.getStreet();
+        String station_major=station.getStation_major();
+        String station_setup=station.getStation_setup();
+        String station_setupdate=setupdate;
+        String company_code=station.getCompany_code();
+        int climate=station.getClimate();
+        int radar=station.getRadar();
+        String station_position=station.getPosition();
+        String station_range=station.getRange();
+        int station_attribute=station.getStation_attribute();
+        stationDao.insertStation(application,area,city_con,country_con,district,domain,domain_con,station_code,
+                station_id,station_id_dz,station_name,station_status,online_flag,protocol,protocol_name,street,station_major,
+                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute);
+    }
+
+    @Override
+    public void deleteStation(String station_id) {
+        stationDao.deleteStation(station_id);
+    }
+
+    @Override
+    public void updateStation(Station station, String setupdate, String target) {
+        String application=station.getApplication();
+        int area=station.getArea();
+        int city_con=station.getCityCon();
+        int country_con=station.getCountryCon();
+        String district=station.getDistrict();
+        int domain=station.getDomain();
+        int domain_con=station.getDomainCon();
+        String station_code=station.getStationCode();
+        String station_id=station.getStationId();
+        String station_id_dz=station.getStationIdDZ();
+        String station_name=station.getStationName();
+        int station_status=station.getStationStatus();
+        int online_flag=station.getOnlineFlag();
+        int protocol=station.getProtocol();
+        String protocol_name=station.getStationName();
+        String street=station.getStreet();
+        String station_major=station.getStation_major();
+        String station_setup=station.getStation_setup();
+        String station_setupdate=setupdate;
+        String company_code=station.getCompany_code();
+        int climate=station.getClimate();
+        int radar=station.getRadar();
+        String station_position=station.getPosition();
+        String station_range=station.getRange();
+        int station_attribute=station.getStation_attribute();
+        stationDao.updateStation(area,application,city_con,country_con,district,domain,domain_con,station_code,
+                station_id,station_id_dz,station_name,station_status,online_flag,protocol,protocol_name,street,station_major,
+                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute,target);
+    }
+
+    @Override
+    public Station getByStationId(String station_id) {
+        return stationDao.findStationByStationId(station_id);
+    }
 }

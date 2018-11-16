@@ -209,5 +209,36 @@ public interface StationDao extends JpaRepository<Station, Integer> {
     @Query(value="select distinct s.street from station s group by s.street",nativeQuery = true)
     List<String> getAllStreet();
 
+    /*新增某一个站点*/
+    @Modifying
+    @Transactional
+    @Query(value="insert into station(application,area,city_con,country_con,district,domain,domain_con,station_code," +
+            "station_id,station_id_dz,station_name,station_status,online_flag,protocol,protocol_name,street,station_major,"+
+            "station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12," +
+            "?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24,?25)",nativeQuery = true)
+    void insertStation(String application,int area,int city_con,int country_con,String district,int domain,int domain_con,
+                       String station_code,String station_id,String station_id_dz,String station_name,int station_status,
+                       int online_flag,int protocol,String protocol_name,String street,String station_major,String station_setup,
+                       String station_setupdate,String company_code,int climate,int radar,String station_position,String station_range,int station_attribute);
+
+    /*删除某一个站点*/
+    @Transactional
+    @Modifying
+    @Query(value="delete from station where station_id=?1",nativeQuery = true)
+    void deleteStation(String station_id);
+
+    /*修改某一个站点信息*/
+    @Transactional
+    @Modifying
+    @Query(value="update station set area=?1,application=?2,city_con=?3,country_con=?4,district=?5," +
+            "domain=?6,domain_con=?7,station_code=?8,station_id=?9,station_id_dz=?10,station_name=?11 " +
+            ",station_status=?12,online_flag=?13,protocol=?14,protocol_name=?15,street=?16,station_major=?17" +
+            ",station_setup=?18,station_setupdate=?19,company_code=?20,climate=?21,radar=?22,station_position=?23,"+
+            "station_range=?24,station_attribute=?25 where station_id=?26",nativeQuery = true)
+    void updateStation(int area,String application,int city_con,int country_con,String district,int domain,int domain_con,
+                       String station_code,String station_id,String station_id_dz,String station_name,int station_status,
+                       int online_flag,int protocol,String protocol_name,String street,String station_major,String station_setup,
+                       String station_setupdate,String company_code,int climate,int radar,String station_position,String station_range,
+                       int station_attribute,String target);
 
 }

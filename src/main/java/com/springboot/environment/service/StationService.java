@@ -57,4 +57,12 @@ public interface StationService {
     Map getStationsByAreasAndFuncCodes(Map<String, Object> params);
 
     List<String> getAllStreet();
+
+    void insertStation(Station station,String setupdate);
+
+    void deleteStation(String station_id);
+
+    void updateStation(Station station,String setupdate,String target);
+
+    Station getByStationId(String station_id);
 }
