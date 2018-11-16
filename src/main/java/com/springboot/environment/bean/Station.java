@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 站点表实体类
@@ -76,7 +77,7 @@ public class Station implements Serializable {
     /**
      * 站点位置
      */
-    @Column(name = "POSITION", nullable = false)
+    @Column(name = "station_position", nullable = false)
     private String position;
     /**
      * 站点所属街道
@@ -91,7 +92,7 @@ public class Station implements Serializable {
     /**
      * 噪声点范围
      */
-    @Column(name = "STATION_RANGE", nullable = false)
+    @Column(name = "station_range", nullable = false)
     private String range;
     /**
      * 国控
@@ -121,6 +122,102 @@ public class Station implements Serializable {
      */
     @Column(name = "DOMAIN", nullable = false)
     private int domain;
+
+    /**
+     * 站点性质
+     * 1 自动 0 手工
+     */
+    @Column(name = "station_attribute",nullable = false)
+    private int station_attribute;
+
+    public void setStation_attribute(int station_attribute) {
+        this.station_attribute = station_attribute;
+    }
+
+    public int getStation_attribute() {
+        return station_attribute;
+    }
+
+    /**
+     *主管部门
+     */
+    @Column(name = "station_major",nullable = true)
+    private String station_major;
+
+    public void setStation_major(String station_major) {
+        this.station_major = station_major;
+    }
+
+    public String getStation_major() {
+        return station_major;
+    }
+
+    /**
+     *建站单位
+     */
+    @Column(name = "station_setup",nullable = true)
+    private String station_setup;
+
+    public void setStation_setup(String station_setup) {
+        this.station_setup = station_setup;
+    }
+
+    public String getStation_setup() {
+        return station_setup;
+    }
+
+    /**
+     *建站时间
+     */
+    @Column(name = "station_setupdate",nullable = true)
+    private Date station_setupdate;
+
+    public void setStation_setupdate(Date station_setupdate) {
+        this.station_setupdate = station_setupdate;
+    }
+
+    public Date getStation_setupdate() {
+        return station_setupdate;
+    }
+
+    /**
+     *企业代码
+     */
+    @Column(name = "company_code",nullable = false)
+    private String company_code;
+
+    public void setCompany_code(String company_code) {
+        this.company_code = company_code;
+    }
+
+    public String getCompany_code() {
+        return company_code;
+    }
+
+    /**
+     *是否有气象数据:1有,0无 */
+    @Column(name = "climate",nullable = false)
+    private int climate;
+
+    public void setClimate(int climate) {
+        this.climate = climate;
+    }
+
+    public int getClimate() {
+        return climate;
+    }
+
+    /**
+     * 是否有雷达数据:1有,0无*/
+    private int radar;
+
+    public void setRadar(int radar) {
+        this.radar = radar;
+    }
+
+    public int getRadar() {
+        return radar;
+    }
 
     public int getId() {
         return id;
@@ -287,10 +384,10 @@ public class Station implements Serializable {
                 ", stationIdDZ='" + stationIdDZ + '\'' +
                 ", protocol=" + protocol +
                 ", protocolName='" + protocolName + '\'' +
-                ", position='" + position + '\'' +
+                ", station_position='" + position + '\'' +
                 ", street='" + street + '\'' +
                 ", district='" + district + '\'' +
-                ", range='" + range + '\'' +
+                ", station_range='" + range + '\'' +
                 ", countryCon=" + countryCon +
                 ", cityCon=" + cityCon +
                 ", domainCon=" + domainCon +

@@ -7,4 +7,7 @@ import java.util.List;
 public interface GatherService {
     public List<Gather> getAllGather();
     public Gather getOneGather(String gather_id);
+    public void insertGather(Gather gather,String setupdate);
+    public void deleteGather(String gather_id);
+    public void updateGather(Gather gather,String setupdate,String target);
 }
