@@ -64,26 +64,6 @@ public class DataController {
         return dDataService.getByStationAndTime(station_id,start,end,1,1,0,2);
     }
 
-    /*查询指定站点，指定时间的小时数据
-     * page:起始页
-     * size:每一页的数据条数*/
-    @ApiOperation(value="查询指定站点，指定时间的小时数据",notes = "需要定义站点id,查询的起止时间，以及数据状态，暂时默认都为1")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "station_id",value="站点id",dataType = "String"),
-            @ApiImplicitParam(name = "starttime",value="查询开始时间",dataType = "String"),
-            @ApiImplicitParam(name = "endtime",value="查询结束时间",dataType = "String"),
-            @ApiImplicitParam(name = "data_check",value="数据是否审核",dataType = "int"),
-            @ApiImplicitParam(name = "data_status",value="数据状态是否在线",dataType = "int"),
-            @ApiImplicitParam(name = "page",value="起始页",dataType = "int"),
-            @ApiImplicitParam(name = "size",value="总的页数",dataType = "int")
-    }
-    )
-    @GetMapping("getHDataByStationAndDate/{station_id}/{start}/{end}")
-    public Page<HData> getHDataByStationAndDate(@PathVariable String station_id,
-                                           @PathVariable String start,
-                                           @PathVariable String end){
-        return hDataService.getByStationAndTime(station_id,start,end,1,1,0,2);
-    }
 
     /*查询指定站点，指定时间的五分钟数据
      * page:起始页
@@ -140,22 +120,18 @@ public class DataController {
         params=(Map)params.get("query");
         Map<String,Object> resultMap=new HashMap<String,Object>();
         String station_code=(String)params.get("station");
-        String station_name=stationService.queryStatiionByCode(station_code).getStationName();
+        Station station=stationService.queryStatiionByCode(station_code);
+        String station_name="";
+        if(station!=null) {
+            station_name=station.getStationName();
+        }
         String date=(String)params.get("date");
         List<HData> hDataList=hDataService.getByStationAndDate(station_code,date);
+        if(hDataList.isEmpty()){
+            return null;
+        }
         List<Map> dataList=new ArrayList<Map>();
         Map <String,Map> dataMap=new HashMap<String,Map>();
-        List<DData> dDataList=dDataService.getByStationAndDay(station_code,date);
-        String dlimit="";
-        String nlimit="";
-        for(DData dData:dDataList){
-            if(dData.getNorm_code().equals("n00008")){
-                dlimit=dData.getNorm_val();
-            }
-            else if(dData.getNorm_code().equals("n00009")){
-                nlimit=dData.getNorm_val();
-            }
-       }
         for(HData hData:hDataList){
             String timeKey=sdf.format(hData.getData_time());
             String time=sdf2.format(hData.getData_time());
@@ -173,7 +149,7 @@ public class DataController {
             Map<String,String> tmpmap=new HashMap<String, String>();
             if(i<10){
                 if(!dataMap.containsKey("0"+i)){
-                    tmpmap.put("dlimit",dlimit);
+                    tmpmap.put("dlimit","56.99");
                     for(Norm norm:normList){
                         tmpmap.put(norm.getNorm_code(),"");
                     }
@@ -181,12 +157,12 @@ public class DataController {
                     dataMap.put("0"+i,tmpmap);
                 }
                 else{
-                    dataMap.get("0"+i).put("dlimit",dlimit);
+                    dataMap.get("0"+i).put("dlimit","56.99");
                 }
             }
             else{
                 if(!dataMap.containsKey(String.valueOf(i))){
-                    tmpmap.put("dlimit",dlimit);
+                    tmpmap.put("dlimit","56.99");
                     for(Norm norm:normList){
                         tmpmap.put(norm.getNorm_code(),"");
                     }
@@ -194,14 +170,14 @@ public class DataController {
                     dataMap.put(String.valueOf(i),tmpmap);
                 }
                 else{
-                    dataMap.get(String.valueOf(i)).put("dlimit",dlimit);
+                    dataMap.get(String.valueOf(i)).put("dlimit","56.99");
                 }
             }
         }
         for(int i=0;i<=4;i++){
             Map<String,String> tmpmap=new HashMap<String, String>();
             if(!dataMap.containsKey("0"+i)){
-                tmpmap.put("nlimit",nlimit);
+                tmpmap.put("nlimit","40.41");
                 for(Norm norm:normList){
                     tmpmap.put(norm.getNorm_code(),"");
                 }
@@ -209,13 +185,13 @@ public class DataController {
                 dataMap.put("0"+i,tmpmap);
             }
             else{
-                dataMap.get("0"+i).put("nlimit",nlimit);
+                dataMap.get("0"+i).put("nlimit","40.41");
             }
         }
         for(int i=17;i<24;i++){
             Map<String,String> tmpmap=new HashMap<String, String>();
             if(!dataMap.containsKey(String.valueOf(i))){
-                tmpmap.put("nlimit",nlimit);
+                tmpmap.put("nlimit","40.41");
                 for(Norm norm:normList){
                     tmpmap.put(norm.getNorm_code(),"");
                 }
@@ -223,7 +199,7 @@ public class DataController {
                 dataMap.put(String.valueOf(i),tmpmap);
             }
             else{
-                dataMap.get(String.valueOf(i)).put("nlimit",nlimit);
+                dataMap.get(String.valueOf(i)).put("nlimit","40.41");
             }
         }
 
@@ -337,10 +313,12 @@ public class DataController {
         SimpleDateFormat sdf=new SimpleDateFormat("HH");
         SimpleDateFormat sdf2=new SimpleDateFormat("HH:mm:ss");
         int count=0;
+        int error_count=0;
         for(String station:stationList){
             String station_id=station;
             String station_name=stationService.queryStatiionByCode(station_id).getStationName();
             List<HData> innerDataList=hDataService.getByStationAndDate(station_id,date);
+            if(innerDataList.isEmpty()) error_count++;
             List<Map> innerList=new ArrayList<Map>();
             Map<String,Map> innerMap=new HashMap<String,Map>();
             for(HData hData:innerDataList){
@@ -393,6 +371,7 @@ public class DataController {
             tmp.put("data",innerList);
             dataList.add(tmp);
         }
+        if(error_count==stationList.size()) return null;
         Map<String,Object> map=new HashMap<String,Object>();
         map.put("count",count);
         map.put("datas",dataList);
@@ -417,10 +396,12 @@ public class DataController {
         SimpleDateFormat sdf2=new SimpleDateFormat("yyyy-MM-dd");
         String year=querytime.split("-")[0];
         String month=querytime.split("-")[1];
+        int error_count=0;
         for(String station:stationList){
             String station_id=station;
             String station_name=stationService.queryStatiionByCode(station_id).getStationName();
             List<DData> innerDataList=dDataService.getByStationAndMonth(station_id,querytime);
+            if(innerDataList.isEmpty()) error_count++;
             List<Map> innerList=new ArrayList<Map>();
             Map<String,Map> innerMap=new HashMap<String,Map>();
             for(DData dData:innerDataList){
@@ -553,6 +534,9 @@ public class DataController {
             tmp.put("time",querytime);
             tmp.put("data",innerList);
             dataList.add(tmp);
+        }
+        if(error_count==stationList.size()){
+            return null;
         }
         Map<String,Object> map=new HashMap<String,Object>();
         map.put("count",count);
