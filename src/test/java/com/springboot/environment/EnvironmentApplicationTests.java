@@ -1,5 +1,8 @@
 package com.springboot.environment;
 
+import com.alibaba.fastjson.JSONObject;
+import com.springboot.environment.bean.MData;
+import com.springboot.environment.dao.MDataDao;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 import com.springboot.environment.service.StationService;
 import org.junit.Test;
@@ -17,6 +20,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringRunner.class)
@@ -25,6 +29,9 @@ public class EnvironmentApplicationTests {
 
     @Autowired
     RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    MDataDao mDataDao;
 
     @Test
     public void testRedis(){
@@ -64,6 +71,32 @@ public class EnvironmentApplicationTests {
         redisTemplate.expire("300010", 120, TimeUnit.SECONDS);
 
 
+    }
+
+    @Test
+    public void storeDataIntoRedis(){
+
+        long start = System.currentTimeMillis();
+        List<MData> allMdata = mDataDao.getMdataByDay("2018-11-16 00:00:00", "2018-11-16 23:59:59");
+
+        ZSetOperations<String, String> zset = redisTemplate.opsForZSet();
+        for (MData mData : allMdata){
+
+            String stationId = mData.getStation_id();
+            double score = (double)mData.getData_time().getTime();
+
+            JSONObject mdataJson = new JSONObject();
+            mdataJson.put("data_id", mData.getData_id());
+            mdataJson.put("data_time", mData.getData_time());
+            mdataJson.put("station_id", mData.getStation_id());
+            mdataJson.put("norm_code", mData.getNorm_code());
+            mdataJson.put("norm_val", mData.getNorm_val());
+            String dataString = mdataJson.toJSONString();
+
+            zset.add(stationId, dataString, score);
+        }
+
+        System.out.println("当前耗时" + (int)(System.currentTimeMillis() - start) / 1000 );
     }
 
 

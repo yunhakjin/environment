@@ -19,14 +19,12 @@ import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.StationConstant;
 import com.springboot.environment.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Transactional
 @Service
@@ -43,6 +41,9 @@ public class StationServiceImpl implements StationService {
 
     @Autowired
     DDataDao dDataDao;
+
+    @Autowired
+    RedisTemplate<String, String> redisTemplate;
 
 
     @Override
@@ -342,49 +343,55 @@ public class StationServiceImpl implements StationService {
 
             //查询数据表中是否有该站点的数据信息
 
-            List<MData> mDatas = mDataDao.queryMaxTimeMdataByStationId(station.getStationCode());
-
-            if (StringUtil.isNullOrEmpty(mDatas)){
-                stationJSON.put("station_name", station.getStationName());
-                stationJSON.put("station_id", station.getStationId());
-                stationJSON.put("station_code", station.getStationCode());
-                stationJSON.put("latest_time", "");
-                stationJSON.put("count_r", 0);
-                stationJSON.put("LA", "");
-                stationJSON.put("LEQ", "");
-                stationJSON.put("LMX","");
-            }
-            else {
-                //查询当天站点收到的数据的数量
-                Date date = new Date();
-                int nowDayMdataNum = mDataDao.querymDataNumBetween(station.getStationCode(), DateUtil.getTodayStr(date), DateUtil.getDateStr(date));
-
-                String LA = null;
-                String LEQ = null;
-                String LMX = null;
-
-                for (MData mData : mDatas){
-                    if (mData.getNorm_code().equals("n00000")){
-                        LA = mData.getNorm_val();
-                    }
-                    if (mData.getNorm_code().equals("n00006")){
-                        LEQ = mData.getNorm_val();
-                    }
-                    if (mData.getNorm_code().equals("n00010")){
-                        LMX = mData.getNorm_val();
-                    }
-                }
-                stationJSON.put("station_name", station.getStationName());
-                stationJSON.put("station_id", station.getStationId());
-                stationJSON.put("station_code", station.getStationCode());
-                stationJSON.put("latest_time", DateUtil.getDateStr(mDatas.get(0).getData_time()));
-                stationJSON.put("count_r", nowDayMdataNum);
-                stationJSON.put("LA", LA);
-                stationJSON.put("LEQ", LEQ);
-                stationJSON.put("LMX",LMX);
+//            List<MData> mDatas = mDataDao.queryMaxTimeMdataByStationId(station.getStationCode());
+            ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
+            Set<String> mDatas = zSetOperations.range(station.getStationCode(), 0, 0);
+            Iterator<String> iterator = mDatas.iterator();
+            while (iterator.hasNext()){
+                dataArray.add(iterator.next());
             }
 
-            dataArray.add(stationJSON);
+//            if (StringUtil.isNullOrEmpty(mDatas)){
+//                stationJSON.put("station_name", station.getStationName());
+//                stationJSON.put("station_id", station.getStationId());
+//                stationJSON.put("station_code", station.getStationCode());
+//                stationJSON.put("latest_time", "");
+//                stationJSON.put("count_r", 0);
+//                stationJSON.put("LA", "");
+//                stationJSON.put("LEQ", "");
+//                stationJSON.put("LMX","");
+//            }
+//            else {
+//                //查询当天站点收到的数据的数量
+//                Date date = new Date();
+//                int nowDayMdataNum = mDataDao.querymDataNumBetween(station.getStationCode(), DateUtil.getTodayStr(date), DateUtil.getDateStr(date));
+//
+//                String LA = null;
+//                String LEQ = null;
+//                String LMX = null;
+//
+//                for (MData mData : mDatas){
+//                    if (mData.getNorm_code().equals("n00000")){
+//                        LA = mData.getNorm_val();
+//                    }
+//                    if (mData.getNorm_code().equals("n00006")){
+//                        LEQ = mData.getNorm_val();
+//                    }
+//                    if (mData.getNorm_code().equals("n00010")){
+//                        LMX = mData.getNorm_val();
+//                    }
+//                }
+//                stationJSON.put("station_name", station.getStationName());
+//                stationJSON.put("station_id", station.getStationId());
+//                stationJSON.put("station_code", station.getStationCode());
+//                stationJSON.put("latest_time", DateUtil.getDateStr(mDatas.get(0).getData_time()));
+//                stationJSON.put("count_r", nowDayMdataNum);
+//                stationJSON.put("LA", LA);
+//                stationJSON.put("LEQ", LEQ);
+//                stationJSON.put("LMX",LMX);
+//            }
+
+//            dataArray.add(stationJSON);
         }
 
         siteData.put("count", count);

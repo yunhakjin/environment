@@ -56,4 +56,7 @@ public interface MDataDao extends JpaRepository<MData,Integer> {
      */
     @Query(value = "select * from mdata m where m.station_id = ?1 and m.data_time between ?2 and ?3", nativeQuery = true)
     List<MData> queryMdataByStationIdAndTime(String statonId, String startTime, String endTime);
+
+    @Query(value = "select * from mdata m where m.data_time between ?1 and ?2", nativeQuery = true)
+    List<MData> getMdataByDay(String start, String end);
 }
