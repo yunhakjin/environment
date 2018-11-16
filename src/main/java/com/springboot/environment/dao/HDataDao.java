@@ -17,9 +17,6 @@ public interface HDataDao extends JpaRepository<HData,Integer> {
     @Query(value = "select *from hdata d where d.data_id=?1",nativeQuery = true)
     List<HData> getAllByData_id(String data_id);
 
-    @Query(value="select * from hdata d where d.station_id=?1 and d.data_time between ?2 and ?3 ",nativeQuery = true)
-    List<HData> getByStationAndTime(String station_id, String starttime, String endtime);
-
     /**
      * 查询数据表中是否有指定站点的数据
      * @param stationId
