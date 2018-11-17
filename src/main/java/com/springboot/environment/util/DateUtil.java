@@ -36,6 +36,12 @@ public class DateUtil {
         return simpleDateFormat.format(date);
     }
 
+    public static long dateToDateStamp(String date) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date datedate = sdf.parse(date);
+        return datedate.getTime();
+    }
+
     /**
      * 日期转化为字符串不包括秒
      */

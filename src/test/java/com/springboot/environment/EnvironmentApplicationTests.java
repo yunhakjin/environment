@@ -99,5 +99,11 @@ public class EnvironmentApplicationTests {
         System.out.println("当前耗时" + (int)(System.currentTimeMillis() - start) / 1000 );
     }
 
+    @Test
+    public void testTImeStamp(){
+        Date date  = new Date(Long.valueOf("1542297600000"));
+        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
+    }
+
 
 }

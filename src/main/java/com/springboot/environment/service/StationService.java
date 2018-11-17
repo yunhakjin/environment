@@ -5,6 +5,7 @@ import com.springboot.environment.request.QuerydDataByStationAreaReq;
 import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public interface StationService {
 
     String queryStationsByKey(String key);
 
-    String querymDataByStationArea(QuerymDataByStationsAreaReq req);
+    String querymDataByStationArea(QuerymDataByStationsAreaReq req) throws ParseException;
 
     String queryhDataByStationArea(QueryhDataByStationAreaReq req);
 

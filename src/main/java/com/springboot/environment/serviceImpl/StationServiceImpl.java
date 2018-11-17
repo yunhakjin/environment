@@ -24,6 +24,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.util.*;
 
 @Transactional
@@ -296,7 +297,10 @@ public class StationServiceImpl implements StationService {
     }
 
     @Override
-    public String querymDataByStationArea(QuerymDataByStationsAreaReq req) {
+    public String querymDataByStationArea(QuerymDataByStationsAreaReq req) throws ParseException {
+
+        //方法开始时间
+        long startTime  = System.currentTimeMillis();
 
         JSONObject dataJson = new JSONObject();
         JSONObject siteData = new JSONObject();
@@ -345,10 +349,47 @@ public class StationServiceImpl implements StationService {
 
 //            List<MData> mDatas = mDataDao.queryMaxTimeMdataByStationId(station.getStationCode());
             ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
-            Set<String> mDatas = zSetOperations.range(station.getStationCode(), 0, 0);
-            Iterator<String> iterator = mDatas.iterator();
-            while (iterator.hasNext()){
-                dataArray.add(iterator.next());
+            //取得第一个数据
+            Set<String> maxScoreMdata = zSetOperations.reverseRange(station.getStationCode(), 0, 0);
+            long maxDataTime = 0L;
+            if (maxScoreMdata.iterator().hasNext()) {
+                JSONObject maxMdataJson = JSONObject.parseObject(maxScoreMdata.iterator().next());
+                System.out.println("data_time = " + maxMdataJson.get("data_time"));
+                //最新数据的时间戳
+                maxDataTime = (long)maxMdataJson.get("data_time");
+
+
+                //最新的数据的set集合
+                Set<String> dataSet = zSetOperations.rangeByScore(station.getStationCode(), maxDataTime, maxDataTime);
+
+                String LA = null;
+                String LEQ = null;
+                String LMX = null;
+
+                System.out.println("输出最新几条数据的全部内容");
+                Iterator<String> iterator = dataSet.iterator();
+                while (iterator.hasNext()) {
+                    String dataString = iterator.next();
+                    System.out.println(dataString);
+                    JSONObject data = JSONObject.parseObject(dataString);
+                    if (data.get("norm_code").equals("n00000")) {
+                        LA = (String) data.get("norm_val");
+                    }
+                    if (data.get("norm_code").equals("n00006")) {
+                        LEQ = (String) data.get("norm_val");
+                    }
+                    if (data.get("norm_code").equals("n00010")) {
+                        LMX = (String) data.get("norm_val");
+                    }
+                }
+                stationJSON.put("station_name", station.getStationName());
+                stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("station_code", station.getStationCode());
+                stationJSON.put("latest_time", DateUtil.getDateStr(new Date(maxDataTime)));
+                stationJSON.put("count_r", 0);
+                stationJSON.put("LA", LA);
+                stationJSON.put("LEQ", LEQ);
+                stationJSON.put("LMX", LMX);
             }
 
 //            if (StringUtil.isNullOrEmpty(mDatas)){
@@ -391,7 +432,7 @@ public class StationServiceImpl implements StationService {
 //                stationJSON.put("LMX",LMX);
 //            }
 
-//            dataArray.add(stationJSON);
+            dataArray.add(stationJSON);
         }
 
         siteData.put("count", count);
@@ -400,6 +441,7 @@ public class StationServiceImpl implements StationService {
         dataJson.put("sitesDataReal", siteData);
         //打印语句上线要删除
         System.out.println(dataJson.toJSONString());
+        System.out.println("方法结束时间" + (System.currentTimeMillis() - startTime) + "毫秒");
         return dataJson.toJSONString();
     }
 
