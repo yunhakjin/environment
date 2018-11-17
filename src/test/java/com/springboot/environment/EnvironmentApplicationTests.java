@@ -5,6 +5,7 @@ import com.springboot.environment.bean.MData;
 import com.springboot.environment.dao.MDataDao;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 import com.springboot.environment.service.StationService;
+import com.springboot.environment.util.DateUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringRunner.class)
@@ -73,36 +75,22 @@ public class EnvironmentApplicationTests {
 
     }
 
-    @Test
-    public void storeDataIntoRedis(){
 
-        long start = System.currentTimeMillis();
-        List<MData> allMdata = mDataDao.getMdataByDay("2018-11-16 00:00:00", "2018-11-16 23:59:59");
-
-        ZSetOperations<String, String> zset = redisTemplate.opsForZSet();
-        for (MData mData : allMdata){
-
-            String stationId = mData.getStation_id();
-            double score = (double)mData.getData_time().getTime();
-
-            JSONObject mdataJson = new JSONObject();
-            mdataJson.put("data_id", mData.getData_id());
-            mdataJson.put("data_time", mData.getData_time());
-            mdataJson.put("station_id", mData.getStation_id());
-            mdataJson.put("norm_code", mData.getNorm_code());
-            mdataJson.put("norm_val", mData.getNorm_val());
-            String dataString = mdataJson.toJSONString();
-
-            zset.add(stationId, dataString, score);
-        }
-
-        System.out.println("当前耗时" + (int)(System.currentTimeMillis() - start) / 1000 );
-    }
 
     @Test
     public void testTImeStamp(){
-        Date date  = new Date(Long.valueOf("1542297600000"));
-        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
+
+        ZSetOperations<String, String> zset = redisTemplate.opsForZSet();
+        Set<String> maxScoreData = zset.reverseRange("31010702330052", 0,1);
+        String data = (String) maxScoreData.toArray()[1];
+        long time = (long)JSONObject.parseObject(data).get("data_time");
+        System.out.println(DateUtil.getDateStr(new Date(time)));
+    }
+
+
+    @Test
+    public void testTimeStamp() {
+        System.out.println(DateUtil.getDateStr(new Date(1542374880000L)));
     }
 
 
