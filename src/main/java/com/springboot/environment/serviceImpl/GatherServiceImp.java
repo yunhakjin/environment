@@ -22,4 +22,67 @@ public class GatherServiceImp implements GatherService {
     public Gather getOneGather(String gather_id) {
         return gatherDao.getAllByGather_id(gather_id);
     }
+
+    @Override
+    public void insertGather(Gather gather,String setupdate) {
+        String application=gather.getApplication();
+        int area=gather.getArea();
+        int city_con=gather.getCity_con();
+        int country_con=gather.getCountry_con();
+        String district=gather.getDistrict();
+        int domain=gather.getDomain();
+        int domain_con=gather.getDomain_con();
+        String gather_code=gather.getGather_code();
+        String gather_id=gather.getGather_id();
+        String gather_id_dz=gather.getGather_id_dz();
+        String gather_name=gather.getGather_name();
+        int gather_status=gather.getGather_status();
+        int online_flag=gather.getOnline_flag();
+        int protocol=gather.getProtocol();
+        String protocol_name=gather.getProtocol_name();
+        String street=gather.getStreet();
+        String gather_major=gather.getGather_major();
+        String gather_setup=gather.getGather_setup();
+        String gather_setupdate=setupdate;
+        String company_code=gather.getCompany_code();
+        int climate=gather.getClimate();
+        int radar=gather.getRadar();
+        gatherDao.insertGather(application,area,city_con,country_con,district,domain,domain_con,gather_code,
+                gather_id,gather_id_dz,gather_name,gather_status,online_flag,protocol,protocol_name,street,gather_major,
+                        gather_setup,gather_setupdate,company_code,climate,radar);
+    }
+
+    @Override
+    public void deleteGather(String gather_id) {
+        gatherDao.deleteGather(gather_id);
+    }
+
+    @Override
+    public void updateGather(Gather gather, String setupdate, String target) {
+        String application=gather.getApplication();
+        int area=gather.getArea();
+        int city_con=gather.getCity_con();
+        int country_con=gather.getCountry_con();
+        String district=gather.getDistrict();
+        int domain=gather.getDomain();
+        int domain_con=gather.getDomain_con();
+        String gather_code=gather.getGather_code();
+        String gather_id=gather.getGather_id();
+        String gather_id_dz=gather.getGather_id_dz();
+        String gather_name=gather.getGather_name();
+        int gather_status=gather.getGather_status();
+        int online_flag=gather.getOnline_flag();
+        int protocol=gather.getProtocol();
+        String protocol_name=gather.getProtocol_name();
+        String street=gather.getStreet();
+        String gather_major=gather.getGather_major();
+        String gather_setup=gather.getGather_setup();
+        String gather_setupdate=setupdate;
+        String company_code=gather.getCompany_code();
+        int climate=gather.getClimate();
+        int radar=gather.getRadar();
+        gatherDao.updateGather(area,application,city_con,country_con,district,domain,domain_con,gather_code,
+                gather_id,gather_id_dz,gather_name,gather_status,online_flag,protocol,protocol_name,street,gather_major,
+                gather_setup,gather_setupdate,company_code,climate,radar,target);
+    }
 }
