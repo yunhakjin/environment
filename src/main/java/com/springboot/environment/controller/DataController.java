@@ -6,6 +6,7 @@ import com.springboot.environment.bean.DData;
 import com.springboot.environment.bean.HData;
 import com.springboot.environment.bean.M5Data;
 import com.springboot.environment.bean.MData;
+import com.springboot.environment.dao.MDataDao;
 import com.springboot.environment.request.QueryDataByStationIdAndDatetimeReq;
 import com.springboot.environment.request.QuerydDataByStationAreaReq;
 import com.springboot.environment.request.QueryhDataByStationAreaReq;
@@ -18,6 +19,8 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +45,11 @@ public class DataController {
     private MDataService mDataService;
     @Autowired
     private M5DataService m5DataService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    MDataDao mDataDao;
 
     /*查询指定站点，指定时间的日数据
     * page:起始页
@@ -602,6 +610,38 @@ public class DataController {
         return mDataService.getmanyMdatabystationanddata(params);
     }
 
+
+
+    @ApiOperation(value = "测试redis数据",notes = "测试redis数据")
+    @ApiImplicitParam(name = "params",value="向redis中写入2018-11-16的所有站点数据，约16W条",dataType = "JSON")
+    @RequestMapping(value = "/testRedis",method = RequestMethod.POST)
+    public String testRedis(){
+
+        long start = System.currentTimeMillis();
+        List<MData> allMdata = mDataDao.getMdataByDay("2018-11-16 00:00:00", "2018-11-16 23:59:59");
+
+        ZSetOperations<String, String> zset = redisTemplate.opsForZSet();
+        for (MData mData : allMdata){
+
+            String stationId = mData.getStation_id();
+            double score = (double)mData.getData_time().getTime();
+
+            JSONObject mdataJson = new JSONObject();
+            mdataJson.put("data_id", mData.getData_id());
+            //这里的redis存储的是时间戳
+            mdataJson.put("data_time", mData.getData_time());
+            mdataJson.put("station_id", mData.getStation_id());
+            mdataJson.put("norm_code", mData.getNorm_code());
+            mdataJson.put("norm_val", mData.getNorm_val());
+            String dataString = mdataJson.toJSONString();
+
+            zset.add(stationId, dataString, score);
+        }
+
+        System.out.println("当前耗时" + (int)(System.currentTimeMillis() - start) / 1000 );
+
+        return "当前耗时" + (int)(System.currentTimeMillis() - start) / 1000 ;
+    }
 
 
 }

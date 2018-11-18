@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /*采集车实体类*/
 @Data
@@ -216,5 +217,86 @@ public class Gather {
 
     public int getDomain() {
         return domain;
+    }
+
+    /**
+     *主管部门
+     */
+    @Column(name = "gather_major",nullable = true)
+    private String gather_major;
+
+    public void setGather_major(String gather_major) {
+        this.gather_major = gather_major;
+    }
+
+    public String getGather_major() {
+        return gather_major;
+    }
+
+    /**
+     *建站单位
+     */
+    @Column(name = "gather_setup",nullable = true)
+    private String gather_setup;
+
+    public void setGather_setup(String gather_setup) {
+        this.gather_setup = gather_setup;
+    }
+
+    public String getGather_setup() {
+        return gather_setup;
+    }
+
+    /**
+     *建站时间
+     */
+    @Column(name = "gather_setupdate",nullable = true)
+    private Date gather_setupdate;
+
+    public void setGather_setupdate(Date gather_setupdate) {
+        this.gather_setupdate = gather_setupdate;
+    }
+
+    public Date getGather_setupdate() {
+        return gather_setupdate;
+    }
+
+    /**
+     *企业代码
+     */
+    @Column(name = "company_code",nullable = false)
+    private String company_code;
+
+    public void setCompany_code(String company_code) {
+        this.company_code = company_code;
+    }
+
+    public String getCompany_code() {
+        return company_code;
+    }
+
+    /**
+     *是否有气象数据:1有,0无 */
+    @Column(name = "climate",nullable = false)
+    private int climate;
+
+    public void setClimate(int climate) {
+        this.climate = climate;
+    }
+
+    public int getClimate() {
+        return climate;
+    }
+
+    /**
+     * 是否有雷达数据:1有,0无*/
+    private int radar;
+
+    public void setRadar(int radar) {
+        this.radar = radar;
+    }
+
+    public int getRadar() {
+        return radar;
     }
 }
