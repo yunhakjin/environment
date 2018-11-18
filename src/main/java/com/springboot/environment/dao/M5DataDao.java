@@ -31,4 +31,9 @@ public interface M5DataDao extends JpaRepository<M5Data,Integer> {
      */
     @Query(value = "select * from m5data m where m.station_id = ?1 and m.data_time between ?2 and ?3", nativeQuery = true)
     List<M5Data> queryMdataByStationIdAndTime(String stationId, String startTime, String endTime);
+
+    @Query(value = "select * from m5data m where m.station_id = ?1 and DATE_FORMAT(m.data_time,'%Y-%m-%d %H')=?2", nativeQuery = true)
+    List<M5Data> getByStationAndHour(String station_id, String time1);
+
+
 }

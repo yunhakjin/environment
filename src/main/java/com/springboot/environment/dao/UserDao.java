@@ -45,4 +45,8 @@ public interface UserDao extends JpaRepository<User,Integer> {
 
     @Query(value = "select DISTINCT * from user",nativeQuery = true)
     List<Object[]> getAll();
+
+
+    @Query(value = "select * from user u where u.user_id like %?1% or u.user_name like %?1% ",nativeQuery = true)
+    List<User> getUserByLikeNameAndID(String key);
 }

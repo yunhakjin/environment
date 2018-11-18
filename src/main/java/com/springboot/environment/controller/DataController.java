@@ -310,7 +310,7 @@ public class DataController {
     @ApiOperation(value="多站点指定日期小时数据查询",notes = "需要传送包含站点id列表和查询时间的json")
     @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
     @RequestMapping(value = "/getmanyhdatabystationanddate",method = RequestMethod.POST)
-    public Map getManayHdataByStationAndDate(@RequestBody Map<String,Object> params){
+    public Map getManyHdataByStationAndDate(@RequestBody Map<String,Object> params){
         //String query="{"query":{"stations": ["31010702335001","31010702335002"],"time":"2018-10-30"}}"
         List<Norm> normList=normService.getAllByHflag();
         Map query=(Map)params.get("query");
@@ -391,7 +391,7 @@ public class DataController {
     @ApiOperation(value="多站点指定日期日数据查询",notes = "需要传送包含站点id列表和查询时间(月份)的json")
     @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
     @RequestMapping(value = "/getmanyddatabystationanddate",method = RequestMethod.POST)
-    public Map getManayDdataByStationAndDate(@RequestBody Map<String,Object> params){
+    public Map getManyDdataByStationAndDate(@RequestBody Map<String,Object> params){
         //String query="{"query":{"stations": ["31010702335001","31010702335002"],"time":"2018-10"}}"
         List<Norm> normList=normService.getAllByDflag();
         Map query=(Map)params.get("query");
@@ -563,7 +563,7 @@ public class DataController {
     }
 
     /*
-    * 根据查询粒度返回需要的站点数据，（年，月，天） 比较页2---月数据--返回30天
+    * （单站点月数据对比查询）根据查询粒度返回需要的站点数据，（年，月，天） 比较页2---月数据--返回30天
     * */
     @ApiOperation(value = "根据查询粒度返回需要的站点月数据",notes = "比较页2---月数据--返回30天")
     @ApiImplicitParam(name = "params",value="包含查询站点的id和查询的月份json",dataType = "JSON")
@@ -573,15 +573,44 @@ public class DataController {
     }
 
     /*
-    * 根据查询粒度返回需要的站点数据，（年，月，天） 比较页2--天数据--返回24个小时
+    * （单站点日数据对比查询）根据查询粒度返回需要的站点数据，（年，月，天） 比较页2--天数据--返回24个小时
     * */
     @ApiOperation(value = "根据查询粒度返回需要的站点日数据",notes = "比较页2---日数据--返回24个小时")
-    @ApiImplicitParam(name = "params",value="包含查询站点的id和查询的月份json",dataType = "JSON")
+    @ApiImplicitParam(name = "params",value="包含查询站点的id和查询的日期json",dataType = "JSON")
     @RequestMapping(value = "/getStationsDataByDays",method = RequestMethod.POST)
     public Map<String,Object> getStationsDataByDays(@RequestBody Map<String,Object> params){
         //return dDataService.getStationsDataByDays();
         return hDataService.getStationsDataByDays(params);
     }
+
+    /*
+    * （单站点5分钟数据对比查询）根据查询粒度返回需要的站点数据，（年，月，天）
+    * */
+    @ApiOperation(value = "单站点5分钟数据对比",notes = "单站点不同5分钟数据对比-返回120条")
+    @ApiImplicitParam(name = "params",value="包含查询站点的id和查询的小时json",dataType = "JSON")
+    @RequestMapping(value = "/getM5StationsData",method = RequestMethod.POST)
+    public Map getM5StationsData(@RequestBody Map<String,Object> params){
+        return m5DataService.getM5StationsData(params);
+    }
+
+    /*多站点指定日期5分钟数据查询*/
+    @ApiOperation(value="多站点指定日期5分钟数据查询",notes = "需要传送包含站点id列表和查询时间的json")
+    @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
+    @RequestMapping(value = "/getmanyM5databystationanddate",method = RequestMethod.POST)
+    public Map getmanyM5databystationanddate(@RequestBody Map<String,Object> params){
+       return m5DataService.getmanyM5databystationanddata(params);
+    }
+
+
+    /*多站点指定日期分钟数据查询*/
+    @ApiOperation(value="多站点指定日期分钟数据查询",notes = "需要传送包含站点id列表和查询时间的json")
+    @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
+    @RequestMapping(value = "/getmanyMdatabystationanddate",method = RequestMethod.POST)
+    public Map getmanyMdatabystationanddate(@RequestBody Map<String,Object> params){
+        return mDataService.getmanyMdatabystationanddata(params);
+    }
+
+
 
     @ApiOperation(value = "测试redis数据",notes = "测试redis数据")
     @ApiImplicitParam(name = "params",value="向redis中写入2018-11-16的所有站点数据，约16W条",dataType = "JSON")
@@ -613,5 +642,6 @@ public class DataController {
 
         return "当前耗时" + (int)(System.currentTimeMillis() - start) / 1000 ;
     }
+
 
 }

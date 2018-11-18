@@ -15,5 +15,6 @@ public interface MDataService {
 
     Map getMDataByStationsID();
 
+    Map getmanyMdatabystationanddata(Map params);
 }
 
