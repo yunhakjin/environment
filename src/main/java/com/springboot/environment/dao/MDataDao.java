@@ -56,4 +56,18 @@ public interface MDataDao extends JpaRepository<MData,Integer> {
      */
     @Query(value = "select * from mdata m where m.station_id = ?1 and m.data_time between ?2 and ?3", nativeQuery = true)
     List<MData> queryMdataByStationIdAndTime(String statonId, String startTime, String endTime);
+
+
+    @Query(value = "select * from mdata m where m.station_id = ?1 and DATE_FORMAT(m.data_time,'%Y-%m-%d %H')=?2", nativeQuery = true)
+    List<MData> getByStationAndHour(String station_id, String date);
+
+    /**
+     * 该方法只是向redis写入数据使用，线上不允许使用此sql
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    @Query(value = "select * from mdata m where m.data_time between ?1 and ?2", nativeQuery = true)
+    List<MData> getMdataByDay(String startTime, String endTime);
+
 }
