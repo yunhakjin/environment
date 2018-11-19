@@ -380,6 +380,8 @@ public class StationController {
         String station_position=params.get("station_position");
         String station_range=params.get("station_range");
         String station_attribute=params.get("station_attribute");
+        String d_limit=params.get("d_limit");
+        String n_limit=params.get("n_limit");
         Station station = new Station();
         station.setApplication(application);
         station.setArea(Integer.valueOf(area));
@@ -405,6 +407,9 @@ public class StationController {
         station.setPosition(station_position);
         station.setRange(station_range);
         station.setStation_attribute(Integer.valueOf(station_attribute));
+        station.setN_limit(n_limit);
+        station.setD_limit(d_limit);
+        System.out.println(station.getD_limit());
         if(stationService.getByStationId(station_id)!=null){
             return "已经存在此采集车";
         }
@@ -451,6 +456,8 @@ public class StationController {
         String station_position=params.get("station_position");
         String station_range=params.get("station_range");
         String station_attribute=params.get("station_attribute");
+        String d_limit=params.get("d_limit");
+        String n_limit=params.get("n_limit");
         Station station = new Station();
         station.setApplication(application);
         station.setArea(Integer.valueOf(area));
@@ -476,6 +483,8 @@ public class StationController {
         station.setPosition(station_position);
         station.setRange(station_range);
         station.setStation_attribute(Integer.valueOf(station_attribute));
+        station.setN_limit(n_limit);
+        station.setD_limit(d_limit);
         if(stationService.getByStationId(target)==null){
             return "不存在采集车";
         }
