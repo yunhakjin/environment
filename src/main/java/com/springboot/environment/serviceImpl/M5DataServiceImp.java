@@ -6,7 +6,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.springboot.environment.bean.M5Data;
 import com.springboot.environment.bean.MData;
+import com.springboot.environment.bean.Norm;
+import com.springboot.environment.bean.Station;
 import com.springboot.environment.dao.M5DataDao;
+import com.springboot.environment.dao.NormDao;
+import com.springboot.environment.dao.StationDao;
 import com.springboot.environment.service.M5DataService;
 import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.NormConstant;
@@ -18,15 +22,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class M5DataServiceImp implements M5DataService {
     @Autowired
     private M5DataDao m5DataDao;
+
+    @Autowired
+    private StationDao stationDao;
+
+    @Autowired
+    private NormDao normDao;
 
     @Override
     public List<M5Data> getAll() {
@@ -121,6 +130,258 @@ public class M5DataServiceImp implements M5DataService {
         }
 
         return null;
+    }
+
+    @Override
+    public Map getM5StationsData(Map params) {
+        //{"station_id":"31010702330051",  "timeRange":{ "time1":"2018-10-29",   "time2":"2018-10-30"   }}
+        Map<String,String> timeRange=(Map<String, String>) params.get("timeRange");
+        String station_id=params.get("station_id")+"";
+        String time1=timeRange.get("time1")+"";
+        String time2=timeRange.get("time2")+"";
+        Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+
+
+        Station station=stationDao.findStationByStationId(station_id);
+        String station_name= station.getStationName();
+
+        List<M5Data> dDatas_time1=m5DataDao.getByStationAndHour(station_id,time1);
+        List<M5Data> dDatas_time2=m5DataDao.getByStationAndHour(station_id,time2);
+
+
+        Map<String, Object> time1Map = new LinkedHashMap<String, Object>();//time1
+        Map<String, Object> time2Map = new LinkedHashMap<String, Object>();//time2
+        time1Map.put("time",time1+":00");
+        time2Map.put("time",time2+":00");
+        Map<String,Map> innertrackMap=new HashMap<String,Map>();
+        Map<String,Map> innertrack2Map=new HashMap<String,Map>();
+
+        SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
+        SimpleDateFormat sdf2=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat sdf3=new SimpleDateFormat("mm");
+
+
+        for(int i=0;i<dDatas_time1.size();i++){
+            String trackTime=sdf3.format(dDatas_time1.get(i).getData_time());
+            Map<String,String> normVal=new HashMap<String,String>();
+            if(innertrackMap.containsKey(trackTime)){
+                normVal.put(dDatas_time1.get(i).getNorm_code(),dDatas_time1.get(i).getNorm_val());
+                innertrackMap.get(trackTime).putAll(normVal);
+            }
+            else{
+                normVal.put("time",sdf2.format(dDatas_time1.get(i).getData_time()));
+                normVal.put(dDatas_time1.get(i).getNorm_code(),dDatas_time1.get(i).getNorm_val());
+                innertrackMap.put(trackTime,normVal);
+            }
+        }
+        for(int i=0;i<dDatas_time2.size();i++){
+            String trackTime=sdf3.format(dDatas_time2.get(i).getData_time());
+            Map<String,String> normVal=new HashMap<String,String>();
+            if(innertrack2Map.containsKey(trackTime)){
+                normVal.put(dDatas_time2.get(i).getNorm_code(),dDatas_time2.get(i).getNorm_val());
+                innertrack2Map.get(trackTime).putAll(normVal);
+            }
+            else{
+                normVal.put("time",sdf2.format(dDatas_time2.get(i).getData_time()));
+                normVal.put(dDatas_time2.get(i).getNorm_code(),dDatas_time2.get(i).getNorm_val());
+                innertrack2Map.put(trackTime,normVal);
+            }
+        }
+
+        List<Map> innerTrackList=new ArrayList<Map>();
+        List<Map> innerTrackList2=new ArrayList<Map>();
+        List<Norm> normList=normDao.getAllByM5flag();
+        List<Norm> normList2=normDao.getAllByM5flag();
+
+
+        for(int i=0;i<12;i++){
+            if(i==0){
+                if(!innertrackMap.containsKey("00")){
+                    Map<String,String> map=new HashMap<String, String>();
+                    for(Norm norm:normList){
+                        map.put(norm.getNorm_code(),"");
+                    }
+                    map.put("time",time1+":00");
+                    innertrackMap.put("00",map);
+                }
+            }else if(i==1){
+                if(!innertrackMap.containsKey("05")){
+                    Map<String,String> map=new HashMap<String, String>();
+                    for(Norm norm:normList){
+                        map.put(norm.getNorm_code(),"");
+                    }
+                    map.put("time",time1+":05");
+                    innertrackMap.put("05",map);
+                }
+            }else{
+                if(!innertrackMap.containsKey(""+5*i)){
+                    Map<String,String> map=new HashMap<String, String>();
+                    for(Norm norm:normList){
+                        map.put(norm.getNorm_code(),"");
+                    }
+                    map.put("time",time1+":"+5*i);
+                    innertrackMap.put(5*i+"",map);
+                }
+            }
+
+
+        }
+//list2
+        for(int i=0;i<12;i++){
+            if(i==0){
+                if(!innertrack2Map.containsKey("00")){
+                    Map<String,String> map=new HashMap<String, String>();
+                    for(Norm norm:normList2){
+                        map.put(norm.getNorm_code(),"");
+                    }
+                    map.put("time",time2+":00");
+                    innertrack2Map.put("00",map);
+                }
+            }else if(i==1){
+                if(!innertrack2Map.containsKey("05")){
+                    Map<String,String> map=new HashMap<String, String>();
+                    for(Norm norm:normList2){
+                        map.put(norm.getNorm_code(),"");
+                    }
+                    map.put("time",time2+":05");
+                    innertrack2Map.put("05",map);
+                }
+            }else{
+                 if(!innertrack2Map.containsKey(5*i+"")){
+                    Map<String,String> map=new HashMap<String, String>();
+                    for(Norm norm:normList2){
+                        map.put(norm.getNorm_code(),"");
+                    }
+                    map.put("time",time2+":"+5*i);
+                    innertrack2Map.put(""+5*i,map);
+                }
+            }
+
+        }
+
+        for(Map value:innertrackMap.values()){
+            innerTrackList.add(value);
+        }
+        for(Map value:innertrack2Map.values()){
+            innerTrackList2.add(value);
+        }
+        Collections.sort(innerTrackList, new Comparator<Map>() {
+            public int compare(Map o1, Map o2) {
+                String map1value =o1.get("time")+"";
+                String map2value =o2.get("time")+"";
+                return map1value.compareTo(map2value);
+            }
+        });
+        Collections.sort(innerTrackList2, new Comparator<Map>() {
+            public int compare(Map o1, Map o2) {
+                String map1value =o1.get("time")+"";
+                String map2value =o2.get("time")+"";
+                return map1value.compareTo(map2value);
+            }
+        });
+        int count=innerTrackList.size()+innerTrackList2.size();
+        resultMap.put("count", count);
+        resultMap.put("station_id",station_id);
+        resultMap.put("station_name",station_name);
+        time1Map.put("data",innerTrackList);
+        time2Map.put("data",innerTrackList2);
+        resultMap.put("time1",time1Map);
+        resultMap.put("time2",time2Map);
+        return resultMap;
+    }
+
+    @Override
+    public Map getmanyM5databystationanddata(Map params) {
+        //String query="{"query":{"stations": ["31010702335001","31010702335002"],"time":"2018-10-30"}}"
+        List<Norm> normList=normDao.getAllByM5flag();
+        Map query=(Map)params.get("query");
+        Map<String,Map> resultMap=new HashMap<String,Map>();
+        List<String> stationList=(List)query.get("stations");//获取所有的stationIDList
+        String date=(String)query.get("time");//2018-11-17 04
+        List<Map> dataList=new ArrayList<Map>();
+        SimpleDateFormat sdf=new SimpleDateFormat("mm");
+        SimpleDateFormat sdf2=new SimpleDateFormat("HH:mm");
+        SimpleDateFormat sdf3=new SimpleDateFormat("HH");
+        int count=0;
+        int error_count=0;
+        for(String station:stationList){
+            String station_id=station;
+            String station_name=stationDao.findStationByStationId(station_id).getStationName();
+            List<M5Data> innerDataList=m5DataDao.getByStationAndHour(station_id,date);//获得5分钟数据中的整点信息
+            if(innerDataList.isEmpty()) error_count++;
+            List<Map> innerList=new ArrayList<Map>();
+            Map<String,Map> innerMap=new HashMap<String,Map>();
+            for(M5Data m5Data:innerDataList){
+                String dateKey=sdf.format(m5Data.getData_time());
+                String time=sdf2.format(m5Data.getData_time());
+                if(innerMap.containsKey(dateKey)){
+                    innerMap.get(dateKey).put(m5Data.getNorm_code(),m5Data.getNorm_val());
+                }
+                else{
+                    Map<String,String> normVal=new HashMap<String,String>();
+                    normVal.put("station_id",station_id);
+                    normVal.put("station_name",station_name);
+                    normVal.put("time",time);
+                    normVal.put(m5Data.getNorm_code(),m5Data.getNorm_val());
+                    innerMap.put(dateKey,normVal);
+                }
+            }
+            for(int i=0;i<12;i++){
+
+                if(i==0){
+                    if(!innerMap.containsKey("00")){
+                        Map<String,String> map=new HashMap<String, String>();
+                        for(Norm norm:normList){
+                            map.put(norm.getNorm_code(),"");
+                        }
+                        map.put("station_id",station_id);
+                        map.put("station_name",station_name);
+                        map.put("time",date.substring(date.length()-2)+":00");
+                        innerMap.put("00",map);
+                    }
+                }else if(i==1){
+                    if(!innerMap.containsKey("05")){
+                        Map<String,String> map=new HashMap<String, String>();
+                        for(Norm norm:normList){
+                            map.put(norm.getNorm_code(),"");
+                        }
+                        map.put("station_id",station_id);
+                        map.put("station_name",station_name);
+                        map.put("time",date.substring(date.length()-2)+":05");
+                        innerMap.put("05",map);
+                    }
+                }else{
+                    if(!innerMap.containsKey(5*i+"")){
+                        Map<String,String> map=new HashMap<String, String>();
+                        for(Norm norm:normList){
+                            map.put(norm.getNorm_code(),"");
+                        }
+                        map.put("station_id",station_id);
+                        map.put("station_name",station_name);
+                        map.put("time",date.substring(date.length()-2)+":"+5*i);
+                        System.out.println(date.substring(date.length()-2)+":"+5*i);
+                        innerMap.put(""+5*i,map);
+                    }
+                }
+                }
+
+            innerMap=innerMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                    .collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue,(oldValue, newVvalue)->oldValue,LinkedHashMap::new));
+            for(Map value:innerMap.values()){
+                innerList.add(value);
+                count++;
+            }
+            Map<String,Object> tmp=new HashMap<String,Object>();
+            tmp.put("time",date+":00");
+            tmp.put("data",innerList);
+            dataList.add(tmp);
+        }
+        if(error_count==stationList.size()) return null;
+        Map<String,Object> map=new HashMap<String,Object>();
+        map.put("count",count);
+        map.put("datas",dataList);
+        resultMap.put("stationData",map);
+        return resultMap;
     }
 
 }

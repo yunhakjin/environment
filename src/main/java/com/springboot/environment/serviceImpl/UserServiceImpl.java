@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.User;
 import com.springboot.environment.dao.UserDao;
 import com.springboot.environment.service.UserService;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
 import org.slf4j.Logger;
@@ -16,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by yww on 2018/9/11.
@@ -120,6 +123,113 @@ public class UserServiceImpl implements UserService {
         }
         return lists;
     }
+
+    @Override
+    public Map getLikeUserIDandName(Map params) {
+        //String  keyPoint="{\"key\":\"31010702330051\"}";
+        Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+        String key=(String)params.get("key");
+        List<Map> userList = new ArrayList<Map>();
+        List<User> users_LikeNameAndID=userDao.getUserByLikeNameAndID(key);
+        for (int i=0;i<users_LikeNameAndID.size();i++){
+            Map<String,String> userMap=new LinkedHashMap<String,String>();
+            userMap.put("user_id",users_LikeNameAndID.get(i).getUser_id().toString());
+            userMap.put("user_name",users_LikeNameAndID.get(i).getUser_name().toString());
+            userList.add(userMap);
+        }
+        resultMap.put("userList",userList);
+        return resultMap;
+    }
+
+    @Override
+    public Map getUserByID(Map params) {
+        Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+        String selectedUserId=(String)params.get("selectedUserId");
+        System.out.println(selectedUserId);
+        List<Map> userList = new ArrayList<Map>();
+        if(selectedUserId.equals("*")){
+            List<User> users=userDao.findAll();
+            for (int i=0;i<users.size();i++){
+                Map<String,String> userMap=new LinkedHashMap<String,String>();
+                userMap.put("user_id",users.get(i).getUser_id().toString());
+                userMap.put("user_name",users.get(i).getUser_name().toString());
+                userMap.put("user_tel",users.get(i).getUser_tel().toString());
+                userMap.put("user_mail",users.get(i).getUser_mail().toString());
+                userMap.put("password",users.get(i).getPassword().toString());
+                userList.add(userMap);
+            }
+        }else {
+            User user=userDao.loadByUserId(Integer.parseInt(selectedUserId));
+            System.out.println(user);
+            Map<String,String> userMap=new LinkedHashMap<String,String>();
+            userMap.put("user_id",user.getUser_id().toString());
+            userMap.put("user_name",user.getUser_name().toString());
+            userMap.put("user_tel",user.getUser_tel().toString());
+            userMap.put("user_mail",user.getUser_mail().toString());
+            userMap.put("password",user.getPassword().toString());
+            userList.add(userMap);
+            System.out.println(userMap);
+        }
+        resultMap.put("userInfoData",userList);
+        return resultMap;
+    }
+
+    @Override
+    public Map addUser(Map params) {
+        Map<String,String> resultMap=new LinkedHashMap<String,String>();
+        String type=(String)params.get("type");
+        String user_id=(String)params.get("user_id");
+        String user_name=(String)params.get("user_name");
+        String password=(String)params.get("password");
+        String user_tel=(String)params.get("user_tel");
+        String user_mail=(String)params.get("user_mail");
+        User user=new User();
+        user.setUser_id(Integer.parseInt(user_id));
+        user.setUser_name(user_name);
+        user.setPassword(password);
+        user.setUser_tel(user_tel);
+        user.setUser_mail(user_mail);
+        userDao.save(user);
+        if(type.equals("add")){
+            User user1=userDao.loadByUserId(Integer.parseInt(user_id));
+            if(user1!=null){
+                resultMap.put("addFlag","true");
+            }else{
+                resultMap.put("addFlag","false");
+            }
+        }else if(type.equals("edit")){
+            User user1=userDao.loadByUserId(Integer.parseInt(user_id));
+            if(user1.getUser_name().equals(user_name)&&user1.getPassword().equals(password)&&user1.getUser_mail().equals(user_mail)&&user1.getUser_tel().equals(user_tel)){
+                resultMap.put("editFlag","true");
+            }else{
+                resultMap.put("editFlag","false");
+            }
+        }
+        return resultMap;
+    }
+
+    @Override
+    public Map deleteUser(Map params) {
+        Map<String,String> resultMap=new LinkedHashMap<String,String>();
+        List<String> userIdList=(List)params.get("deleteUserList");
+        int count=0;
+        for(int i=0;i<userIdList.size();i++){
+            String user_id=userIdList.get(i).toString();
+            //判断用户和其他的表连接关系-如果存在就删除--最后再删除用户信息。user_group user-role
+            //暂时不考虑，后期考虑
+            userDao.deleteById(Integer.parseInt(user_id));
+            if (userDao.loadByUserId(Integer.parseInt(user_id))==null){
+                count++;
+            }
+        }
+        if(count==userIdList.size()){
+            resultMap.put("deleteFlag","true");
+        }else{
+            resultMap.put("deleteFlag","false");
+        }
+        return resultMap;
+    }
+
 
 
 }
