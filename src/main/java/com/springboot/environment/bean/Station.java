@@ -209,6 +209,7 @@ public class Station implements Serializable {
 
     /**
      * 是否有雷达数据:1有,0无*/
+    @Column(name="radar",nullable = false)
     private int radar;
 
     public void setRadar(int radar) {
@@ -217,6 +218,30 @@ public class Station implements Serializable {
 
     public int getRadar() {
         return radar;
+    }
+
+    /*昼阈值*/
+    @Column(name="d_limit",nullable = false)
+    private String d_limit;
+
+    public void setD_limit(String d_limit) {
+        this.d_limit = d_limit;
+    }
+
+    public String getD_limit() {
+        return d_limit;
+    }
+
+    /*夜阈值*/
+    @Column(name="n_limit",nullable = false)
+    private String n_limit;
+
+    public void setN_limit(String n_limit) {
+        this.n_limit = n_limit;
+    }
+
+    public String getN_limit() {
+        return n_limit;
     }
 
     public int getId() {

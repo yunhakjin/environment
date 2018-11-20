@@ -154,6 +154,46 @@ public class UserController {
         return  userService.getPrefer(user_id);
     }
 
+      /*
+       * 用户模糊搜索-返回包含所有关键字的用户
+       * */
+    @ApiOperation(value = "用户信息模糊搜索",notes = "返回包含关键字的所有用户")
+    @ApiImplicitParam(name = "params",value="包含用户编号或者用户名的关键字",dataType = "JSON")
+    @RequestMapping(value = "/getLikeUserIDandName",method = RequestMethod.POST)
+    public Map getLikeUserIDandName(@RequestBody Map<String,Object> params){
+        return userService.getLikeUserIDandName(params);
+    }
+
+    /*
+      * 用户ID搜索-返回此用户ID的用户所有信息
+      * */
+    @ApiOperation(value = "用户ID搜索",notes = "返回此用户ID的用户所有信息")
+    @ApiImplicitParam(name = "params",value="用户ID",dataType = "JSON")
+    @RequestMapping(value = "/getUserByID",method = RequestMethod.POST)
+    public Map getUserByID(@RequestBody Map<String,Object> params){
+        return userService.getUserByID(params);
+    }
+
+    /*
+      * 新增用户，输入用户信息，返回是否新增成功标志
+      * */
+    @ApiOperation(value = "新增或修改用户",notes = "根据type判断操作：新增，更新；返回是否新增成功的标志")
+    @ApiImplicitParam(name = "params",value="用户信息",dataType = "JSON")
+    @RequestMapping(value = "/addUser",method = RequestMethod.POST)
+    public Map addUser(@RequestBody Map<String,Object> params){
+        return userService.addUser(params);
+    }
+
+    /*
+      * 删除用户，输入用户ID，返回是否新增成功标志
+      * */
+    @ApiOperation(value = "删除用户",notes = "返回是否新增成功的标志")
+    @ApiImplicitParam(name = "params",value="用户ID",dataType = "JSON")
+    @RequestMapping(value = "/deleteUser",method = RequestMethod.POST)
+    public Map deleteUser(@RequestBody Map<String,Object> params){
+        return userService.deleteUser(params);
+    }
+
 
 }
 

@@ -3,6 +3,7 @@ import com.springboot.environment.bean.M5Data;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 public interface M5DataService {
     public List<M5Data> getAll();
@@ -11,5 +12,9 @@ public interface M5DataService {
     public Page<M5Data> getByStationAndTime(String station_id,String starttime,String endtime,int data_check,int data_status,int page,int size);
 
     String queryM5dataByStationIdAndDatetime(String stationId, String date);
+
+    Map getM5StationsData(Map params);
+
+    Map getmanyM5databystationanddata(Map params);
 }
 
