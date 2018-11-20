@@ -2,7 +2,9 @@ package com.springboot.environment;
 
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.MData;
+import com.springboot.environment.bean.Station;
 import com.springboot.environment.dao.MDataDao;
+import com.springboot.environment.dao.StationDao;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 import com.springboot.environment.service.StationService;
 import com.springboot.environment.util.DateUtil;
@@ -34,6 +36,9 @@ public class EnvironmentApplicationTests {
 
     @Autowired
     MDataDao mDataDao;
+
+    @Autowired
+    StationDao stationDao;
 
     @Test
     public void testRedis(){
@@ -88,10 +93,25 @@ public class EnvironmentApplicationTests {
     }
 
 
-    @Test
-    public void testTimeStamp() {
-        System.out.println(DateUtil.getDateStr(new Date(1542374880000L)));
-    }
+   @Test
+    public void testRedisCount(){
+        HashOperations<String, String, String> mdataCount = redisTemplate.opsForHash();
+        ZSetOperations<String, String> zSet = redisTemplate.opsForZSet();
+        List<Station> stations = stationDao.findAll();
+
+        for (Station station : stations){
+            String stationId = station.getStationCode();
+            Long count = zSet.zCard(stationId);
+            System.out.println("站点" + stationId + "当前redis的数据量是" + count);
+            //如果判断存在这个有序集合
+            if (count != 0){
+                mdataCount.put("count", stationId, String.valueOf(count));
+            }
+            else {
+                mdataCount.put("count", stationId,  String.valueOf(0));
+            }
+        }
+   }
 
 
 }

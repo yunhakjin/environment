@@ -19,6 +19,7 @@ import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.StationConstant;
 import com.springboot.environment.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -319,7 +320,6 @@ public class StationServiceImpl implements StationService {
 
         //符合区域环境的总数
         int count ;
-
         if (req.getArea() == 5 ){
 
             count = stationDao.queryAllStationNum();
@@ -341,23 +341,21 @@ public class StationServiceImpl implements StationService {
             stations = stationDao.queryStationsByAreaAndPage(req.getArea(), start, end);
         }
 
+        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         for (Station station : stations){
 
             JSONObject stationJSON = new JSONObject();
 
-            //查询数据表中是否有该站点的数据信息
-
-//            List<MData> mDatas = mDataDao.queryMaxTimeMdataByStationId(station.getStationCode());
-            ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
+            String thisDayCount = hashOperations.get("count", station.getStationCode());
             //取得第一个数据
             Set<String> maxScoreMdata = zSetOperations.reverseRange(station.getStationCode(), 0, 0);
             long maxDataTime = 0L;
-            if (maxScoreMdata.iterator().hasNext()) {
+            if (!maxScoreMdata.isEmpty()) {
                 JSONObject maxMdataJson = JSONObject.parseObject(maxScoreMdata.iterator().next());
                 System.out.println("data_time = " + maxMdataJson.get("data_time"));
                 //最新数据的时间戳
                 maxDataTime = (long)maxMdataJson.get("data_time");
-
 
                 //最新的数据的set集合
                 Set<String> dataSet = zSetOperations.rangeByScore(station.getStationCode(), maxDataTime, maxDataTime);
@@ -386,10 +384,20 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("station_id", station.getStationId());
                 stationJSON.put("station_code", station.getStationCode());
                 stationJSON.put("latest_time", DateUtil.getDateStr(new Date(maxDataTime)));
-                stationJSON.put("count_r", 0);
+                stationJSON.put("count_r", thisDayCount);
                 stationJSON.put("LA", LA);
                 stationJSON.put("LEQ", LEQ);
                 stationJSON.put("LMX", LMX);
+            }
+            else {
+                stationJSON.put("station_name", station.getStationName());
+                stationJSON.put("station_id", station.getStationId());
+                stationJSON.put("station_code", station.getStationCode());
+                stationJSON.put("latest_time", "");
+                stationJSON.put("count_r", thisDayCount);
+                stationJSON.put("LA", "");
+                stationJSON.put("LEQ", "");
+                stationJSON.put("LMX", "");
             }
 
 //            if (StringUtil.isNullOrEmpty(mDatas)){
