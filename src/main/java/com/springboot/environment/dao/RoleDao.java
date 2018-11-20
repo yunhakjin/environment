@@ -30,4 +30,7 @@ public interface RoleDao extends JpaRepository<Role,Integer> {
 
     @Query(value = "select DISTINCT * from role",nativeQuery = true)
     List<Object[]> getAll();
+
+    @Query(value = "select * from role where role_id in (select role_id from user_role where user_id=?1)",nativeQuery = true)
+    List<Role> getRoleByUserID(Integer user_id);
 }

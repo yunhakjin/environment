@@ -40,4 +40,10 @@ public class RoleServiceImpl implements RoleService {
     public void updateOne(String role_id, String role_name) {
         roleDao.updateOne(Integer.parseInt(role_id),role_name);
     }
+
+    @Override
+    public List<Role> getRoleByUserID(Integer user_id) {
+        List<Role> roles = roleDao.getRoleByUserID(user_id);
+        return roles;
+    }
 }

@@ -17,4 +17,6 @@ public interface RoleService {
     void delOne(String role_id);
 
     void updateOne(String role_id, String role_name);
+
+    List<Role> getRoleByUserID(Integer user_id);
 }
