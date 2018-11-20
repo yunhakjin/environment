@@ -4,7 +4,9 @@ package com.springboot.environment.controller;
  * Created by yww on 2018/10/13.
  */
 
+import com.springboot.environment.bean.Role;
 import com.springboot.environment.bean.User;
+import com.springboot.environment.service.RoleService;
 import com.springboot.environment.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -13,15 +15,14 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.tags.form.LabelTag;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @Api("用户类相关api")
@@ -31,6 +32,8 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    RoleService roleService;
 
     @ApiOperation(value="注册",notes = "注册包括用户个人信息：id,name,pwd,mail,tel,prefer,role_id,group_id")
     @ApiImplicitParams({
@@ -79,12 +82,18 @@ public class UserController {
             Subject subject = SecurityUtils.getSubject();
             subject.login(usernamePasswordToken);   //完成登录
             User user=(User) subject.getPrincipal();
+            List<Role> roles =roleService.getRoleByUserID(user.getUser_id());
+            List<String> permissionList=new ArrayList<String>();
             session.setAttribute("user", user);
             System.out.println(user);
             resultMap.put("status", 200);
             resultMap.put("message", "登录成功");
             resultMap.put("user", user.getUser_id());
             resultMap.put("password",user.getPassword());
+            for (int i = 0;i< roles.size();i++){
+                permissionList.add(roles.get(i).getPermission_list());
+            }
+            resultMap.put("permissionList",permissionList);
         }catch(Exception e) {
             resultMap.put("status", 500);
             e.printStackTrace();
