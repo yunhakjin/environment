@@ -61,7 +61,6 @@ public class UserServiceImpl implements UserService {
         * 最后用toHex()方法将加密后的密码转成String
         * */
         String newPs = new SimpleHash("MD5", password, salt, 1024).toHex();
-        boolean flag=false;
         User u = new User();
         u.setUser_id(Integer.parseInt(user_id));
         u.setPassword(newPs);
@@ -181,12 +180,14 @@ public class UserServiceImpl implements UserService {
         String user_id=(String)params.get("user_id");
         String user_name=(String)params.get("user_name");
         String password=(String)params.get("password");
+        ByteSource salt = ByteSource.Util.bytes(user_name);
+        String newPs = new SimpleHash("MD5", password, salt, 1024).toHex();
         String user_tel=(String)params.get("user_tel");
         String user_mail=(String)params.get("user_mail");
         User user=new User();
         user.setUser_id(Integer.parseInt(user_id));
         user.setUser_name(user_name);
-        user.setPassword(password);
+        user.setPassword(newPs);
         user.setUser_tel(user_tel);
         user.setUser_mail(user_mail);
         userDao.save(user);
