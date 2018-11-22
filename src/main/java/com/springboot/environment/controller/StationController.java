@@ -172,9 +172,6 @@ public class StationController {
     }
 
 
-
-
-
     @ApiOperation(value="根据站点名模糊查询站点信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "stationName",value="站点名",dataType = "String")
@@ -226,68 +223,6 @@ public class StationController {
         List<Station> stations = stationService.queryStationsByDomain(Integer.parseInt(domain));
         return ConvertToJsonUtil.stationListConvertToJson(stations);
 
-    }
-
-
-
-
-    @ApiOperation(value="新增站点信息")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "stationId",value="对内站点编号",dataType = "String"),
-            @ApiImplicitParam(name = "stationCode",value="对外站点编号",dataType = "String"),
-            @ApiImplicitParam(name = "stationName",value="站点名称",dataType = "String"),
-            @ApiImplicitParam(name = "stationStatus",value="站点状态",dataType = "String"),
-            @ApiImplicitParam(name = "application",value="所属应用(暂未使用)",dataType = "String"),
-            @ApiImplicitParam(name = "onlineFlag",value="在线标识",dataType = "String"),
-            @ApiImplicitParam(name = "stationIdDZ",value="对照码",dataType = "String"),
-            @ApiImplicitParam(name = "protocol",value="所用协议",dataType = "String"),
-            @ApiImplicitParam(name = "protocolName",value="所用协议名称",dataType = "String"),
-            @ApiImplicitParam(name = "position",value="站点位置",dataType = "String"),
-            @ApiImplicitParam(name = "street",value="站点所属街道",dataType = "String"),
-            @ApiImplicitParam(name = "district",value="站点所属行政区",dataType = "String"),
-            @ApiImplicitParam(name = "range",value="噪声点范围",dataType = "String"),
-            @ApiImplicitParam(name = "countryCon",value="国控",dataType = "String"),
-            @ApiImplicitParam(name = "cityCon",value="市控",dataType = "String"),
-            @ApiImplicitParam(name = "domainCon",value="区控",dataType = "String"),
-            @ApiImplicitParam(name = "area",value="区域环境",dataType = "String"),
-            @ApiImplicitParam(name = "domain",value="功能区",dataType = "String")
-    })
-    @RequestMapping(value = "/addStation/{stationId}/{stationCode}/{stationName}/{stationStatus}/{application}/{onlineFlag}/{stationIdDZ}/{protocol}/{protocolName}/{position}/{street}/{district}/{range}/{countryCon}/{cityCon}/{domainCon}/{area}/{domain}", method = RequestMethod.GET)
-    @ResponseBody
-    public String addStation(@PathVariable String stationId,
-                             @PathVariable String stationCode,
-                             @PathVariable String stationName,
-                             @PathVariable String stationStatus,
-                             @PathVariable String application,
-                             @PathVariable String onlineFlag,
-                             @PathVariable String stationIdDZ,
-                             @PathVariable String protocol,
-                             @PathVariable String protocolName,
-                             @PathVariable String position,
-                             @PathVariable String street,
-                             @PathVariable String district,
-                             @PathVariable String range,
-                             @PathVariable String countryCon,
-                             @PathVariable String cityCon,
-                             @PathVariable String domainCon,
-                             @PathVariable String area,
-                             @PathVariable String domain){
-
-        return stationService.addStation(stationId, stationCode, stationName, stationStatus, application, onlineFlag, stationIdDZ, protocol, protocolName, position, street, district, range, countryCon, cityCon, domainCon, area, domain);
-
-    }
-
-
-    @ApiOperation(value="根据站点Id删除站点信息")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "stationId",value="站点对内Id",dataType = "String")
-    })
-
-    @RequestMapping(value = "/deleteByStationId/{stationId}", method = RequestMethod.GET)
-    @ResponseBody
-    public String deleteByStationId(@PathVariable String stationId){
-
-        return stationService.deleteStationByStationId(stationId);
     }
 
     @ApiOperation(value = "查询所有的功能区",notes = "查询所有的功能区")
@@ -357,31 +292,29 @@ public class StationController {
     public String insertStation (@RequestBody Map<String,String> params){
         String application = params.get("application");
         String area = params.get("area");
-        String cityCon = params.get("city_con");
-        String countryCon = params.get("country_con");
+        String cityCon = params.get("cityCon");
+        String countryCon = params.get("countryCon");
         String district = params.get("district");
         String domain = params.get("domain");
-        String domainCon = params.get("domain_con");
-        String station_code = params.get("station_code");
-        String station_id = params.get("station_id");
-        String station_id_dz = params.get("station_id_dz");
-        String station_name = params.get("station_name");
-        String station_status = params.get("station_status");
-        String online_flag = params.get("online_flag");
+        String domainCon = params.get("domainCon");
+        String station_code = params.get("stationCode");
+        String station_id = params.get("stationId");
+        String station_id_dz = params.get("stationIdDz");
+        String station_name = params.get("stationName");
+        String station_status = params.get("stationStatus");
+        String online_flag = params.get("onlineFlag");
         String protocol = params.get("protocol");
-        String protocol_name = params.get("protocol_name");
+        String protocol_name = params.get("protocolName");
         String street = params.get("street");
-        String station_major = params.get("station_major");
-        String station_setup = params.get("station_setup");
-        String station_setupdate = params.get("station_setupdate");
-        String company_code = params.get("company_code");
+        String station_major = params.get("stationMajor");
+        String station_setup = params.get("stationSetup");
+        String station_setupdate = params.get("stationSetupDate");
+        String company_code = params.get("companyCode");
         String climate = params.get("climate");
         String radar = params.get("radar");
-        String station_position=params.get("station_position");
-        String station_range=params.get("station_range");
-        String station_attribute=params.get("station_attribute");
-        String d_limit=params.get("d_limit");
-        String n_limit=params.get("n_limit");
+        String station_position=params.get("stationPosition");
+        String station_range=params.get("stationRange");
+        String station_attribute=params.get("stationAttribute");
         Station station = new Station();
         station.setApplication(application);
         station.setArea(Integer.valueOf(area));
@@ -407,57 +340,52 @@ public class StationController {
         station.setPosition(station_position);
         station.setRange(station_range);
         station.setStation_attribute(Integer.valueOf(station_attribute));
-        station.setN_limit(n_limit);
-        station.setD_limit(d_limit);
-        System.out.println(station.getD_limit());
         if(stationService.getByStationId(station_id)!=null){
-            return "已经存在此采集车";
+            return "已经存在此站点";
         }
         stationService.insertStation(station,station_setupdate);
         return "success";
     }
 
-    @ApiOperation(value="删除某一辆采集车")
-    @ApiImplicitParam(name = "params",value = "所要删除采集车的id",dataType = "JSON")
-    @RequestMapping(value = "deletestation",method =RequestMethod.DELETE)
+    @ApiOperation(value="删除某一站点")
+    @ApiImplicitParam(name = "params",value = "所要删除站点的id",dataType = "JSON")
+    @RequestMapping(value = "deletestation",method =RequestMethod.POST)
     public String deletestation(@RequestBody Map<String,String> parmas){
         String station_id=parmas.get("station_id");
         stationService.deleteStation(station_id);
         return "success";
     }
 
-    @ApiOperation(value="更新某一辆采集车")
-    @ApiImplicitParam(name = "params",value = "所要更新的参数以及目标车辆",dataType = "JSON")
+    @ApiOperation(value="更新某站点")
+    @ApiImplicitParam(name = "params",value = "所要更新的参数以及目标站点",dataType = "JSON")
     @RequestMapping(value = "/updatestation",method = RequestMethod.POST)
     public String updatestation(@RequestBody Map<String,String> params){
         String application = params.get("application");
         String area = params.get("area");
-        String cityCon = params.get("city_con");
-        String countryCon = params.get("country_con");
+        String cityCon = params.get("cityCon");
+        String countryCon = params.get("countryCon");
         String district = params.get("district");
         String domain = params.get("domain");
-        String domainCon = params.get("domain_con");
-        String station_code = params.get("station_code");
-        String station_id = params.get("station_id");
-        String station_id_dz = params.get("station_id_dz");
-        String station_name = params.get("station_name");
-        String station_status = params.get("station_status");
-        String online_flag = params.get("online_flag");
+        String domainCon = params.get("domainCon");
+        String station_code = params.get("stationCode");
+        String station_id = params.get("stationId");
+        String station_id_dz = params.get("stationIdDz");
+        String station_name = params.get("stationName");
+        String station_status = params.get("stationStatus");
+        String online_flag = params.get("onlineFlag");
         String protocol = params.get("protocol");
-        String protocol_name = params.get("protocol_name");
+        String protocol_name = params.get("protocolName");
         String street = params.get("street");
-        String station_major = params.get("station_major");
-        String station_setup = params.get("station_setup");
-        String station_setupdate = params.get("station_setupdate");
-        String company_code = params.get("company_code");
+        String station_major = params.get("stationMajor");
+        String station_setup = params.get("stationSetup");
+        String station_setupdate = params.get("stationSetupDate");
+        String company_code = params.get("companyCode");
         String climate = params.get("climate");
         String radar = params.get("radar");
+        String station_position=params.get("stationPosition");
+        String station_range=params.get("stationRange");
+        String station_attribute=params.get("stationAttribute");
         String target=params.get("target");
-        String station_position=params.get("station_position");
-        String station_range=params.get("station_range");
-        String station_attribute=params.get("station_attribute");
-        String d_limit=params.get("d_limit");
-        String n_limit=params.get("n_limit");
         Station station = new Station();
         station.setApplication(application);
         station.setArea(Integer.valueOf(area));
@@ -483,13 +411,19 @@ public class StationController {
         station.setPosition(station_position);
         station.setRange(station_range);
         station.setStation_attribute(Integer.valueOf(station_attribute));
-        station.setN_limit(n_limit);
-        station.setD_limit(d_limit);
         if(stationService.getByStationId(target)==null){
-            return "不存在采集车";
+            return "不存在此站点";
         }
         stationService.updateStation(station,station_setupdate,target);
         return "success";
+    }
+
+    @ApiOperation(value="查询某一站点信息")
+    @ApiImplicitParam(name = "params")
+    @RequestMapping(value = "/findoneStation", method = RequestMethod.POST)
+    public Station findOneStation(@RequestBody Map<String,String> params){
+        String station_id=params.get("id");
+        return stationService.getByStationId(station_id);
     }
 
 }
