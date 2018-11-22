@@ -47,11 +47,9 @@ public class GatherServiceImp implements GatherService {
         String company_code=gather.getCompany_code();
         int climate=gather.getClimate();
         int radar=gather.getRadar();
-        String d_limit=gather.getD_limit();
-        String n_limit=gather.getN_limit();
         gatherDao.insertGather(application,area,city_con,country_con,district,domain,domain_con,gather_code,
                 gather_id,gather_id_dz,gather_name,gather_status,online_flag,protocol,protocol_name,street,gather_major,
-                        gather_setup,gather_setupdate,company_code,climate,radar,d_limit,n_limit);
+                        gather_setup,gather_setupdate,company_code,climate,radar);
     }
 
     @Override
@@ -83,10 +81,8 @@ public class GatherServiceImp implements GatherService {
         String company_code=gather.getCompany_code();
         int climate=gather.getClimate();
         int radar=gather.getRadar();
-        String d_limit=gather.getD_limit();
-        String n_limit=gather.getN_limit();
         gatherDao.updateGather(area,application,city_con,country_con,district,domain,domain_con,gather_code,
                 gather_id,gather_id_dz,gather_name,gather_status,online_flag,protocol,protocol_name,street,gather_major,
-                gather_setup,gather_setupdate,company_code,climate,radar,d_limit,n_limit,target);
+                gather_setup,gather_setupdate,company_code,climate,radar,target);
     }
 }

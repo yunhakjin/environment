@@ -635,11 +635,9 @@ public class StationServiceImpl implements StationService {
         String station_position=station.getPosition();
         String station_range=station.getRange();
         int station_attribute=station.getStation_attribute();
-        String d_limit=station.getD_limit();
-        String n_limit=station.getN_limit();
         stationDao.insertStation(application,area,city_con,country_con,district,domain,domain_con,station_code,
                 station_id,station_id_dz,station_name,station_status,online_flag,protocol,protocol_name,street,station_major,
-                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute,d_limit,n_limit);
+                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute);
     }
 
     @Override
@@ -674,15 +672,13 @@ public class StationServiceImpl implements StationService {
         String station_position=station.getPosition();
         String station_range=station.getRange();
         int station_attribute=station.getStation_attribute();
-        String d_limit=station.getD_limit();
-        String n_limit=station.getN_limit();
         stationDao.updateStation(area,application,city_con,country_con,district,domain,domain_con,station_code,
                 station_id,station_id_dz,station_name,station_status,online_flag,protocol,protocol_name,street,station_major,
-                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute,d_limit,n_limit,target);
+                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute,target);
     }
 
     @Override
     public Station getByStationId(String station_id) {
-        return stationDao.findStationByStationId(station_id);
+        return stationDao.findByStationId(station_id);
     }
 }
