@@ -50,7 +50,7 @@ public class GatherController {
         for(Gather gather:gatherList){
             Map<String,Object> map=new HashMap<String,Object>();
             map.put("gather_id",gather.getGather_id());
-            map.put("gather_code",gather.getCompany_code());
+            map.put("gather_code",gather.getGather_code());
             map.put("gather_name",gather.getGather_name());
             map.put("gather_status",gather.getGather_status());
             map.put("application",gather.getApplication());
