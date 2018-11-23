@@ -19,7 +19,7 @@ public interface GatherDao extends JpaRepository<Gather,Integer> {
     @Modifying
     @Query(value="insert into gather(application,area,city_con,country_con,district,domain,domain_con,gather_code," +
                   "gather_id,gather_id_dz,gather_name,gather_status,online_flag,protocol,protocol_name,street,gather_major,"+
-                  "gather_setup,gather_setupdate,company_code,climate,radar,d_limit,n_limit) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12," +
+                  "gather_setup,gather_setupdate,company_code,climate,radar) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12," +
                   "?13,?14,?15,?16,?17,?18,?19,?20,?21,?22)",nativeQuery = true)
     void insertGather(String application,int area,int city_con,int country_con,String district,int domain,int domain_con,
                       String gather_code,String gather_id,String gather_id_dz,String gather_name,int gather_status,
