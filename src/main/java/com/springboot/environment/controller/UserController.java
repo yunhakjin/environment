@@ -153,7 +153,7 @@ public class UserController {
         return true;
     }
 
-    @ApiOperation(value="得到用户喜好列表",notes = "根据用户id获得用户喜好列表")
+    @ApiOperation(value="得到用户喜好列表(此方法无用)",notes = "根据用户id获得用户喜好列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "user_id",value="用户id（指定）",dataType = "String")
     }

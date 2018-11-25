@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value="/role")
@@ -24,49 +25,38 @@ public class RoleController {
     @Autowired
     private RoleService roleService;
 
-    @ApiOperation(value="返回所有角色的信息",notes = "所有角色的信息")
 
-    @GetMapping(value = "/getall")
-    public List< Object[]> getAll(){
-        return roleService.getAll();
-    }
-
-    @ApiOperation(value="增加某一个角色",notes = "需要定义角色名称")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "role_name",value="角色名称",dataType = "String")
-    }
-    )
-    @RequestMapping(value = "/addone/{role_name}",method = RequestMethod.GET)
-    @ResponseBody
-    public void addOne(@PathVariable String role_name){
-        Role role=new Role();
-        role.setRole_name(role_name);
-        roleService.addOne(role);
+    @ApiOperation(value = "添加某一个角色",notes = "添加角色")
+    @ApiImplicitParam(name = "params",value="角色name",dataType = "JSON")
+    @RequestMapping(value = "/addRole",method = RequestMethod.POST)
+    public Map addOrUdateRole(@RequestBody Map<String,Object> params){
+        return roleService.addRole(params);
     }
 
-    @ApiOperation(value="修改某一个角色",notes = "需要定义角色id，角色名称")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "role_id",value="角色id",dataType = "String"),
-            @ApiImplicitParam(name = "role_name",value="角色名称",dataType = "String")
-    }
-    )
-    @RequestMapping(value = "/updateone/{role_id}/{role_name}",method = RequestMethod.GET)
-    @ResponseBody
-    public void updateOne(@PathVariable String role_id,
-                          @PathVariable String role_name){
-        roleService.updateOne(role_id,role_name);
+    @ApiOperation(value = "角色授权",notes = "角色授权")
+    @ApiImplicitParam(name = "params",value="角色id和权限",dataType = "JSON")
+    @RequestMapping(value = "/rolePermissionDistribute",method = RequestMethod.POST)
+    public Map rolePermissionDistribute(@RequestBody Map<String,Object> params){
+        return roleService.rolePermissionDistribute(params);
     }
 
-    @ApiOperation(value="删除某一个角色",notes = "根据角色的id进行角色删除，同时删除user_role role_permission")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "role_id",value="角色id",dataType = "String")
-    }
-    )
-    @RequestMapping(value="/deleteone/{role_id}",method = RequestMethod.GET)
-    @ResponseBody
-    public void deleteOne(@PathVariable String role_id){
-        roleService.delOne(role_id);
+    @ApiOperation(value = "删除角色",notes = "删除角色")
+    @ApiImplicitParam(name = "params",value="删除角色的id",dataType = "JSON")
+    @RequestMapping(value = "/deleteRole",method = RequestMethod.POST)
+    public Map deleteRole(@RequestBody Map<String,Object> params){
+        return roleService.deleteRole(params);
     }
 
+    @ApiOperation(value = "查询所有角色",notes = "查询所有角色")
+    @RequestMapping(value = "/queryRole",method = RequestMethod.POST)
+    public Map queryRole(){
+        return roleService.queryRole();
+    }
+
+    @ApiOperation(value = "查询某个角色",notes = "查询某个角色")
+    @RequestMapping(value = "/queryRoleByRoleID",method = RequestMethod.POST)
+    public Map queryRoleByRoleID(@RequestBody Map<String,Object> params){
+        return roleService.queryRoleByRoleID(params);
+    }
 
 }
