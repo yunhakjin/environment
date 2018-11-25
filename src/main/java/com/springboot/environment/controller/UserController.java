@@ -207,7 +207,7 @@ public class UserController {
     /*
          * 删除用户，输入用户ID，返回是否新增成功标志
          * */
-    @ApiOperation(value = "校验用户密码",notes = "返回是否旧密码是否正确")
+    @ApiOperation(value = "校验用户的旧密码",notes = "返回验证的旧密码是否正确")
     @ApiImplicitParam(name = "params",value="用户ID和旧密码",dataType = "JSON")
     @RequestMapping(value = "/pwdVerification",method = RequestMethod.POST)
     public Map pwdVerification(@RequestBody Map<String,Object> params){
