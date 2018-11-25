@@ -88,7 +88,8 @@ public class UserController {
             System.out.println(user);
             resultMap.put("status", 200);
             resultMap.put("message", "登录成功");
-            resultMap.put("user", user.getUser_id());
+            resultMap.put("user_id", user.getUser_id());
+            resultMap.put("user_name", user.getUser_name());
             resultMap.put("password",user.getPassword());
             for (int i = 0;i< roles.size();i++){
                 permissionList.add(roles.get(i).getPermission_list());
