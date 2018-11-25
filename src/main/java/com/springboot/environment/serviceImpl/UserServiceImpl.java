@@ -231,6 +231,19 @@ public class UserServiceImpl implements UserService {
         return resultMap;
     }
 
-
-
+    @Override
+    public Map pwdVerification(Map params) {
+        String user_id=(String)params.get("user_id");
+        String old_pwd=(String)params.get("old_pwd");
+        Map<String,String> resultMap=new LinkedHashMap<String,String>();
+        User user=userDao.loadByUserId(Integer.parseInt(user_id));
+        ByteSource salt = ByteSource.Util.bytes(user.getUser_name());
+        String newPs = new SimpleHash("MD5", old_pwd, salt, 1024).toHex();
+        if(newPs.equals(user.getPassword())){
+            resultMap.put("flag","True");
+        }else{
+            resultMap.put("flag","False");
+        }
+        return resultMap;
+    }
 }
