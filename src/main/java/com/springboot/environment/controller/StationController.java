@@ -426,4 +426,12 @@ public class StationController {
         return stationService.getByStationId(station_id);
     }
 
+    @ApiOperation(value="GEOJSON 返回接口信息")
+    @ApiImplicitParam(name = "params")
+    @RequestMapping(value = "/GEOJson", method = RequestMethod.POST)
+    public Map GEOJson(@RequestBody Map<String,String> params){
+        return stationService.GEOJson(params);
+    }
+
+
 }
