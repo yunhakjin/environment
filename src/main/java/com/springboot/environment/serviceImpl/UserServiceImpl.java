@@ -200,7 +200,7 @@ public class UserServiceImpl implements UserService {
             }
         }else if(type.equals("edit")){
             User user1=userDao.loadByUserId(Integer.parseInt(user_id));
-            if(user1.getUser_name().equals(user_name)&&user1.getPassword().equals(password)&&user1.getUser_mail().equals(user_mail)&&user1.getUser_tel().equals(user_tel)){
+            if(user1.getUser_name().equals(user_name)&&user1.getPassword().equals(newPs)&&user1.getUser_mail().equals(user_mail)&&user1.getUser_tel().equals(user_tel)){
                 resultMap.put("editFlag","true");
             }else{
                 resultMap.put("editFlag","false");
@@ -240,9 +240,9 @@ public class UserServiceImpl implements UserService {
         ByteSource salt = ByteSource.Util.bytes(user.getUser_name());
         String newPs = new SimpleHash("MD5", old_pwd, salt, 1024).toHex();
         if(newPs.equals(user.getPassword())){
-            resultMap.put("flag","True");
+            resultMap.put("flag","true");
         }else{
-            resultMap.put("flag","False");
+            resultMap.put("flag","false");
         }
         return resultMap;
     }
