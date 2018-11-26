@@ -71,4 +71,9 @@ public class NormServiceImpl implements NormService {
     public List<Norm> getAllByMonthflag() {
         return normDao.getAllByMonthflag();
     }
+
+    @Override
+    public List<Norm> getAllByOverflag() {
+        return normDao.getAllByOverflag();
+    }
 }
