@@ -3,14 +3,8 @@ package com.springboot.environment.serviceImpl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.springboot.environment.bean.DData;
-import com.springboot.environment.bean.HData;
-import com.springboot.environment.bean.MData;
-import com.springboot.environment.bean.Station;
-import com.springboot.environment.dao.DDataDao;
-import com.springboot.environment.dao.HDataDao;
-import com.springboot.environment.dao.MDataDao;
-import com.springboot.environment.dao.StationDao;
+import com.springboot.environment.bean.*;
+import com.springboot.environment.dao.*;
 import com.springboot.environment.request.QuerydDataByStationAreaReq;
 import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
@@ -22,11 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Transactional
 @Service
@@ -39,11 +30,13 @@ public class StationServiceImpl implements StationService {
     MDataDao mDataDao;
 
     @Autowired
-    HDataDao hDataDao;
-
-    @Autowired
     DDataDao dDataDao;
 
+    @Autowired
+    NormDao normDao;
+
+    @Autowired
+    HDataDao hDataDao;
 
     @Override
     public List<Station> findALl() {
@@ -680,5 +673,52 @@ public class StationServiceImpl implements StationService {
     @Override
     public Station getByStationId(String station_id) {
         return stationDao.findByStationId(station_id);
+    }
+
+    @Override
+    public Map GEOJson(Map params) {
+        String type=params.get("type")+"";
+        Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<Map> lists=new ArrayList<Map>();
+        if(type.equals("all")){
+            List<Station> stations=stationDao.findAll();
+            String LeqAnorm_code=normDao.getLeqACode().toString();
+            //String VdrNorm_code=normDao.getVdrCode();
+            for(int i=0;i<stations.size();i++){
+                Map<String,Object> map=new HashMap<String,Object>();
+                map.put("type","Feature");
+                map.put("id",stations.get(i).getStationCode());
+                map.put("name",stations.get(i).getStationName());
+                map.put("region",stations.get(i).getDomain());
+                List<HData> hDatas= hDataDao.getLatestStationListByStationCode(stations.get(i).getStationCode());
+                System.out.println(hDatas);
+                map.put("time",hDataDao.getLatestTimeByStationCode(stations.get(i).getStationCode().toString()));
+                for (int j= 0;j<hDatas.size();j++){
+                    if(hDatas.get(j).getNorm_code().equals(LeqAnorm_code)){
+                        map.put("LeqA",hDatas.get(j).getNorm_val());
+                    }
+                }
+                map.put("M_type",stations.get(i).getDistrict());
+                if(stations.get(i).getOnlineFlag()==1){
+                    map.put("S_type","在线");
+                }else{
+                    map.put("S_type","离线");
+                }
+                Map<String,Object> mapGeometry=new HashMap<String,Object>();
+                mapGeometry.put("type","Point");
+                List<String> coordinates=new ArrayList<>();
+                String[] coordinates_str=stations.get(i).getPosition().split(",");
+                for(int k=0;k<coordinates_str.length;k++){
+                    coordinates.add(coordinates_str[k]);
+                }
+                mapGeometry.put("coordinates",coordinates);
+                map.put("geometry",mapGeometry);
+                lists.add(map);
+            }
+        }
+        resultMap.put("type","FeatureCollection");
+        resultMap.put("features",lists);
+        return resultMap;
     }
 }

@@ -29,4 +29,8 @@ public interface NormDao extends JpaRepository<Norm,String> {
 
     @Query(value = "select * from norm where overflag=1",nativeQuery = true)
     public List<Norm> getAllByOverflag();
+
+    @Query(value = "select norm_code from norm where mflag=1 and norm_name = 'LeqA'",nativeQuery = true)
+    Object getLeqACode();
+
 }

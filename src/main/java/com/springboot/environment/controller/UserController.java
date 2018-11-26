@@ -88,7 +88,8 @@ public class UserController {
             System.out.println(user);
             resultMap.put("status", 200);
             resultMap.put("message", "登录成功");
-            resultMap.put("user", user.getUser_id());
+            resultMap.put("user_id", user.getUser_id());
+            resultMap.put("user_name", user.getUser_name());
             resultMap.put("password",user.getPassword());
             for (int i = 0;i< roles.size();i++){
                 permissionList.add(roles.get(i).getPermission_list());
@@ -152,7 +153,7 @@ public class UserController {
         return true;
     }
 
-    @ApiOperation(value="得到用户喜好列表",notes = "根据用户id获得用户喜好列表")
+    @ApiOperation(value="得到用户喜好列表(此方法无用)",notes = "根据用户id获得用户喜好列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "user_id",value="用户id（指定）",dataType = "String")
     }
@@ -202,6 +203,17 @@ public class UserController {
     public Map deleteUser(@RequestBody Map<String,Object> params){
         return userService.deleteUser(params);
     }
+
+    /*
+         * 删除用户，输入用户ID，返回是否新增成功标志
+         * */
+    @ApiOperation(value = "校验用户的旧密码",notes = "返回验证的旧密码是否正确")
+    @ApiImplicitParam(name = "params",value="用户ID和旧密码",dataType = "JSON")
+    @RequestMapping(value = "/pwdVerification",method = RequestMethod.POST)
+    public Map pwdVerification(@RequestBody Map<String,Object> params){
+        return userService.pwdVerification(params);
+    }
+
 
 
 }
