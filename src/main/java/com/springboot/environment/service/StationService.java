@@ -66,4 +66,6 @@ public interface StationService {
     void updateStation(Station station,String setupdate,String target);
 
     Station getByStationId(String station_id);
+
+    Map GEOJson(Map params);
 }

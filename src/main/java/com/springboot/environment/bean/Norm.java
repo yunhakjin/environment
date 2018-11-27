@@ -20,7 +20,8 @@ import javax.persistence.*;
 * m5flag: 是否适用5分钟数据
 * dflag: 是否适用天数据
 * hflag: 是否适用小时数据
-* monthflag: 是否适用月数据*/
+* monthflag: 是否适用月数据
+* overflag:是否用于报警阈值*/
 public class Norm {
     @Id
     @Column(name="norm_id_code")
@@ -129,6 +130,17 @@ public class Norm {
 
     public int getMonthflag() {
         return monthflag;
+    }
+
+    @Column(name="overflag")
+    private int overflag;
+
+    public void setOverflag(int overflag) {
+        this.overflag = overflag;
+    }
+
+    public int getOverflag() {
+        return overflag;
     }
 
 }

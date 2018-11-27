@@ -3,14 +3,8 @@ package com.springboot.environment.serviceImpl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.springboot.environment.bean.DData;
-import com.springboot.environment.bean.HData;
-import com.springboot.environment.bean.MData;
-import com.springboot.environment.bean.Station;
-import com.springboot.environment.dao.DDataDao;
-import com.springboot.environment.dao.HDataDao;
-import com.springboot.environment.dao.MDataDao;
-import com.springboot.environment.dao.StationDao;
+import com.springboot.environment.bean.*;
+import com.springboot.environment.dao.*;
 import com.springboot.environment.request.QuerydDataByStationAreaReq;
 import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
@@ -26,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Transactional
 @Service
@@ -38,11 +34,13 @@ public class StationServiceImpl implements StationService {
     MDataDao mDataDao;
 
     @Autowired
-    HDataDao hDataDao;
-
-    @Autowired
     DDataDao dDataDao;
 
+    @Autowired
+    NormDao normDao;
+
+    @Autowired
+    HDataDao hDataDao;
     @Autowired
     RedisTemplate<String, String> redisTemplate;
 
@@ -392,46 +390,6 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("LMX", LMX);
             }
 
-//            if (StringUtil.isNullOrEmpty(mDatas)){
-//                stationJSON.put("station_name", station.getStationName());
-//                stationJSON.put("station_id", station.getStationId());
-//                stationJSON.put("station_code", station.getStationCode());
-//                stationJSON.put("latest_time", "");
-//                stationJSON.put("count_r", 0);
-//                stationJSON.put("LA", "");
-//                stationJSON.put("LEQ", "");
-//                stationJSON.put("LMX","");
-//            }
-//            else {
-//                //查询当天站点收到的数据的数量
-//                Date date = new Date();
-//                int nowDayMdataNum = mDataDao.querymDataNumBetween(station.getStationCode(), DateUtil.getTodayStr(date), DateUtil.getDateStr(date));
-//
-//                String LA = null;
-//                String LEQ = null;
-//                String LMX = null;
-//
-//                for (MData mData : mDatas){
-//                    if (mData.getNorm_code().equals("n00000")){
-//                        LA = mData.getNorm_val();
-//                    }
-//                    if (mData.getNorm_code().equals("n00006")){
-//                        LEQ = mData.getNorm_val();
-//                    }
-//                    if (mData.getNorm_code().equals("n00010")){
-//                        LMX = mData.getNorm_val();
-//                    }
-//                }
-//                stationJSON.put("station_name", station.getStationName());
-//                stationJSON.put("station_id", station.getStationId());
-//                stationJSON.put("station_code", station.getStationCode());
-//                stationJSON.put("latest_time", DateUtil.getDateStr(mDatas.get(0).getData_time()));
-//                stationJSON.put("count_r", nowDayMdataNum);
-//                stationJSON.put("LA", LA);
-//                stationJSON.put("LEQ", LEQ);
-//                stationJSON.put("LMX",LMX);
-//            }
-
             dataArray.add(stationJSON);
         }
 
@@ -684,11 +642,9 @@ public class StationServiceImpl implements StationService {
         String station_position=station.getPosition();
         String station_range=station.getRange();
         int station_attribute=station.getStation_attribute();
-        String d_limit=station.getD_limit();
-        String n_limit=station.getN_limit();
         stationDao.insertStation(application,area,city_con,country_con,district,domain,domain_con,station_code,
                 station_id,station_id_dz,station_name,station_status,online_flag,protocol,protocol_name,street,station_major,
-                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute,d_limit,n_limit);
+                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute);
     }
 
     @Override
@@ -723,15 +679,60 @@ public class StationServiceImpl implements StationService {
         String station_position=station.getPosition();
         String station_range=station.getRange();
         int station_attribute=station.getStation_attribute();
-        String d_limit=station.getD_limit();
-        String n_limit=station.getN_limit();
         stationDao.updateStation(area,application,city_con,country_con,district,domain,domain_con,station_code,
                 station_id,station_id_dz,station_name,station_status,online_flag,protocol,protocol_name,street,station_major,
-                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute,d_limit,n_limit,target);
+                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute,target);
     }
 
     @Override
     public Station getByStationId(String station_id) {
-        return stationDao.findStationByStationId(station_id);
+        return stationDao.findByStationId(station_id);
+    }
+
+    @Override
+    public Map GEOJson(Map params) {
+        String type=params.get("type")+"";
+        Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<Map> lists=new ArrayList<Map>();
+        if(type.equals("all")){
+            List<Station> stations=stationDao.findAll();
+            String LeqAnorm_code=normDao.getLeqACode().toString();
+            //String VdrNorm_code=normDao.getVdrCode();
+            for(int i=0;i<stations.size();i++){
+                Map<String,Object> map=new HashMap<String,Object>();
+                map.put("type","Feature");
+                map.put("id",stations.get(i).getStationCode());
+                map.put("name",stations.get(i).getStationName());
+                map.put("region",stations.get(i).getDomain());
+                List<HData> hDatas= hDataDao.getLatestStationListByStationCode(stations.get(i).getStationCode());
+                System.out.println(hDatas);
+                map.put("time",hDataDao.getLatestTimeByStationCode(stations.get(i).getStationCode().toString()));
+                for (int j= 0;j<hDatas.size();j++){
+                    if(hDatas.get(j).getNorm_code().equals(LeqAnorm_code)){
+                        map.put("LeqA",hDatas.get(j).getNorm_val());
+                    }
+                }
+                map.put("M_type",stations.get(i).getDistrict());
+                if(stations.get(i).getOnlineFlag()==1){
+                    map.put("S_type","在线");
+                }else{
+                    map.put("S_type","离线");
+                }
+                Map<String,Object> mapGeometry=new HashMap<String,Object>();
+                mapGeometry.put("type","Point");
+                List<String> coordinates=new ArrayList<>();
+                String[] coordinates_str=stations.get(i).getPosition().split(",");
+                for(int k=0;k<coordinates_str.length;k++){
+                    coordinates.add(coordinates_str[k]);
+                }
+                mapGeometry.put("coordinates",coordinates);
+                map.put("geometry",mapGeometry);
+                lists.add(map);
+            }
+        }
+        resultMap.put("type","FeatureCollection");
+        resultMap.put("features",lists);
+        return resultMap;
     }
 }

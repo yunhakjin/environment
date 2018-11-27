@@ -61,7 +61,6 @@ public class UserServiceImpl implements UserService {
         * 最后用toHex()方法将加密后的密码转成String
         * */
         String newPs = new SimpleHash("MD5", password, salt, 1024).toHex();
-        boolean flag=false;
         User u = new User();
         u.setUser_id(Integer.parseInt(user_id));
         u.setPassword(newPs);
@@ -181,12 +180,14 @@ public class UserServiceImpl implements UserService {
         String user_id=(String)params.get("user_id");
         String user_name=(String)params.get("user_name");
         String password=(String)params.get("password");
+        ByteSource salt = ByteSource.Util.bytes(user_name);
+        String newPs = new SimpleHash("MD5", password, salt, 1024).toHex();
         String user_tel=(String)params.get("user_tel");
         String user_mail=(String)params.get("user_mail");
         User user=new User();
         user.setUser_id(Integer.parseInt(user_id));
         user.setUser_name(user_name);
-        user.setPassword(password);
+        user.setPassword(newPs);
         user.setUser_tel(user_tel);
         user.setUser_mail(user_mail);
         userDao.save(user);
@@ -199,7 +200,7 @@ public class UserServiceImpl implements UserService {
             }
         }else if(type.equals("edit")){
             User user1=userDao.loadByUserId(Integer.parseInt(user_id));
-            if(user1.getUser_name().equals(user_name)&&user1.getPassword().equals(password)&&user1.getUser_mail().equals(user_mail)&&user1.getUser_tel().equals(user_tel)){
+            if(user1.getUser_name().equals(user_name)&&user1.getPassword().equals(newPs)&&user1.getUser_mail().equals(user_mail)&&user1.getUser_tel().equals(user_tel)){
                 resultMap.put("editFlag","true");
             }else{
                 resultMap.put("editFlag","false");
@@ -230,6 +231,19 @@ public class UserServiceImpl implements UserService {
         return resultMap;
     }
 
-
-
+    @Override
+    public Map pwdVerification(Map params) {
+        String user_id=(String)params.get("user_id");
+        String old_pwd=(String)params.get("old_pwd");
+        Map<String,String> resultMap=new LinkedHashMap<String,String>();
+        User user=userDao.loadByUserId(Integer.parseInt(user_id));
+        ByteSource salt = ByteSource.Util.bytes(user.getUser_name());
+        String newPs = new SimpleHash("MD5", old_pwd, salt, 1024).toHex();
+        if(newPs.equals(user.getPassword())){
+            resultMap.put("flag","true");
+        }else{
+            resultMap.put("flag","false");
+        }
+        return resultMap;
+    }
 }

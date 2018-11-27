@@ -22,9 +22,26 @@ public class Role  implements Serializable {
     @GeneratedValue
     private int role_id;
     private String role_name;
+    private String permission_list;
 
+    public String getPermission_list() {
+        return permission_list;
+    }
 
+    public void setPermission_list(String permission_list) {
+        this.permission_list = permission_list;
+    }
 
+    @Override
+    public String toString() {
+        return "Role{" +
+                "role_id=" + role_id +
+                ", role_name='" + role_name + '\'' +
+                ", permission_list='" + permission_list + '\'' +
+                ", users=" + users +
+                ", permissions=" + permissions +
+                '}';
+    }
     // 用户 - 角色关系定义;多对多
     @ManyToMany(mappedBy = "roles" ,fetch = FetchType.LAZY)
 //    @JoinTable(name="e_user_role",joinColumns={@JoinColumn(name="role_id")},inverseJoinColumns={@JoinColumn(name="user_id")})
@@ -70,11 +87,4 @@ public class Role  implements Serializable {
     public Role() {
     }
 
-    @Override
-    public String toString() {
-        return "Role{" +
-                "role_id=" + role_id +
-                ", role_name='" + role_name +
-                '}';
-    }
 }

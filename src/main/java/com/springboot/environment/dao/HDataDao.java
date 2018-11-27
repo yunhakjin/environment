@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -59,4 +60,10 @@ public interface HDataDao extends JpaRepository<HData,Integer> {
     List<HData> queryHdataByStationIdAndTime(String stationId, String startTime, String endTime);
 
 
+
+    @Query(value = "select max(data_time) from `hdata` where station_id=?1", nativeQuery = true)
+    Date getLatestTimeByStationCode(String stationCode);
+
+    @Query(value = "select * from `hdata` where data_time = (select max(data_time) from `hdata` where station_id= ?1) and station_id=?1", nativeQuery = true)
+    List<HData> getLatestStationListByStationCode(String stationCode);
 }
