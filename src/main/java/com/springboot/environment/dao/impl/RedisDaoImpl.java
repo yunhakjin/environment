@@ -23,4 +23,10 @@ public class RedisDaoImpl implements RedisDao {
         dataSet = zset.reverseRangeByScore(stationId, startTime, endTime);
         return dataSet;
     }
+
+    public Set<String> getMaxscoreData(String stationId){
+        ZSetOperations<String, String> zset = redisTemplate.opsForZSet();
+        Set<String> dataSet = zset.reverseRange(stationId, 0, 0);
+        return dataSet;
+    }
 }
