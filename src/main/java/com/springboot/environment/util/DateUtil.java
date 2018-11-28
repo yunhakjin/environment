@@ -175,9 +175,18 @@ public class DateUtil {
         return null;
     }
 
+    public static String getDayWithMonthOffset(Date date, int offset){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, offset);
+        date = calendar.getTime();
+        return sdf.format(date);
+    }
+
     public static void main(String[] args) throws ParseException {
 
-        System.out.println(getYesterdayString(new Date()));
+        System.out.println(getDayWithMonthOffset(new Date(), -3));
     }
 
 
