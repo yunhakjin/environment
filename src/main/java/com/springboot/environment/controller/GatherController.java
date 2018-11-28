@@ -42,6 +42,40 @@ public class GatherController {
         return carMap;
     }
 
+    @ApiOperation(value = "返回所有的采集车信息")
+    @RequestMapping(value = "/getallgatherInfo",method = RequestMethod.GET)
+    public List getAllGatherInfo(){
+        List<Gather> gatherList=gatherService.getAllGather();
+        List<Map> result=new ArrayList<Map>();
+        for(Gather gather:gatherList){
+            Map<String,Object> map=new HashMap<String,Object>();
+            map.put("gather_id",gather.getGather_id());
+            map.put("gather_code",gather.getGather_code());
+            map.put("gather_name",gather.getGather_name());
+            map.put("gather_status",gather.getGather_status());
+            map.put("application",gather.getApplication());
+            map.put("online_flag",gather.getOnline_flag());
+            map.put("gather_id_dz",gather.getGather_id_dz());
+            map.put("protocol",gather.getProtocol());
+            map.put("protocol_name",gather.getProtocol_name());
+            map.put("street",gather.getStreet());
+            map.put("district",gather.getDistrict());
+            map.put("country_con",gather.getCountry_con());
+            map.put("city_con",gather.getCity_con());
+            map.put("domain_con",gather.getDomain_con());
+            map.put("area",gather.getDomain());
+            map.put("domain",gather.getDomain());
+            map.put("gather_major",gather.getGather_major());
+            map.put("gather_setup",gather.getGather_setup());
+            map.put("gather_setupdate",gather.getGather_setupdate().toString());
+            map.put("company_code",gather.getCompany_code());
+            map.put("climate",gather.getClimate());
+            map.put("radar",gather.getRadar());
+            result.add(map);
+        }
+        return result;
+    }
+
     @ApiOperation(value = "根据采集车id返回其所有轨迹",notes = "根据采集车id返回其所有轨迹")
     @ApiImplicitParam(name = "params",value="包含采集车id列表和查询时间的json",dataType = "JSON")
     @RequestMapping(value = "/getgatherdata",method = RequestMethod.POST)
@@ -100,28 +134,26 @@ public class GatherController {
     public String insertGather (@RequestBody Map<String,String> params){
            String application = params.get("application");
            String area = params.get("area");
-           String city_con = params.get("city_con");
-           String country_con = params.get("country_con");
+           String city_con = params.get("cityCon");
+           String country_con = params.get("countryCon");
            String district = params.get("district");
            String domain = params.get("domain");
-           String domain_con = params.get("domain_con");
-           String gather_code = params.get("gather_code");
-           String gather_id = params.get("gather_id");
-           String gather_id_dz = params.get("gather_id_dz");
-           String gather_name = params.get("gather_name");
-           String gather_status = params.get("gather_status");
-           String online_flag = params.get("online_flag");
+           String domain_con = params.get("domainCon");
+           String gather_code = params.get("gatherCode");
+           String gather_id = params.get("gatherId");
+           String gather_id_dz = params.get("gatherIdDz");
+           String gather_name = params.get("gatherName");
+           String gather_status = params.get("gatherStatus");
+           String online_flag = params.get("onlineFlag");
            String protocol = params.get("protocol");
-           String protocol_name = params.get("protocol_name");
+           String protocol_name = params.get("protocolName");
            String street = params.get("street");
-           String gather_major = params.get("gather_major");
-           String gather_setup = params.get("gather_setup");
-           String gather_setupdate = params.get("gather_setupdate");
-           String company_code = params.get("company_code");
+           String gather_major = params.get("gatherMajor");
+           String gather_setup = params.get("gatherSetup");
+           String gather_setupdate = params.get("gatherSetupDate");
+           String company_code = params.get("companyCode");
            String climate = params.get("climate");
            String radar = params.get("radar");
-           String d_limit=params.get("d_limit");
-           String n_limit=params.get("n_limit");
            Gather gather = new Gather();
            gather.setApplication(application);
            gather.setArea(Integer.valueOf(area));
@@ -144,8 +176,6 @@ public class GatherController {
            gather.setCompany_code(company_code);
            gather.setClimate(Integer.valueOf(climate));
            gather.setRadar(Integer.valueOf(radar));
-           gather.setD_limit(d_limit);
-           gather.setN_limit(n_limit);
            if(gatherService.getOneGather(gather_id)!=null){
                return "已经存在此采集车";
            }
@@ -155,9 +185,9 @@ public class GatherController {
 
     @ApiOperation(value="删除某一辆采集车")
     @ApiImplicitParam(name = "params",value = "所要删除采集车的id",dataType = "JSON")
-    @RequestMapping(value = "deletegather",method =RequestMethod.DELETE)
+    @RequestMapping(value = "deletegather",method =RequestMethod.POST)
     public String deleteGather(@RequestBody Map<String,String> parmas){
-        String gather_id=parmas.get("gather_id");
+        String gather_id=parmas.get("gatherId");
         gatherService.deleteGather(gather_id);
         return "success";
     }
@@ -168,29 +198,27 @@ public class GatherController {
     public String updateGather(@RequestBody Map<String,String> params){
         String application = params.get("application");
         String area = params.get("area");
-        String city_con = params.get("city_con");
-        String country_con = params.get("country_con");
+        String city_con = params.get("cityCon");
+        String country_con = params.get("countryCon");
         String district = params.get("district");
         String domain = params.get("domain");
-        String domain_con = params.get("domain_con");
-        String gather_code = params.get("gather_code");
-        String gather_id = params.get("gather_id");
-        String gather_id_dz = params.get("gather_id_dz");
-        String gather_name = params.get("gather_name");
-        String gather_status = params.get("gather_status");
-        String online_flag = params.get("online_flag");
+        String domain_con = params.get("domainCon");
+        String gather_code = params.get("gatherCode");
+        String gather_id = params.get("gatherId");
+        String gather_id_dz = params.get("gatherIdDz");
+        String gather_name = params.get("gatherName");
+        String gather_status = params.get("gatherStatus");
+        String online_flag = params.get("onlineFlag");
         String protocol = params.get("protocol");
-        String protocol_name = params.get("protocol_name");
+        String protocol_name = params.get("protocolName");
         String street = params.get("street");
-        String gather_major = params.get("gather_major");
-        String gather_setup = params.get("gather_setup");
-        String gather_setupdate = params.get("gather_setupdate");
-        String company_code = params.get("company_code");
+        String gather_major = params.get("gatherMajor");
+        String gather_setup = params.get("gatherSetup");
+        String gather_setupdate = params.get("gatherSetupDate");
+        String company_code = params.get("companyCode");
         String climate = params.get("climate");
         String radar = params.get("radar");
         String target=params.get("target");
-        String d_limit=params.get("d_limit");
-        String n_limit=params.get("n_limit");
         Gather gather = new Gather();
         gather.setApplication(application);
         gather.setArea(Integer.valueOf(area));
@@ -213,8 +241,6 @@ public class GatherController {
         gather.setCompany_code(company_code);
         gather.setClimate(Integer.valueOf(climate));
         gather.setRadar(Integer.valueOf(radar));
-        gather.setD_limit(d_limit);
-        gather.setN_limit(n_limit);
         if(gatherService.getOneGather(target)==null){
             return "不存在采集车";
         }

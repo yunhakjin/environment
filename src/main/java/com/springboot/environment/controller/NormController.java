@@ -99,6 +99,7 @@ public class NormController {
         List<Map> hfactors=new ArrayList<Map>();
         List<Map> dfactors=new ArrayList<Map>();
         List<Map> monthfactors=new ArrayList<Map>();
+        List<Map> overfactors=new ArrayList<Map>();
         List<Norm> mflags=normService.getAllByMflag();
         for(Norm norm:mflags){
             Map<String,String> map=new HashMap<String,String>();
@@ -134,11 +135,19 @@ public class NormController {
             map.put("norm_name",norm.getNorm_name());
             monthfactors.add(map);
         }
+        List<Norm> oflags=normService.getAllByOverflag();
+        for(Norm norm:oflags){
+            Map<String,String> map=new HashMap<String,String>();
+            map.put("norm_code",norm.getNorm_code());
+            map.put("norm_name",norm.getNorm_name());
+            overfactors.add(map);
+        }
         resultMap.put("mfactors",mfactors);
         resultMap.put("m5factors",m5factors);
         resultMap.put("hfactors",hfactors);
         resultMap.put("dfactors",dfactors);
         resultMap.put("monthfactors",monthfactors);
+        resultMap.put("overfactors",overfactors);
        return resultMap;
     }
 }

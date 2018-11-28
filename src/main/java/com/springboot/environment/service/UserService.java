@@ -41,6 +41,7 @@ public interface UserService {
 
     Map deleteUser(Map params);
 
+    Map pwdVerification(Map params);
 
 
     // Object login(String name, String pass, HttpSession session, HttpServletRequest request);
