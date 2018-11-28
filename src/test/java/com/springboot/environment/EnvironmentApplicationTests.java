@@ -12,13 +12,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -39,6 +45,9 @@ public class EnvironmentApplicationTests {
 
     @Autowired
     StationDao stationDao;
+
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Test
     public void testRedis(){
@@ -111,7 +120,47 @@ public class EnvironmentApplicationTests {
                 mdataCount.put("count", stationId,  String.valueOf(0));
             }
         }
+
    }
+
+   @Test
+   @Transactional
+
+   public void testCreateTable(){
+       SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+       Date date = new Date(1543291200000L);
+       StringBuilder stringBuilder = new StringBuilder("mdata_");
+       stringBuilder.append(sdf.format(date));
+       String sql = "create table if not exists " + stringBuilder.toString() + " like mdata";
+
+       entityManager.createNativeQuery(sql).executeUpdate();
+       entityManager.flush();
+       System.out.println(stringBuilder.toString());
+       System.out.println("分表成功");
+
+       String startTime = DateUtil.getDayBeforeTodayStartTime(new Date(1543291200000L));
+       String endTime = DateUtil.getDayBeforeTodayEndTime(new Date(1543291200000L));
+
+
+       String readWriteSql = "insert into " + stringBuilder + " select  * from mdata where data_time between \'" + startTime + "\' and \'" + endTime + "\'";
+       System.out.println(readWriteSql);
+       int result = entityManager.createNativeQuery(readWriteSql).executeUpdate();
+       System.out.println("数据成功" + result);
+   }
+
+   @Test
+   @Transactional
+   @Modifying
+   public void testInsert(){
+
+        String sql = "create table testTable like mdata";
+        int result = entityManager.createNativeQuery(sql).executeUpdate();
+        System.out.println(result);
+
+   }
+
+
+
 
 
 }
