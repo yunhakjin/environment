@@ -690,20 +690,28 @@ public class StationServiceImpl implements StationService {
                 map.put("type","Feature");
                 map.put("id",stations.get(i).getStationCode());
                 map.put("name",stations.get(i).getStationName());
-                map.put("region",stations.get(i).getDomain());
+                map.put("region",stations.get(i).getDistrict());
                 List<HData> hDatas= hDataDao.getLatestStationListByStationCode(stations.get(i).getStationCode());
                 System.out.println(hDatas);
-                map.put("time",hDataDao.getLatestTimeByStationCode(stations.get(i).getStationCode().toString()));
+                map.put("time",(hDataDao.getLatestTimeByStationCode(stations.get(i).getStationCode().toString())));
                 for (int j= 0;j<hDatas.size();j++){
                     if(hDatas.get(j).getNorm_code().equals(LeqAnorm_code)){
                         map.put("LeqA",hDatas.get(j).getNorm_val());
                     }
                 }
-                map.put("M_type",stations.get(i).getDistrict());
+                //M_type和C_type暂时未处理
+                map.put("M_type","");
+                map.put("C_type","");
                 if(stations.get(i).getOnlineFlag()==1){
                     map.put("S_type","在线");
                 }else{
                     map.put("S_type","离线");
+                }
+
+                if(stations.get(i).getStation_attribute()==1){
+                    map.put("O_status","自动");
+                }else if(stations.get(i).getStation_attribute()==0){
+                    map.put("O_status","手动");
                 }
                 Map<String,Object> mapGeometry=new HashMap<String,Object>();
                 mapGeometry.put("type","Point");
