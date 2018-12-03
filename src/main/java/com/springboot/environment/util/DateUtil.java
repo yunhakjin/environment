@@ -1,7 +1,13 @@
 package com.springboot.environment.util;
 
+import org.apache.tomcat.jni.Local;
+
+import javax.xml.crypto.Data;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -184,9 +190,26 @@ public class DateUtil {
         return sdf.format(date);
     }
 
+    public static String getDayBeforeOneWeekStartTime(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE, -7);
+        date = calendar.getTime();
+        return sdf.format(date);
+    }
+
+    public static String getSunDayOfLastWeek(){
+        LocalDate today = LocalDate.now();
+        LocalDate sundaytoLastWeek = today.minusWeeks(1).with(DayOfWeek.SUNDAY);
+         return sundaytoLastWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
+
     public static void main(String[] args) throws ParseException {
 
-        System.out.println(getDayWithMonthOffset(new Date(), -3));
+        System.out.println(getDayBeforeOneWeekStartTime(new SimpleDateFormat("yyyy-MM-dd 00:00:00").parse("2018-12-02 00:00:00")));
+        System.out.println(getDayBeforeTodayEndTime(new SimpleDateFormat("yyyy-MM-dd 00:00:00").parse("2018-12-02 00:00:00")));
+        System.out.println(getSunDayOfLastWeek());
     }
 
 

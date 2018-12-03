@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.xml.crypto.Data;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
@@ -56,7 +55,7 @@ public class MdataTask {
     }
 
     @Scheduled(cron = "0 0 2 ? * ?")
-    public void deleteMdataBuDay(){
+    public void deleteMdataByDay(){
         Date date = new Date();
         StringBuilder tableName = new StringBuilder("mdata_");
         tableName.append(DateUtil.getYesterdayString(date));
@@ -85,7 +84,7 @@ public class MdataTask {
     }
 
     @Scheduled(cron = "0 0 0 ? * ?")
-    public void deleteTableBefore90(){
+    public void deleteTableBefore90Days(){
         Date date = new Date();
         StringBuilder tableName = new StringBuilder("mdata_");
         tableName.append(DateUtil.getDayWithMonthOffset(date, BEFORE_HREE_MONTH));
