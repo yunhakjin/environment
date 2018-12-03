@@ -190,8 +190,8 @@ public class UserServiceImpl implements UserService {
         user.setPassword(newPs);
         user.setUser_tel(user_tel);
         user.setUser_mail(user_mail);
-        userDao.save(user);
         if(type.equals("add")){
+            userDao.save(user);
             User user1=userDao.loadByUserId(Integer.parseInt(user_id));
             if(user1!=null){
                 resultMap.put("addFlag","true");
@@ -199,10 +199,18 @@ public class UserServiceImpl implements UserService {
                 resultMap.put("addFlag","false");
             }
         }else if(type.equals("edit")){
-            User user1=userDao.loadByUserId(Integer.parseInt(user_id));
-            if(user1.getUser_name().equals(user_name)&&user1.getPassword().equals(newPs)&&user1.getUser_mail().equals(user_mail)&&user1.getUser_tel().equals(user_tel)){
-                resultMap.put("editFlag","true");
+            //判断user-id是否有，如果有，那么
+            User u=userDao.loadByUserId(Integer.parseInt(user_id));
+            if(u!=null){
+                userDao.save(user);
+                User user1=userDao.loadByUserId(Integer.parseInt(user_id));
+                if(user1.getUser_name().equals(user_name)&&user1.getPassword().equals(newPs)&&user1.getUser_mail().equals(user_mail)&&user1.getUser_tel().equals(user_tel)){
+                    resultMap.put("editFlag","true");
+                }else{
+                    resultMap.put("editFlag","false");
+                }
             }else{
+                System.out.println("不存在此用户");
                 resultMap.put("editFlag","false");
             }
         }
@@ -218,6 +226,12 @@ public class UserServiceImpl implements UserService {
             String user_id=userIdList.get(i).toString();
             //判断用户和其他的表连接关系-如果存在就删除--最后再删除用户信息。user_group user-role
             //暂时不考虑，后期考虑
+            List<Object[]> UserRoleList=userDao.getUserRoleByUserID(Integer.parseInt(user_id));
+            if(UserRoleList!=null){
+
+                System.out.println("UserRoleList"+UserRoleList);
+            }
+
             userDao.deleteById(Integer.parseInt(user_id));
             if (userDao.loadByUserId(Integer.parseInt(user_id))==null){
                 count++;
