@@ -126,10 +126,12 @@ public class RoleServiceImpl implements RoleService {
         Map<String,Object> map=new HashMap<String, Object>();
         map.put("id",role.getRole_id()+"");
         map.put("name",role.getRole_name());
-        String[] permissions=role.getPermission_list().split(",");
         List<String> permissionsList=new ArrayList<String>();
-        for(int i =0;i<permissions.length;i++){
-            permissionsList.add(permissions[i]);
+        if(role.getPermission_list().equals("")){
+            String[] permissions=role.getPermission_list().split(",");
+            for(int i =0;i<permissions.length;i++){
+                permissionsList.add(permissions[i]);
+            }
         }
         map.put("permissions",permissionsList);
         list.add(map);
