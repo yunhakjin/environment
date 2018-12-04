@@ -205,11 +205,31 @@ public class DateUtil {
          return sundaytoLastWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
+    public static String getStartDayBefore3Month(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, -3);
+        date = calendar.getTime();
+        return sdf.format(date);
+    }
+
+    public static String getHdataTableName(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, -3);
+        date = calendar.getTime();
+        return sdf.format(date);
+    }
+
     public static void main(String[] args) throws ParseException {
 
-        System.out.println(getDayBeforeOneWeekStartTime(new SimpleDateFormat("yyyy-MM-dd 00:00:00").parse("2018-12-02 00:00:00")));
-        System.out.println(getDayBeforeTodayEndTime(new SimpleDateFormat("yyyy-MM-dd 00:00:00").parse("2018-12-02 00:00:00")));
-        System.out.println(getSunDayOfLastWeek());
+        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2018-12-01 00:00:00");
+        System.out.println(getStartDayBefore3Month(date));
+        System.out.println(getDayBeforeTodayEndTime(date));
+        System.out.println(getHdataTableName(date));
     }
 
 
