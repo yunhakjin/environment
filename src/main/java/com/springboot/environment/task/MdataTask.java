@@ -31,7 +31,7 @@ public class MdataTask {
 
     private static final Logger logger = LoggerFactory.getLogger(MdataTask.class);
 
-    @Scheduled(cron = "0 0 1 ? * ?")
+//    @Scheduled(cron = "0 0 1 ? * ?")
     public void createNewMdataTableByDay(){
 
         Date date = new Date();
@@ -54,7 +54,7 @@ public class MdataTask {
 
     }
 
-    @Scheduled(cron = "0 0 2 ? * ?")
+//    @Scheduled(cron = "0 0 2 ? * ?")
     public void deleteMdataByDay(){
         Date date = new Date();
         StringBuilder tableName = new StringBuilder("mdata_");
@@ -83,7 +83,7 @@ public class MdataTask {
 
     }
 
-    @Scheduled(cron = "0 0 0 ? * ?")
+//    @Scheduled(cron = "0 0 0 ? * ?")
     public void deleteTableBefore90Days(){
         Date date = new Date();
         StringBuilder tableName = new StringBuilder("mdata_");
