@@ -26,7 +26,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.text.DateFormat;
+
+import java.text.ParseException;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -232,7 +236,7 @@ public class DataController {
             @ApiImplicitParam(name = "params",value="参数列表",dataType = "String")
     })
     @RequestMapping(value = "/querymDataByStationsArea", method = RequestMethod.POST)
-    public String querymDataByStationsArea(@RequestBody Map<String, Object> params){
+    public String querymDataByStationsArea(@RequestBody Map<String, Object> params) throws ParseException {
 
         System.out.println(params.toString());
         int area = (Integer)params.get("area_id");

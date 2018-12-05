@@ -1,7 +1,13 @@
 package com.springboot.environment.util;
 
+import org.apache.tomcat.jni.Local;
+
+import javax.xml.crypto.Data;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -34,6 +40,12 @@ public class DateUtil {
     public static String getDateStr(Date date){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return simpleDateFormat.format(date);
+    }
+
+    public static long dateToDateStamp(String date) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date datedate = sdf.parse(date);
+        return datedate.getTime();
     }
 
     /**
@@ -96,6 +108,20 @@ public class DateUtil {
     }
 
     /**
+     * 获得当前时间的前一天
+     * @param date
+     * @return
+     */
+    public static String getYesterdayString(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        date = calendar.getTime();
+        return sdf.format(date);
+    }
+
+    /**
      * 得到月初的一天
      * @param date
      * @return
@@ -124,9 +150,86 @@ public class DateUtil {
         return sdf.format(date);
     }
 
+
+    public static String getDayBeforeTodayStartTime(Date date) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        date = calendar.getTime();
+        try {
+            return getThisDayStartTime(sdf.format(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static String getDayBeforeTodayEndTime(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        date = calendar.getTime();
+        try {
+            return getThisDayEndTime(sdf.format(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String getDayWithMonthOffset(Date date, int offset){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, offset);
+        date = calendar.getTime();
+        return sdf.format(date);
+    }
+
+    public static String getDayBeforeOneWeekStartTime(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE, -7);
+        date = calendar.getTime();
+        return sdf.format(date);
+    }
+
+    public static String getSunDayOfLastWeek(){
+        LocalDate today = LocalDate.now();
+        LocalDate sundaytoLastWeek = today.minusWeeks(1).with(DayOfWeek.SUNDAY);
+         return sundaytoLastWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
+
+    public static String getStartDayBefore3Month(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, -3);
+        date = calendar.getTime();
+        return sdf.format(date);
+    }
+
+    public static String getHdataTableName(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, -3);
+        date = calendar.getTime();
+        return sdf.format(date);
+    }
+
     public static void main(String[] args) throws ParseException {
 
-        System.out.println(getMonthEndDay("2018-10"));
+        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2018-12-01 00:00:00");
+        System.out.println(getStartDayBefore3Month(date));
+        System.out.println(getDayBeforeTodayEndTime(date));
+        System.out.println(getHdataTableName(date));
     }
 
 

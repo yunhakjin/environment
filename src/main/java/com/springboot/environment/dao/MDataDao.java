@@ -5,9 +5,11 @@ import com.springboot.environment.bean.MData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -70,10 +72,5 @@ public interface MDataDao extends JpaRepository<MData,Integer> {
     @Query(value = "select * from mdata m where m.data_time between ?1 and ?2", nativeQuery = true)
     List<MData> getMdataByDay(String startTime, String endTime);
 
-  /*  @Query(value = "select * from `mdata` where data_time = (select max(data_time) from `mdata` where station_id= ?1) and station_id=?1", nativeQuery = true)
-    List<MData> getLatestStationListByStationCode(String stationCode);
 
-
-    @Query(value = "select max(data_time) from `mdata` where station_id=?1", nativeQuery = true)
-    Object getLatestTimeByStationCode(String stationCode);*/
 }
