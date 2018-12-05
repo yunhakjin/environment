@@ -692,16 +692,29 @@ public class StationServiceImpl implements StationService {
                 map.put("name",stations.get(i).getStationName());
                 map.put("region",stations.get(i).getDistrict());
                 List<HData> hDatas= hDataDao.getLatestStationListByStationCode(stations.get(i).getStationCode());
-                System.out.println(hDatas);
                 map.put("time",(hDataDao.getLatestTimeByStationCode(stations.get(i).getStationCode().toString())));
                 for (int j= 0;j<hDatas.size();j++){
                     if(hDatas.get(j).getNorm_code().equals(LeqAnorm_code)){
                         map.put("LeqA",hDatas.get(j).getNorm_val());
                     }
                 }
-                //M_type和C_type暂时未处理
-                map.put("M_type","");
-                map.put("C_type","");
+                List<String> MType_list=new ArrayList<String>();
+                MType_list.add(stations.get(i).getArea()+"");
+                MType_list.add(stations.get(i).getDomain()+"");
+                map.put("M_type",MType_list);
+                List<String> CType_list=new ArrayList<String>();
+                if(stations.get(i).getCountryCon()==1){
+                    CType_list.add("国控");
+                }
+                if(stations.get(i).getCityCon()==1){
+                    CType_list.add("市控");
+                }
+                if(stations.get(i).getDomainCon()==1){
+                    CType_list.add("区控");
+                }
+                map.put("M_type",MType_list);
+                map.put("C_type",CType_list);
+
                 if(stations.get(i).getOnlineFlag()==1){
                     map.put("S_type","在线");
                 }else{

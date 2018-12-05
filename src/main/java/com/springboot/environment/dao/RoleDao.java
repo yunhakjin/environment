@@ -53,4 +53,13 @@ public interface RoleDao extends JpaRepository<Role,Integer> {
 
     @Query(value = "select * from role",nativeQuery = true)
     List<Role> getAllRoles();
+
+    @Query(value = "select * from role where role_id=?1",nativeQuery = true)
+    Role getRoleByRoleID(int i);
+
+
+    @Transactional
+    @Modifying
+    @Query(value = "delete from  user_role where role_id = ?1",nativeQuery = true)
+    int deleteRoleUserByRoleID(int role_id);
 }

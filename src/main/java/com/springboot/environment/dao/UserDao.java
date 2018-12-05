@@ -52,4 +52,17 @@ public interface UserDao extends JpaRepository<User,Integer> {
 
     @Query(value = "select * from user_role where user_id = ?1 ",nativeQuery = true)
     List<Object[] > getUserRoleByUserID(int i);
+
+    @Transactional
+    @Modifying
+    @Query(value = "insert into user_role(user_id,role_id) values(?1,?2)",nativeQuery = true)
+    int addRoleUser(int i, int i1);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update user_role set role_id =?2 where user_id=?1 ",nativeQuery = true)
+    void updateRoleUser(int i, int i1);
+
+    @Query(value = "select count(*) from user_role where user_id = ?1 ",nativeQuery = true)
+    int Count(int i);
 }

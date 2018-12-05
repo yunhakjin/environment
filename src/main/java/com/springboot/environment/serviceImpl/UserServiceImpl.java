@@ -180,6 +180,7 @@ public class UserServiceImpl implements UserService {
         String user_id=(String)params.get("user_id");
         String user_name=(String)params.get("user_name");
         String password=(String)params.get("password");
+        String role=(String)params.get("role");
         ByteSource salt = ByteSource.Util.bytes(user_name);
         String newPs = new SimpleHash("MD5", password, salt, 1024).toHex();
         String user_tel=(String)params.get("user_tel");
@@ -191,13 +192,21 @@ public class UserServiceImpl implements UserService {
         user.setUser_tel(user_tel);
         user.setUser_mail(user_mail);
         if(type.equals("add")){
-            userDao.save(user);
-            User user1=userDao.loadByUserId(Integer.parseInt(user_id));
-            if(user1!=null){
-                resultMap.put("addFlag","true");
+            User u=userDao.loadByUserId(Integer.parseInt(user_id));
+            if(u==null){
+                userDao.save(user);
+                userDao.addRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
+                User user1=userDao.loadByUserId(Integer.parseInt(user_id));
+                if(user1!=null){
+                    resultMap.put("addFlag","true");
+                }else{
+                    resultMap.put("addFlag","false");
+                }
             }else{
+                System.out.println("已经存在此用户");
                 resultMap.put("addFlag","false");
             }
+
         }else if(type.equals("edit")){
             //判断user-id是否有，如果有，那么
             User u=userDao.loadByUserId(Integer.parseInt(user_id));
@@ -209,6 +218,16 @@ public class UserServiceImpl implements UserService {
                 }else{
                     resultMap.put("editFlag","false");
                 }
+             int userRoleCount=userDao.Count(Integer.parseInt(user_id));
+             System.out.println(userRoleCount+"userRoleCount");
+             if(userRoleCount==1){
+                 userDao.updateRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
+             }else {
+                 userDao.addRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
+
+             }
+
+
             }else{
                 System.out.println("不存在此用户");
                 resultMap.put("editFlag","false");
