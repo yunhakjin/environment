@@ -149,7 +149,6 @@ public class MDataServiceImp implements MDataService {
 
     @Override
     public Map getmanyMdatabystationanddata(Map params) {
-
         //String query="{"query":{"stations": ["31010702335001","31010702335002"],"time":"2018-10-30"}}"
         List<Norm> normList=normDao.getAllByMflag();
         Map query=(Map)params.get("query");
@@ -162,17 +161,22 @@ public class MDataServiceImp implements MDataService {
         SimpleDateFormat sdf3=new SimpleDateFormat("HH");
         int count=0;
         int error_count=0;
+
+        //有一个问题，这个是对不同站点的同一个时间段的分钟数据进行对比，那么应该是判断整个操作超过一定时间就返回的吧
         for(String station:stationList){
             String station_id=station;
             String station_name=stationDao.findStationByStationId(station_id).getStationName();
+
             List<MData> innerDataList=mDataDao.getByStationAndHour(station_id,date);//获得分钟数据中的整点信息
-            System.out.println(innerDataList);
+
+
+            //System.out.println(innerDataList);
             if(innerDataList.isEmpty()) error_count++;
             List<Map> innerList=new ArrayList<Map>();
             Map<String,Map> innerMap=new HashMap<String,Map>();
             for(MData mData:innerDataList){
                 String dateKey=sdf.format(mData.getData_time());
-                System.out.println("datekey:"+dateKey);
+                //System.out.println("datekey:"+dateKey);
                 String time=sdf2.format(mData.getData_time());
                 if(innerMap.containsKey(dateKey)){
                     innerMap.get(dateKey).put(mData.getNorm_code(),mData.getNorm_val());
@@ -218,7 +222,7 @@ public class MDataServiceImp implements MDataService {
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
                         map.put("time",date.substring(date.length()-2)+":"+i);
-                        System.out.println(date.substring(date.length()-2)+":"+i);
+                        //System.out.println(date.substring(date.length()-2)+":"+i);
                         innerMap.put(""+i,map);
                     }
                 }

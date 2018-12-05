@@ -92,10 +92,15 @@ public class RoleServiceImpl implements RoleService {
     public Map deleteRole(Map params) {
         Map<String,String> resultMap=new LinkedHashMap<String,String>();
         String role_id=(String)params.get("deleteRoleList");
-        int flag=roleDao.deleteOne(Integer.parseInt(role_id));
-        if(flag==1){
-            resultMap.put("deleteFlag","true");
-        }else{
+        int flagRoleUser = roleDao.deleteRoleUserByRoleID(Integer.parseInt(role_id));
+        if(flagRoleUser==1){
+            int flag=roleDao.deleteOne(Integer.parseInt(role_id));
+            if(flag==1){
+                resultMap.put("deleteFlag","true");
+            }else{
+                resultMap.put("deleteFlag","false");
+            }
+        }else {
             resultMap.put("deleteFlag","false");
         }
         return resultMap;
@@ -120,15 +125,17 @@ public class RoleServiceImpl implements RoleService {
     public Map queryRoleByRoleID(Map params) {
         Map<String,List> resultMap=new LinkedHashMap<String,List>();
         String selectedRoleId = (String)params.get("selectedRoleId");
-        Role role=roleDao.getOne(Integer.parseInt(selectedRoleId));
-        List<Role> roles= roleDao.getAllRoles();
+        Role role=roleDao.getRoleByRoleID(Integer.parseInt(selectedRoleId));
         List<Map> list=new ArrayList<Map>();
         Map<String,Object> map=new HashMap<String, Object>();
+        System.out.println("role"+role);
         map.put("id",role.getRole_id()+"");
         map.put("name",role.getRole_name());
         List<String> permissionsList=new ArrayList<String>();
-        if(role.getPermission_list().equals("")){
+        System.out.println(role.getPermission_list());
+        if(role.getPermission_list()!=null&&role.getPermission_list()!=""){
             String[] permissions=role.getPermission_list().split(",");
+            System.out.println("permissions"+permissions);
             for(int i =0;i<permissions.length;i++){
                 permissionsList.add(permissions[i]);
             }

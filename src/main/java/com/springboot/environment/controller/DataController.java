@@ -17,6 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import net.sf.ehcache.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,7 +26,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.text.DateFormat;
+
 import java.text.ParseException;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -602,13 +607,31 @@ public class DataController {
        return m5DataService.getmanyM5databystationanddata(params);
     }
 
-
+    int flag=0;
     /*多站点指定日期分钟数据查询*/
     @ApiOperation(value="多站点指定日期分钟数据查询",notes = "需要传送包含站点id列表和查询时间的json")
     @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
     @RequestMapping(value = "/getmanyMdatabystationanddate",method = RequestMethod.POST)
     public Map getmanyMdatabystationanddate(@RequestBody Map<String,Object> params){
-        return mDataService.getmanyMdatabystationanddata(params);
+        Timer timer = new Timer();
+        Map res =new HashMap<>();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {//这里相当于延迟20000ms执行此程序
+                flag = 1;
+                timer.cancel();//关闭线程
+            }
+        },30000);
+        Map map=mDataService.getmanyMdatabystationanddata(params);
+        System.out.println("flag:"+flag);
+        if(flag==0){
+            map.put("queryFlag","true");
+            return map;
+        }else {
+            Map mapTimeout=new HashMap<>();
+            mapTimeout.put("queryFlag","false");
+            return mapTimeout;
+        }
     }
 
 
