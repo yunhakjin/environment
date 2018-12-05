@@ -607,6 +607,7 @@ public class DataController {
        return m5DataService.getmanyM5databystationanddata(params);
     }
 
+    //分钟数据对比查询超时的标志，flag=1 超时  flag=0 未超时
     int flag=0;
     /*多站点指定日期分钟数据查询*/
     @ApiOperation(value="多站点指定日期分钟数据查询",notes = "需要传送包含站点id列表和查询时间的json")
