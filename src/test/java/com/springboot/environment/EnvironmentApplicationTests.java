@@ -1,3 +1,4 @@
+/*
 package com.springboot.environment;
 
 import com.alibaba.fastjson.JSONObject;
@@ -66,9 +67,11 @@ public class EnvironmentApplicationTests {
         redisTemplate.expire("300010", 60, TimeUnit.SECONDS);
         System.out.println(ops.entries("stationId").toString());
 
-        /**
+        */
+/**
          * 测试有序集合
-         */
+         *//*
+
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         long nowTimeStamp = new Date().getTime();
         System.out.println("当前系统时间 = " +nowTimeStamp +  "     " + dateFormat.format(nowTimeStamp));
@@ -164,3 +167,4 @@ public class EnvironmentApplicationTests {
 
 
 }
+*/

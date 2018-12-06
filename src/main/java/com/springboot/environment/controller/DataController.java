@@ -614,13 +614,14 @@ public class DataController {
     @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
     @RequestMapping(value = "/getmanyMdatabystationanddate",method = RequestMethod.POST)
     public Map getmanyMdatabystationanddate(@RequestBody Map<String,Object> params){
-        Timer timer = new Timer();
+        /*Timer timer = new Timer();
         Map res =new HashMap<>();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {//这里相当于延迟20000ms执行此程序
                 flag = 1;
-                timer.cancel();//关闭线程
+                //timer.cancel();//关闭线程
+                System.gc();
             }
         },30000);
         Map map=mDataService.getmanyMdatabystationanddata(params);
@@ -632,7 +633,9 @@ public class DataController {
             Map mapTimeout=new HashMap<>();
             mapTimeout.put("queryFlag","false");
             return mapTimeout;
-        }
+        }*/
+        return mDataService.getmanyMdatabystationanddata(params);
+
     }
 
 
