@@ -137,4 +137,14 @@ public class DData implements Serializable {
         return norm_flag;
     }
 
+    @Column(name = "norm_vdr",length = 10)
+    private String norm_vdr;
+
+    public void setNorm_vdr(String norm_vdr) {
+        this.norm_vdr = norm_vdr;
+    }
+
+    public String getNorm_vdr() {
+        return norm_vdr;
+    }
 }
