@@ -76,19 +76,69 @@ public class GatherController {
         return result;
     }
 
+//    @ApiOperation(value = "根据采集车id返回其所有轨迹",notes = "根据采集车id返回其所有轨迹")
+//    @ApiImplicitParam(name = "params",value="包含采集车id列表和查询时间的json",dataType = "JSON")
+//    @RequestMapping(value = "/getgatherdata",method = RequestMethod.POST)
+//    public Map getGatherDataByGatherId(@RequestBody Map<String,Object> params){
+//        String json="{query:{date:"2018-09-07",cars:["movingcar06","movingcar05"]}}";
+//        Map gatherQuery=JSONObject.parseObject(query);
+//        Map gatherQuery=(Map)params.get("query");
+//        String date=(String)gatherQuery.get("date");
+//        List<String> cars=(List)gatherQuery.get("cars");
+//        Map<String,List> result=new HashMap<String, List>();
+//        List<Map> trackList=new ArrayList<Map>();
+//        for(int i=0;i<cars.size();i++){
+//            Map<String,Object> trackMap=new HashMap<String,Object>();
+//            String car=cars.get(i);
+//            trackMap.put("carName",car);
+//            List<GatherData> gatherDataList=gatherDataService.getAllByGather_idAndData_time(car,date);
+//            Map<String,Map> innertrackMap=new HashMap<String,Map>();
+//            for(int j=0;j<gatherDataList.size();j++){
+//                String trackTime=gatherDataList.get(j).getData_time().toString();
+//                Map<String,Object> normVal=new HashMap<String,Object>();
+//                if(innertrackMap.containsKey(trackTime)){
+//                    normVal.put(gatherDataList.get(j).getNorm_code(),gatherDataList.get(j).getNorm_val());
+//                    innertrackMap.get(trackTime).putAll(normVal);
+//                }
+//                else{
+//                    normVal.put("time",trackTime);
+//                    List<String> position= Arrays.asList(gatherDataList.get(j).getGather_position().replace('(',' ').replace(')',' ').split(","));
+//                    List<Double> pos=new ArrayList<Double>();
+//                    if(!position.isEmpty()){
+//                        pos.add(Double.parseDouble(position.get(0)));
+//                        pos.add(Double.parseDouble(position.get(1)));
+//                    }
+//                    normVal.put("position",pos);
+//                    normVal.put(gatherDataList.get(j).getNorm_code(),gatherDataList.get(j).getNorm_val());
+//                    innertrackMap.put(trackTime,normVal);
+//                }
+//            }
+//            innertrackMap=innertrackMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
+//                    .collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue,(oldValue, newVvalue)->oldValue,LinkedHashMap::new));
+//
+//            List<Map> innerTrackList=new ArrayList<Map>();
+//            for(Map value:innertrackMap.values()){
+//                innerTrackList.add(value);
+//            }
+//            trackMap.put("trackList",innerTrackList);
+//            trackList.add(trackMap);
+//        }
+//
+//        result.put("trackList",trackList);
+//        return result;
+//    }
+
     @ApiOperation(value = "根据采集车id返回其所有轨迹",notes = "根据采集车id返回其所有轨迹")
     @ApiImplicitParam(name = "params",value="包含采集车id列表和查询时间的json",dataType = "JSON")
     @RequestMapping(value = "/getgatherdata",method = RequestMethod.POST)
     public Map getGatherDataByGatherId(@RequestBody Map<String,Object> params){
-//        String json="{query:{date:"2018-09-07",cars:["movingcar06","movingcar05"]}}";
-//        Map gatherQuery=JSONObject.parseObject(query);
+        //{"query":{"date":"2018-09-07","cars":["movingcar06"]}}
         Map gatherQuery=(Map)params.get("query");
         String date=(String)gatherQuery.get("date");
         List<String> cars=(List)gatherQuery.get("cars");
-        Map<String,List> result=new HashMap<String, List>();
-        List<Map> trackList=new ArrayList<Map>();
+        Map<String,Object> result=new HashMap<String,Object>();
+        Map<String,Object> trackMap=new HashMap<String,Object>();
         for(int i=0;i<cars.size();i++){
-            Map<String,Object> trackMap=new HashMap<String,Object>();
             String car=cars.get(i);
             trackMap.put("carName",car);
             List<GatherData> gatherDataList=gatherDataService.getAllByGather_idAndData_time(car,date);
@@ -101,6 +151,9 @@ public class GatherController {
                     innertrackMap.get(trackTime).putAll(normVal);
                 }
                 else{
+                    normVal.put("type","Feature");
+                    normVal.put("id",gatherDataList.get(j).getData_id());
+                    Map<String,Object> geometry=new HashMap<String,Object>();
                     normVal.put("time",trackTime);
                     List<String> position= Arrays.asList(gatherDataList.get(j).getGather_position().replace('(',' ').replace(')',' ').split(","));
                     List<Double> pos=new ArrayList<Double>();
@@ -108,7 +161,9 @@ public class GatherController {
                         pos.add(Double.parseDouble(position.get(0)));
                         pos.add(Double.parseDouble(position.get(1)));
                     }
-                    normVal.put("position",pos);
+                    geometry.put("type","Point");
+                    geometry.put("coordinates",pos);
+                    normVal.put("geometry",geometry);
                     normVal.put(gatherDataList.get(j).getNorm_code(),gatherDataList.get(j).getNorm_val());
                     innertrackMap.put(trackTime,normVal);
                 }
@@ -121,10 +176,9 @@ public class GatherController {
                 innerTrackList.add(value);
             }
             trackMap.put("trackList",innerTrackList);
-            trackList.add(trackMap);
         }
-
-        result.put("trackList",trackList);
+        result.put("type","FeatureCollection");
+        result.put("features",trackMap.get("trackList"));
         return result;
     }
 
