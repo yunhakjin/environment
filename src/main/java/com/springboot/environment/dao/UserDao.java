@@ -65,4 +65,7 @@ public interface UserDao extends JpaRepository<User,Integer> {
 
     @Query(value = "select count(*) from user_role where user_id = ?1 ",nativeQuery = true)
     int Count(int i);
+
+    @Query(value = "select role_id from user_role where user_id = ?1 ",nativeQuery = true)
+    String getRoleIDByUserID(Integer user_id);
 }
