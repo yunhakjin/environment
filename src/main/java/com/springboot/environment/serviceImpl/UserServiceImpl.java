@@ -163,10 +163,8 @@ public class UserServiceImpl implements UserService {
                     userMap.put("user_tel",users.get(i).getUser_tel().toString());
                     userMap.put("user_mail",users.get(i).getUser_mail().toString());
                     userMap.put("password",users.get(i).getPassword().toString());
-                    Map roleMap =new HashMap<>();
-                    roleMap.put("role_id",role.getRole_id());
-                    roleMap.put("role_name",role.getRole_name());
-                    userMap.put("role",roleMap);
+                    userMap.put("role_id",role.getRole_id());
+                    userMap.put("role_name",role.getRole_name());
                 }else{
                     userMap.put("user_id",users.get(i).getUser_id().toString());
                     userMap.put("user_name",users.get(i).getUser_name().toString());
@@ -189,10 +187,8 @@ public class UserServiceImpl implements UserService {
                 userMap.put("user_tel",user.getUser_tel().toString());
                 userMap.put("user_mail",user.getUser_mail().toString());
                 userMap.put("password",user.getPassword().toString());
-                Map roleMap =new HashMap<>();
-                roleMap.put("role_id",role.getRole_id());
-                roleMap.put("role_name",role.getRole_name());
-                userMap.put("role",roleMap);
+                userMap.put("role_id",role.getRole_id());
+                userMap.put("role_name",role.getRole_name());
             }else {
                 userMap.put("user_id",user.getUser_id().toString());
                 userMap.put("user_name",user.getUser_name().toString());
