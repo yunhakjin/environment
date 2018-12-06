@@ -222,6 +222,7 @@ public class UserServiceImpl implements UserService {
         user.setUser_tel(user_tel);
         user.setUser_mail(user_mail);
         if(type.equals("add")){
+            user.setPassword(newPs);
             User u=userDao.loadByUserId(Integer.parseInt(user_id));
             if(u==null){
                 userDao.save(user);
@@ -239,6 +240,7 @@ public class UserServiceImpl implements UserService {
 
         }else if(type.equals("edit")){
             //判断user-id是否有，如果有，那么
+            user.setPassword(password);
             User u=userDao.loadByUserId(Integer.parseInt(user_id));
             if(u!=null){
                 userDao.save(user);
