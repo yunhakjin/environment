@@ -155,29 +155,55 @@ public class RoleServiceImpl implements RoleService {
     public Map queryRoleByRoleID(Map params) {
         Map<String,Object> resultMap=new LinkedHashMap<String,Object>();
         String selectedRoleId = (String)params.get("selectedRoleId");
-        if(roleDao.getRoleByRoleID(Integer.parseInt(selectedRoleId))!=null){
-            Role role=roleDao.getRoleByRoleID(Integer.parseInt(selectedRoleId));
+        if(selectedRoleId.equals("*")){
             List<Map> list=new ArrayList<Map>();
-            Map<String,Object> map=new HashMap<String, Object>();
-            System.out.println("role"+role);
-            map.put("id",role.getRole_id()+"");
-            map.put("name",role.getRole_name());
-            List<String> permissionsList=new ArrayList<String>();
-            System.out.println(role.getPermission_list());
-            if(role.getPermission_list()!=null&&role.getPermission_list()!=""){
-                String[] permissions=role.getPermission_list().split(",");
-                System.out.println("permissions"+permissions);
-                for(int i =0;i<permissions.length;i++){
-                    permissionsList.add(permissions[i]);
+            List<Role> roles= roleDao.getAllRoles();
+            if(roles!=null){
+                Map<String,Object> map=new HashMap<String, Object>();
+                for(int i=0;i<roles.size();i++){
+
+                    map.put("id",roles.get(i).getRole_id()+"");
+                    map.put("name",roles.get(i).getRole_name());
+                    String[] permissions=roles.get(i).getPermission_list().split(",");
+                    List<String> permissionList=new ArrayList<String>();
+                    for(int j=0;j<permissions.length;j++){
+                        permissionList.add(permissions[j]);
+                    }
+                    map.put("permissionList",permissionList);
+                    list.add(map);
                 }
+                resultMap.put("roleList",list);
+            }else{
+                resultMap.put("queryFlag","false");
+                System.out.println("不存在任何角色，无法查询");
             }
-            map.put("permissions",permissionsList);
-            list.add(map);
-            resultMap.put("roleList",list);
+
         }else{
-            resultMap.put("queryFlag","false");
-            System.out.println("此角色不存在，无法查询");
+            if(roleDao.getRoleByRoleID(Integer.parseInt(selectedRoleId))!=null){
+                Role role=roleDao.getRoleByRoleID(Integer.parseInt(selectedRoleId));
+                List<Map> list=new ArrayList<Map>();
+                Map<String,Object> map=new HashMap<String, Object>();
+                System.out.println("role"+role);
+                map.put("id",role.getRole_id()+"");
+                map.put("name",role.getRole_name());
+                List<String> permissionsList=new ArrayList<String>();
+                System.out.println(role.getPermission_list());
+                if(role.getPermission_list()!=null&&role.getPermission_list()!=""){
+                    String[] permissions=role.getPermission_list().split(",");
+                    System.out.println("permissions"+permissions);
+                    for(int i =0;i<permissions.length;i++){
+                        permissionsList.add(permissions[i]);
+                    }
+                }
+                map.put("permissions",permissionsList);
+                list.add(map);
+                resultMap.put("roleList",list);
+            }else{
+                resultMap.put("queryFlag","false");
+                System.out.println("此角色不存在，无法查询");
+            }
         }
+
         return resultMap;
     }
 }
