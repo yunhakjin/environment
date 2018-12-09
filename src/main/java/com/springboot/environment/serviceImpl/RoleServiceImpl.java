@@ -159,9 +159,8 @@ public class RoleServiceImpl implements RoleService {
             List<Map> list=new ArrayList<Map>();
             List<Role> roles= roleDao.getAllRoles();
             if(roles!=null){
-                Map<String,Object> map=new HashMap<String, Object>();
                 for(int i=0;i<roles.size();i++){
-
+                    Map<String,Object> map=new HashMap<String, Object>();
                     map.put("id",roles.get(i).getRole_id()+"");
                     map.put("name",roles.get(i).getRole_name());
                     String[] permissions=roles.get(i).getPermission_list().split(",");
@@ -169,7 +168,7 @@ public class RoleServiceImpl implements RoleService {
                     for(int j=0;j<permissions.length;j++){
                         permissionList.add(permissions[j]);
                     }
-                    map.put("permissionList",permissionList);
+                    map.put("permissions",permissionList);
                     list.add(map);
                 }
                 resultMap.put("roleList",list);
