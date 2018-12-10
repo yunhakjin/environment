@@ -3,6 +3,7 @@ package com.springboot.environment.serviceImpl;
 import com.springboot.environment.bean.Role;
 import com.springboot.environment.dao.RoleDao;
 import com.springboot.environment.service.RoleService;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,13 +54,20 @@ public class RoleServiceImpl implements RoleService {
         String name=(String)params.get("name");
         Map<String,String> resultMap=new LinkedHashMap<String,String>();
         if(type.equals("add")){
-            int t=roleDao.addOne(name);
-            System.out.println(t);
-            if(t==1){
-                resultMap.put("addRoleFlag","true");
+            //判断这个name是否存在
+            if(roleDao.findByName(name)==null){
+                int t=roleDao.addOne(name);
+                System.out.println(t);
+                if(t==1){
+                    resultMap.put("addRoleFlag","true");
+                }else{
+                    resultMap.put("addRoleFlag","false");
+                }
             }else{
+                System.out.println("此角色名已经存在");
                 resultMap.put("addRoleFlag","false");
             }
+
 
         }else if(type.equals("edit")){
             String id=(String)params.get("id");
@@ -91,18 +99,40 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Map deleteRole(Map params) {
         Map<String,String> resultMap=new LinkedHashMap<String,String>();
-        String role_id=(String)params.get("deleteRoleList");
-        int flagRoleUser = roleDao.deleteRoleUserByRoleID(Integer.parseInt(role_id));
-        if(flagRoleUser==1){
-            int flag=roleDao.deleteOne(Integer.parseInt(role_id));
-            if(flag==1){
-                resultMap.put("deleteFlag","true");
+        List<String> role_idList=(List)params.get("deleteRoleList");
+        int count = 0;
+        for(int i =0;i<role_idList.size();i++){
+            //先判断有没有这个role_id
+            if(roleDao.getRoleByRoleID(Integer.parseInt(role_idList.get(i)))!=null){
+                int flagRoleUser=0;
+                //判断roleUser是否有这个role
+                if(roleDao.isHasRoleInRoleUser(Integer.parseInt(role_idList.get(i)))!=0){
+                    flagRoleUser = roleDao.deleteRoleUserByRoleID(Integer.parseInt(role_idList.get(i)));
+                    if(flagRoleUser==1){
+                        int flag=roleDao.deleteOne(Integer.parseInt(role_idList.get(i)));
+                        if(flag==1){
+                            count++;
+                        }
+                    }
+                }else{
+                    int flag=roleDao.deleteOne(Integer.parseInt(role_idList.get(i)));
+                    if(flag==1){
+                        count++;
+                    }
+                }
+                if(count==role_idList.size()){
+                    resultMap.put("deleteFlag","true");
+                }else{
+                    resultMap.put("deleteFlag","false");
+                }
             }else{
+                System.out.println("不存在此角色，无法删除");
                 resultMap.put("deleteFlag","false");
             }
-        }else {
-            resultMap.put("deleteFlag","false");
-        }
+
+
+            }
+
         return resultMap;
     }
 
@@ -123,26 +153,56 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Map queryRoleByRoleID(Map params) {
-        Map<String,List> resultMap=new LinkedHashMap<String,List>();
+        Map<String,Object> resultMap=new LinkedHashMap<String,Object>();
         String selectedRoleId = (String)params.get("selectedRoleId");
-        Role role=roleDao.getRoleByRoleID(Integer.parseInt(selectedRoleId));
-        List<Map> list=new ArrayList<Map>();
-        Map<String,Object> map=new HashMap<String, Object>();
-        System.out.println("role"+role);
-        map.put("id",role.getRole_id()+"");
-        map.put("name",role.getRole_name());
-        List<String> permissionsList=new ArrayList<String>();
-        System.out.println(role.getPermission_list());
-        if(role.getPermission_list()!=null&&role.getPermission_list()!=""){
-            String[] permissions=role.getPermission_list().split(",");
-            System.out.println("permissions"+permissions);
-            for(int i =0;i<permissions.length;i++){
-                permissionsList.add(permissions[i]);
+        if(selectedRoleId.equals("*")){
+            List<Map> list=new ArrayList<Map>();
+            List<Role> roles= roleDao.getAllRoles();
+            if(roles!=null){
+                for(int i=0;i<roles.size();i++){
+                    Map<String,Object> map=new HashMap<String, Object>();
+                    map.put("id",roles.get(i).getRole_id()+"");
+                    map.put("name",roles.get(i).getRole_name());
+                    String[] permissions=roles.get(i).getPermission_list().split(",");
+                    List<String> permissionList=new ArrayList<String>();
+                    for(int j=0;j<permissions.length;j++){
+                        permissionList.add(permissions[j]);
+                    }
+                    map.put("permissions",permissionList);
+                    list.add(map);
+                }
+                resultMap.put("roleList",list);
+            }else{
+                resultMap.put("queryFlag","false");
+                System.out.println("不存在任何角色，无法查询");
+            }
+
+        }else{
+            if(roleDao.getRoleByRoleID(Integer.parseInt(selectedRoleId))!=null){
+                Role role=roleDao.getRoleByRoleID(Integer.parseInt(selectedRoleId));
+                List<Map> list=new ArrayList<Map>();
+                Map<String,Object> map=new HashMap<String, Object>();
+                System.out.println("role"+role);
+                map.put("id",role.getRole_id()+"");
+                map.put("name",role.getRole_name());
+                List<String> permissionsList=new ArrayList<String>();
+                System.out.println(role.getPermission_list());
+                if(role.getPermission_list()!=null&&role.getPermission_list()!=""){
+                    String[] permissions=role.getPermission_list().split(",");
+                    System.out.println("permissions"+permissions);
+                    for(int i =0;i<permissions.length;i++){
+                        permissionsList.add(permissions[i]);
+                    }
+                }
+                map.put("permissions",permissionsList);
+                list.add(map);
+                resultMap.put("roleList",list);
+            }else{
+                resultMap.put("queryFlag","false");
+                System.out.println("此角色不存在，无法查询");
             }
         }
-        map.put("permissions",permissionsList);
-        list.add(map);
-        resultMap.put("roleList",list);
+
         return resultMap;
     }
 }

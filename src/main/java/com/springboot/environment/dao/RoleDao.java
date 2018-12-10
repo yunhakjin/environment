@@ -62,4 +62,10 @@ public interface RoleDao extends JpaRepository<Role,Integer> {
     @Modifying
     @Query(value = "delete from  user_role where role_id = ?1",nativeQuery = true)
     int deleteRoleUserByRoleID(int role_id);
+
+    @Query(value = "select count(*) from  user_role where role_id=?1",nativeQuery = true)
+    int isHasRoleInRoleUser(int i);
+
+    @Query(value = "select * from  role where role_name=?1",nativeQuery = true)
+    Role findByName(String name);
 }

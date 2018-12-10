@@ -1,10 +1,13 @@
 package com.springboot.environment.serviceImpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.springboot.environment.bean.Role;
 import com.springboot.environment.bean.User;
+import com.springboot.environment.dao.RoleDao;
 import com.springboot.environment.dao.UserDao;
 import com.springboot.environment.service.UserService;
 import com.sun.org.apache.bcel.internal.generic.NEW;
+import io.swagger.models.auth.In;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
 import org.slf4j.Logger;
@@ -16,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by yww on 2018/9/11.
@@ -30,6 +30,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private RoleDao roleDao;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -143,29 +146,56 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map getUserByID(Map params) {
         Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-        String selectedUserId=(String)params.get("selectedUserId");
+        String selectedUserId=params.get("selectedUserId")+"";
         System.out.println(selectedUserId);
         List<Map> userList = new ArrayList<Map>();
         if(selectedUserId.equals("*")){
             List<User> users=userDao.findAll();
             for (int i=0;i<users.size();i++){
-                Map<String,String> userMap=new LinkedHashMap<String,String>();
-                userMap.put("user_id",users.get(i).getUser_id().toString());
-                userMap.put("user_name",users.get(i).getUser_name().toString());
-                userMap.put("user_tel",users.get(i).getUser_tel().toString());
-                userMap.put("user_mail",users.get(i).getUser_mail().toString());
-                userMap.put("password",users.get(i).getPassword().toString());
+                Map<String,Object> userMap=new LinkedHashMap<String,Object>();
+                System.out.println("dddddd"+userDao.getRoleIDByUserID(users.get(i).getUser_id()));
+                if(userDao.getRoleIDByUserID(users.get(i).getUser_id())!=null){
+                    String role_id=userDao.getRoleIDByUserID(users.get(i).getUser_id());
+                    Role role = roleDao.getOne(Integer.parseInt(role_id));
+                    System.out.println(role_id);
+                    userMap.put("user_id",users.get(i).getUser_id().toString());
+                    userMap.put("user_name",users.get(i).getUser_name().toString());
+                    userMap.put("user_tel",users.get(i).getUser_tel().toString());
+                    userMap.put("user_mail",users.get(i).getUser_mail().toString());
+                    userMap.put("password",users.get(i).getPassword().toString());
+                    userMap.put("role_id",role.getRole_id());
+                    userMap.put("role_name",role.getRole_name());
+                }else{
+                    userMap.put("user_id",users.get(i).getUser_id().toString());
+                    userMap.put("user_name",users.get(i).getUser_name().toString());
+                    userMap.put("user_tel",users.get(i).getUser_tel().toString());
+                    userMap.put("user_mail",users.get(i).getUser_mail().toString());
+                    userMap.put("password",users.get(i).getPassword().toString());
+                }
                 userList.add(userMap);
+
             }
         }else {
             User user=userDao.loadByUserId(Integer.parseInt(selectedUserId));
             System.out.println(user);
-            Map<String,String> userMap=new LinkedHashMap<String,String>();
-            userMap.put("user_id",user.getUser_id().toString());
-            userMap.put("user_name",user.getUser_name().toString());
-            userMap.put("user_tel",user.getUser_tel().toString());
-            userMap.put("user_mail",user.getUser_mail().toString());
-            userMap.put("password",user.getPassword().toString());
+            Map<String,Object> userMap=new LinkedHashMap<String,Object>();
+            if(userDao.getRoleIDByUserID(user.getUser_id())!=null){
+                String role_id=userDao.getRoleIDByUserID(user.getUser_id());
+                Role role = roleDao.getOne(Integer.parseInt(role_id));
+                userMap.put("user_id",user.getUser_id().toString());
+                userMap.put("user_name",user.getUser_name().toString());
+                userMap.put("user_tel",user.getUser_tel().toString());
+                userMap.put("user_mail",user.getUser_mail().toString());
+                userMap.put("password",user.getPassword().toString());
+                userMap.put("role_id",role.getRole_id());
+                userMap.put("role_name",role.getRole_name());
+            }else {
+                userMap.put("user_id",user.getUser_id().toString());
+                userMap.put("user_name",user.getUser_name().toString());
+                userMap.put("user_tel",user.getUser_tel().toString());
+                userMap.put("user_mail",user.getUser_mail().toString());
+                userMap.put("password",user.getPassword().toString());
+            }
             userList.add(userMap);
             System.out.println(userMap);
         }
@@ -192,6 +222,7 @@ public class UserServiceImpl implements UserService {
         user.setUser_tel(user_tel);
         user.setUser_mail(user_mail);
         if(type.equals("add")){
+            user.setPassword(newPs);
             User u=userDao.loadByUserId(Integer.parseInt(user_id));
             if(u==null){
                 userDao.save(user);
@@ -209,6 +240,7 @@ public class UserServiceImpl implements UserService {
 
         }else if(type.equals("edit")){
             //判断user-id是否有，如果有，那么
+            user.setPassword(password);
             User u=userDao.loadByUserId(Integer.parseInt(user_id));
             if(u!=null){
                 userDao.save(user);
@@ -245,16 +277,19 @@ public class UserServiceImpl implements UserService {
             String user_id=userIdList.get(i).toString();
             //判断用户和其他的表连接关系-如果存在就删除--最后再删除用户信息。user_group user-role
             //暂时不考虑，后期考虑
-            List<Object[]> UserRoleList=userDao.getUserRoleByUserID(Integer.parseInt(user_id));
-            if(UserRoleList!=null){
-
-                System.out.println("UserRoleList"+UserRoleList);
+            if(userDao.loadByUserId(Integer.parseInt(user_id))!=null){
+                List<Object[]> UserRoleList=userDao.getUserRoleByUserID(Integer.parseInt(user_id));
+                if(UserRoleList!=null){
+                    System.out.println("UserRoleList"+UserRoleList);
+                }
+                userDao.deleteById(Integer.parseInt(user_id));
+                if (userDao.loadByUserId(Integer.parseInt(user_id))==null){
+                    count++;
+                }
+            }else{
+                resultMap.put("deleteFlag","false");
             }
 
-            userDao.deleteById(Integer.parseInt(user_id));
-            if (userDao.loadByUserId(Integer.parseInt(user_id))==null){
-                count++;
-            }
         }
         if(count==userIdList.size()){
             resultMap.put("deleteFlag","true");
