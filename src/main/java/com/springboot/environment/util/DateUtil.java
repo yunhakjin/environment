@@ -226,10 +226,11 @@ public class DateUtil {
 
     public static void main(String[] args) throws ParseException {
 
-        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2018-12-01 00:00:00");
-        System.out.println(getStartDayBefore3Month(date));
-        System.out.println(getDayBeforeTodayEndTime(date));
-        System.out.println(getHdataTableName(date));
+//        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2018-12-01 00:00:00");
+//        System.out.println(getStartDayBefore3Month(date));
+//        System.out.println(getDayBeforeTodayEndTime(date));
+//        System.out.println(getHdataTableName(date));
+        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2018-12-10 12:02:00").getTime());
     }
 
 

@@ -296,7 +296,7 @@ public class StationServiceImpl implements StationService {
     }
 
     @Override
-    public String querymDataByStationArea(QuerymDataByStationsAreaReq req) throws ParseException {
+    public String querymDataByStationArea(QuerymDataByStationsAreaReq req) {
 
         //方法开始时间
         long startTime  = System.currentTimeMillis();
@@ -348,41 +348,40 @@ public class StationServiceImpl implements StationService {
             String thisDayCount = hashOperations.get("count", station.getStationCode());
             //取得第一个数据
             Set<String> maxScoreMdata = zSetOperations.reverseRange(station.getStationCode(), 0, 0);
-            long maxDataTime = 0L;
-            if (!maxScoreMdata.isEmpty()) {
-                JSONObject maxMdataJson = JSONObject.parseObject(maxScoreMdata.iterator().next());
-                System.out.println("data_time = " + maxMdataJson.get("data_time"));
-                //最新数据的时间戳
-                maxDataTime = (long)maxMdataJson.get("data_time");
+            String maxDataTime = null;
 
-                //最新的数据的set集合
-                Set<String> dataSet = zSetOperations.rangeByScore(station.getStationCode(), maxDataTime, maxDataTime);
+            //如果redis中存在最新的数据
+            if (!maxScoreMdata.isEmpty()) {
+                //最新数据的json格式
+                JSONObject maxMdataJson = JSONObject.parseObject(maxScoreMdata.iterator().next());
+
+                //最新数据的时间，格式为yyyy-MM-dd HH:mm:ss.000
+                //最新数据的时间戳
+                maxDataTime = (String) maxMdataJson.get("data_time");
+                maxDataTime = maxDataTime.split("\\.")[0];
 
                 String LA = null;
                 String LEQ = null;
                 String LMX = null;
 
-                System.out.println("输出最新几条数据的全部内容");
-                Iterator<String> iterator = dataSet.iterator();
-                while (iterator.hasNext()) {
-                    String dataString = iterator.next();
-                    System.out.println(dataString);
-                    JSONObject data = JSONObject.parseObject(dataString);
-                    if (data.get("norm_code").equals("n00000")) {
-                        LA = (String) data.get("norm_val");
+                JSONArray data = maxMdataJson.getJSONArray("data");
+                for (int i = 0; i < data.size(); i++) {
+                    JSONObject indexData = data.getJSONObject(i);
+                    if (indexData.get("code").equals("n00000")) {
+                        LA = (String) indexData.get("Val");
                     }
-                    if (data.get("norm_code").equals("n00006")) {
-                        LEQ = (String) data.get("norm_val");
+                    if (indexData.get("code").equals("n00006")) {
+                        LEQ = (String) indexData.get("Val");
                     }
-                    if (data.get("norm_code").equals("n00010")) {
-                        LMX = (String) data.get("norm_val");
+                    if (indexData.get("code").equals("n00010")) {
+                        LMX = (String) indexData.get("Val");
                     }
                 }
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
                 stationJSON.put("station_code", station.getStationCode());
-                stationJSON.put("latest_time", DateUtil.getDateStr(new Date(maxDataTime)));
-                stationJSON.put("count_r", thisDayCount);
+                stationJSON.put("latest_time", maxDataTime);
+                stationJSON.put("count_r", thisDayCount == null ? 0 : thisDayCount);
                 stationJSON.put("LA", LA);
                 stationJSON.put("LEQ", LEQ);
                 stationJSON.put("LMX", LMX);
@@ -392,7 +391,7 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("station_id", station.getStationId());
                 stationJSON.put("station_code", station.getStationCode());
                 stationJSON.put("latest_time", "");
-                stationJSON.put("count_r", thisDayCount);
+                stationJSON.put("count_r", thisDayCount == null ? 0 : thisDayCount);
                 stationJSON.put("LA", "");
                 stationJSON.put("LEQ", "");
                 stationJSON.put("LMX", "");
