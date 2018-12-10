@@ -24,28 +24,33 @@ public class Station implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", unique = true, nullable = false)
+    @Column(name = "ID", unique = true)
     private int id;
     /**
      * 对内站点编号
      */
-    @Column(name = "STATION_ID", nullable = false)
+    @Column(name = "STATION_ID")
     private String stationId;
     /**
      * 对外站点编号
      */
-    @Column(name = "STATION_CODE", nullable = false)
+    @Column(name = "STATION_CODE")
     private String stationCode;
+    /**
+     * 站点简称
+     * */
+    @Column(name="station_sim")
+    private String stationSim;
     /**
      * 站点名称
      */
-    @Column(name = "STATION_NAME", nullable = false)
+    @Column(name = "STATION_NAME")
     private String stationName;
     /**
      * 站点状态
      * 0 停运 1 运营
      */
-    @Column(name = "STATION_STATUS", nullable = false)
+    @Column(name = "STATION_STATUS")
     private int stationStatus;
     /**
      * 所属应用(暂未使用)
@@ -56,78 +61,78 @@ public class Station implements Serializable {
      * 在线标识
      * 0 短线 1 在线
      */
-    @Column(name = "ONLINE_FLAG", nullable = false)
+    @Column(name = "ONLINE_FLAG")
     private int onlineFlag;
     /**
      * 对照码
      */
-    @Column(name = "STATION_ID_DZ", nullable = false)
+    @Column(name = "STATION_ID_DZ")
     private String stationIdDZ;
     /**
      * 所用协议
      * 1 老协议 2 新协议
      */
-    @Column(name = "PROTOCOL", nullable = false)
+    @Column(name = "PROTOCOL")
     private int protocol;
     /**
      * 所用协议名称
      */
-    @Column(name = "PROTOCOL_NAME", nullable = false)
+    @Column(name = "PROTOCOL_NAME")
     private String protocolName;
     /**
      * 站点位置
      */
-    @Column(name = "station_position", nullable = false)
+    @Column(name = "station_position")
     private String position;
     /**
      * 站点所属街道
      */
-    @Column(name = "STREET", nullable = false)
+    @Column(name = "STREET")
     private String street;
     /**
      * 站点所属行政区
      */
-    @Column(name = "DISTRICT", nullable = false)
+    @Column(name = "DISTRICT")
     private String district;
     /**
      * 噪声点范围
      */
-    @Column(name = "station_range", nullable = false)
+    @Column(name = "station_range")
     private String range;
     /**
      * 国控
      * 0 否 1 是
      */
-    @Column(name = "COUNTRY_CON", nullable = false)
+    @Column(name = "COUNTRY_CON")
     private int countryCon;
     /**
      * 市控
      * 0 否 1 是
      */
-    @Column(name = "CITY_CON", nullable = false)
+    @Column(name = "CITY_CON")
     private int cityCon;
     /**
      * 区控
      * 0 否 1 是
      */
-    @Column(name = "DOMAIN_CON", nullable = false)
+    @Column(name = "DOMAIN_CON")
     private int domainCon;
     /**
      * 区域环境
      */
-    @Column(name = "AREA", nullable = false)
+    @Column(name = "AREA")
     private int area;
     /**
      * 功能区
      */
-    @Column(name = "DOMAIN", nullable = false)
+    @Column(name = "DOMAIN")
     private int domain;
 
     /**
      * 站点性质
      * 1 自动 0 手工
      */
-    @Column(name = "station_attribute",nullable = false)
+    @Column(name = "station_attribute")
     private int station_attribute;
 
     public void setStation_attribute(int station_attribute) {
@@ -141,7 +146,7 @@ public class Station implements Serializable {
     /**
      *主管部门
      */
-    @Column(name = "station_major",nullable = true)
+    @Column(name = "station_major")
     private String station_major;
 
     public void setStation_major(String station_major) {
@@ -155,7 +160,7 @@ public class Station implements Serializable {
     /**
      *建站单位
      */
-    @Column(name = "station_setup",nullable = true)
+    @Column(name = "station_setup")
     private String station_setup;
 
     public void setStation_setup(String station_setup) {
@@ -169,7 +174,7 @@ public class Station implements Serializable {
     /**
      *建站时间
      */
-    @Column(name = "station_setupdate",nullable = true)
+    @Column(name = "station_setupdate")
     private Date station_setupdate;
 
     public void setStation_setupdate(Date station_setupdate) {
@@ -183,7 +188,7 @@ public class Station implements Serializable {
     /**
      *企业代码
      */
-    @Column(name = "company_code",nullable = false)
+    @Column(name = "company_code")
     private String company_code;
 
     public void setCompany_code(String company_code) {
@@ -196,7 +201,7 @@ public class Station implements Serializable {
 
     /**
      *是否有气象数据:1有,0无 */
-    @Column(name = "climate",nullable = false)
+    @Column(name = "climate")
     private int climate;
 
     public void setClimate(int climate) {
@@ -209,7 +214,7 @@ public class Station implements Serializable {
 
     /**
      * 是否有雷达数据:1有,0无*/
-    @Column(name="radar",nullable = false)
+    @Column(name="radar")
     private int radar;
 
     public void setRadar(int radar) {
@@ -370,6 +375,14 @@ public class Station implements Serializable {
 
     public void setDomain(int domain) {
         this.domain = domain;
+    }
+
+    public void setStationSim(String stationSim) {
+        this.stationSim = stationSim;
+    }
+
+    public String getStationSim() {
+        return stationSim;
     }
 
     @Override
