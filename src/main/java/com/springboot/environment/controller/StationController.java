@@ -342,7 +342,7 @@ public class StationController {
         station.setRange(station_range);
         station.setStation_attribute(Integer.valueOf(station_attribute));
         station.setStationSim(station_sim);
-        if(stationService.getByStationId(station_id)!=null){
+        if(stationService.getByStationId(station_code)!=null){
             return "已经存在此站点";
         }
         stationService.insertStation(station,station_setupdate);
@@ -354,6 +354,7 @@ public class StationController {
     @RequestMapping(value = "deletestation",method =RequestMethod.POST)
     public String deletestation(@RequestBody Map<String,String> parmas){
         String station_id=parmas.get("station_id");
+        System.out.println(station_id);
         stationService.deleteStation(station_id);
         return "success";
     }
