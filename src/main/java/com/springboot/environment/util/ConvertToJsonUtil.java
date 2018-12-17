@@ -33,6 +33,7 @@ public class ConvertToJsonUtil {
             stationJson.put("stationPosition",station.getPosition());
             stationJson.put("street",station.getStreet());
             stationJson.put("district",station.getDistrict());
+            stationJson.put("stationSim",station.getStationSim());
             List<String> range=new ArrayList<String>();
             if(station.getRange()!=""){
                 for(int i=0;i<station.getRange().split(";").length;i++){

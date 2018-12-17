@@ -22,7 +22,7 @@ public interface StationDao extends JpaRepository<Station, Integer> {
      * @param stationId
      * @return
      */
-    @Query(value = "select * from station where station_id=?1",nativeQuery = true)
+    @Query(value = "select * from station where station_code=?1",nativeQuery = true)
     Station findByStationId(String stationId);
 
     /**
@@ -195,7 +195,7 @@ public interface StationDao extends JpaRepository<Station, Integer> {
      * @param key
      * @return
      */
-    @Query(value = "select * from station s where s.station_id like %?1% or s.station_name like %?1%", nativeQuery = true)
+    @Query(value = "select * from station s where s.station_code like %?1% or s.station_name like %?1%", nativeQuery = true)
     List<Station> findStationsByIdAndNameLike(String key);
 
     /*返回所有的街道*/
@@ -217,8 +217,8 @@ public interface StationDao extends JpaRepository<Station, Integer> {
     /*删除某一个站点*/
     @Transactional
     @Modifying
-    @Query(value="delete from station where station_id=?1",nativeQuery = true)
-    void deleteStation(String station_id);
+    @Query(value="delete from station where station_code=?1",nativeQuery = true)
+    void deleteStation(String station_code);
 
     /*修改某一个站点信息*/
     @Transactional
@@ -227,7 +227,7 @@ public interface StationDao extends JpaRepository<Station, Integer> {
             "domain=?6,domain_con=?7,station_code=?8,station_id=?9,station_id_dz=?10,station_name=?11 " +
             ",station_status=?12,online_flag=?13,protocol=?14,protocol_name=?15,street=?16,station_major=?17" +
             ",station_setup=?18,station_setupdate=?19,company_code=?20,climate=?21,radar=?22,station_position=?23,"+
-            "station_range=?24,station_attribute=?25,station_sim=?26 where station_id=?27",nativeQuery = true)
+            "station_range=?24,station_attribute=?25,station_sim=?26 where station_code=?27",nativeQuery = true)
     void updateStation(int area,String application,int city_con,int country_con,String district,int domain,int domain_con,
                        String station_code,String station_id,String station_id_dz,String station_name,int station_status,
                        int online_flag,int protocol,String protocol_name,String street,String station_major,String station_setup,
