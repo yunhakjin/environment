@@ -357,7 +357,7 @@ public class StationServiceImpl implements StationService {
 
                 //最新数据的时间，格式为yyyy-MM-dd HH:mm:ss.000
                 //最新数据的时间戳
-                maxDataTime = (String) maxMdataJson.get("data_time");
+                maxDataTime = String.valueOf(maxMdataJson.get("data_time"));
                 maxDataTime = maxDataTime.split("\\.")[0];
 
                 String LA = null;
