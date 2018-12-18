@@ -751,11 +751,13 @@ public class StationServiceImpl implements StationService {
                 }
                 Map<String,Object> mapGeometry=new HashMap<String,Object>();
                 mapGeometry.put("type","Point");
-                List<String> coordinates=new ArrayList<>();
+                List<Float> coordinates=new ArrayList<>();
                 String[] coordinates_str=stations.get(i).getPosition().split(",");
                 for(int k=0;k<coordinates_str.length;k++){
-                    coordinates.add(coordinates_str[k]);
+                    Float coordinates_strF=Float.parseFloat(coordinates_str[k]);
+                    coordinates.add(coordinates_strF);
                 }
+
                 mapGeometry.put("coordinates",coordinates);
                 map.put("geometry",mapGeometry);
                 lists.add(map);
