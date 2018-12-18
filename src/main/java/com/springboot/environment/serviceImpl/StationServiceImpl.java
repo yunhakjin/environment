@@ -753,11 +753,10 @@ public class StationServiceImpl implements StationService {
                 mapGeometry.put("type","Point");
                 List<Float> coordinates=new ArrayList<>();
                 String[] coordinates_str=stations.get(i).getPosition().split(",");
-                for(int k=0;k<coordinates_str.length;k++){
-                    Float coordinates_strF=Float.parseFloat(coordinates_str[k]);
-                    coordinates.add(coordinates_strF);
-                }
-
+                Float coordinates_strlat=Float.parseFloat(coordinates_str[0]);
+                Float coordinates_strlon=Float.parseFloat(coordinates_str[1]);
+                coordinates.add(coordinates_strlon);
+                coordinates.add(coordinates_strlat);
                 mapGeometry.put("coordinates",coordinates);
                 map.put("geometry",mapGeometry);
                 lists.add(map);
