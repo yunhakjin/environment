@@ -59,4 +59,10 @@ public class RoleController {
         return roleService.queryRoleByRoleID(params);
     }
 
+    @ApiOperation(value = "添加menuList和permission_list",notes = "添加menuList和permission_list")
+    @RequestMapping(value = "/updateMenulistAndPermissionList",method = RequestMethod.POST)
+    public Map updateMenulistAndPermissionList(@RequestBody Map<String,Object> params){
+        return roleService.updateMenulistAndPermissionList(params);
+    }
+
 }
