@@ -154,7 +154,7 @@ public class DDataServiceImp implements DDataService {
 
     @Override
     public List<DData> getByStationAndDay(String station_id, String date) {
-        return dDataDao.getByStationAndDay(station_id,date);
+        return dDataDao.getByStationAndDate(station_id,date);
     }
 
 

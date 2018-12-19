@@ -136,10 +136,35 @@ public class DataController {
         String station_code=(String)params.get("station");
         Station station=stationService.queryStatiionByCode(station_code);
         String station_name="";
+        String d_limit="";
+        String n_limit="";
         if(station!=null) {
             station_name=station.getStationName();
         }
+
         String date=(String)params.get("date");
+        List<DData> dDataList=dDataService.getByStationAndDay(station_code,date);
+        if(dDataList.isEmpty()){
+            d_limit="56.99";
+            n_limit="40.41";
+        }
+        else{
+            for(DData dData:dDataList){
+                String ddata_norm=dData.getNorm_code();
+                if(ddata_norm.equals("n00008")){
+                    d_limit=dData.getNorm_val();
+                }
+                else if(ddata_norm.equals("n00009")){
+                    n_limit=dData.getNorm_val();
+                }
+            }
+            if(d_limit==""){
+                d_limit="56.99";
+            }
+            if(n_limit==""){
+                n_limit="40.41";
+            }
+        }
         List<HData> hDataList=hDataService.getByStationAndDate(station_code,date);
         if(hDataList.isEmpty()){
             return null;
@@ -148,72 +173,73 @@ public class DataController {
         Map <String,Map> dataMap=new HashMap<String,Map>();
         for(HData hData:hDataList){
             String timeKey=sdf.format(hData.getData_time());
-            String time=sdf2.format(hData.getData_time());
+//            String time=sdf2.format(hData.getData_time());
             if(dataMap.containsKey(timeKey)){
                 dataMap.get(timeKey).put(hData.getNorm_code(),hData.getNorm_val());
+
             }
             else{
                 Map<String,String> innerMap=new HashMap<String,String>();
-                innerMap.put("time",time);
+                innerMap.put("time",timeKey);
                 innerMap.put(hData.getNorm_code(),hData.getNorm_val());
                 dataMap.put(timeKey,innerMap);
             }
         }
-        for(int i=4;i<=16;i++){
+        for(int i=5;i<=16;i++){
             Map<String,String> tmpmap=new HashMap<String, String>();
             if(i<10){
                 if(!dataMap.containsKey("0"+i)){
-                    tmpmap.put("dlimit","56.99");
+                    tmpmap.put("dlimit",d_limit);
                     for(Norm norm:normList){
                         tmpmap.put(norm.getNorm_code(),"");
                     }
-                    tmpmap.put("time","0"+i+":00:00");
+                    tmpmap.put("time",""+i);
                     dataMap.put("0"+i,tmpmap);
                 }
                 else{
-                    dataMap.get("0"+i).put("dlimit","56.99");
+                    dataMap.get("0"+i).put("dlimit",d_limit);
                 }
             }
             else{
                 if(!dataMap.containsKey(String.valueOf(i))){
-                    tmpmap.put("dlimit","56.99");
+                    tmpmap.put("dlimit",d_limit);
                     for(Norm norm:normList){
                         tmpmap.put(norm.getNorm_code(),"");
                     }
-                    tmpmap.put("time",i+":00:00");
+                    tmpmap.put("time",""+ i);
                     dataMap.put(String.valueOf(i),tmpmap);
                 }
                 else{
-                    dataMap.get(String.valueOf(i)).put("dlimit","56.99");
+                    dataMap.get(String.valueOf(i)).put("dlimit",d_limit);
                 }
             }
         }
         for(int i=0;i<=4;i++){
             Map<String,String> tmpmap=new HashMap<String, String>();
             if(!dataMap.containsKey("0"+i)){
-                tmpmap.put("nlimit","40.41");
+                tmpmap.put("nlimit",n_limit);
                 for(Norm norm:normList){
                     tmpmap.put(norm.getNorm_code(),"");
                 }
-                tmpmap.put("time","0"+i+":00:00");
+                tmpmap.put("time",""+i);
                 dataMap.put("0"+i,tmpmap);
             }
             else{
-                dataMap.get("0"+i).put("nlimit","40.41");
+                dataMap.get("0"+i).put("nlimit",n_limit);
             }
         }
         for(int i=17;i<24;i++){
             Map<String,String> tmpmap=new HashMap<String, String>();
             if(!dataMap.containsKey(String.valueOf(i))){
-                tmpmap.put("nlimit","40.41");
+                tmpmap.put("nlimit",n_limit);
                 for(Norm norm:normList){
                     tmpmap.put(norm.getNorm_code(),"");
                 }
-                tmpmap.put("time",i+":00:00");
+                tmpmap.put("time",""+i);
                 dataMap.put(String.valueOf(i),tmpmap);
             }
             else{
-                dataMap.get(String.valueOf(i)).put("nlimit","40.41");
+                dataMap.get(String.valueOf(i)).put("nlimit",n_limit);
             }
         }
 
