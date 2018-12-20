@@ -166,6 +166,7 @@ public class RoleServiceImpl implements RoleService {
                     Map<String,Object> map=new HashMap<String, Object>();
                     map.put("id",roles.get(i).getRole_id()+"");
                     map.put("name",roles.get(i).getRole_name());
+                    map.put("describe",roles.get(i).getDescribe());
                     String[] permissions=roles.get(i).getPermission_list().split(",");
                     List<String> permissionList=new ArrayList<String>();
                     for(int j=0;j<permissions.length;j++){
@@ -188,6 +189,7 @@ public class RoleServiceImpl implements RoleService {
                 System.out.println("role"+role);
                 map.put("id",role.getRole_id()+"");
                 map.put("name",role.getRole_name());
+                map.put("describe",role.getDescribe());
                 List<String> permissionsList=new ArrayList<String>();
                 System.out.println(role.getPermission_list());
                 if(role.getPermission_list()!=null&&role.getPermission_list()!=""){
