@@ -30,4 +30,6 @@ public interface RoleService {
     Map queryRole();
 
     Map queryRoleByRoleID(Map params);
+
+    Map updateMenulistAndPermissionList(Map params);
 }

@@ -1,5 +1,6 @@
 package com.springboot.environment.serviceImpl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.springboot.environment.bean.Role;
 import com.springboot.environment.dao.RoleDao;
 import com.springboot.environment.service.RoleService;
@@ -52,11 +53,12 @@ public class RoleServiceImpl implements RoleService {
     public Map addRole(Map params) {
         String type=(String)params.get("type");
         String name=(String)params.get("name");
+        String describe=(String)params.get("describe");
         Map<String,String> resultMap=new LinkedHashMap<String,String>();
         if(type.equals("add")){
             //判断这个name是否存在
             if(roleDao.findByName(name)==null){
-                int t=roleDao.addOne(name);
+                int t=roleDao.addOne(name,describe);
                 System.out.println(t);
                 if(t==1){
                     resultMap.put("addRoleFlag","true");
@@ -71,7 +73,7 @@ public class RoleServiceImpl implements RoleService {
 
         }else if(type.equals("edit")){
             String id=(String)params.get("id");
-            roleDao.updateOne(Integer.parseInt(id),name);
+            roleDao.updateOne2(Integer.parseInt(id),name,describe);
             if(roleDao.findById(Integer.parseInt(id)).get().getRole_name().equals(name)){
                 resultMap.put("editRoleFlag","true");
             }else{
@@ -145,6 +147,7 @@ public class RoleServiceImpl implements RoleService {
             Map<String,String> map=new HashMap<String, String>();
             map.put("id",roles.get(i).getRole_id()+"");
             map.put("name",roles.get(i).getRole_name());
+            map.put("describe",roles.get(i).getDescribe());
             list.add(map);
         }
         resultMap.put("roleList",list);
@@ -203,6 +206,26 @@ public class RoleServiceImpl implements RoleService {
             }
         }
 
+        return resultMap;
+    }
+
+    @Override
+    public Map updateMenulistAndPermissionList(Map params) {
+        String role_id=(String)params.get("role_id");
+        System.out.println(role_id);
+        String role_permissions=(params.get("role_permissions")+"").replaceAll("[\\[\\]]", "");
+        System.out.println(role_permissions);
+        String menu_list=params.get("menu_list")+"";
+        ArrayList list=(ArrayList)params.get("menu_list");
+        JSONArray array=new JSONArray(list);
+        System.out.println(array.toJSONString());
+        Map<String,Object> resultMap=new LinkedHashMap<String,Object>();
+        int flag=roleDao.updatePermissionAndMenuList(role_id,role_permissions,array.toJSONString());
+        if(flag==1){
+            resultMap.put("authorizeFlag","true");
+        }else{
+            resultMap.put("authorizeFlag","false");
+        }
         return resultMap;
     }
 }

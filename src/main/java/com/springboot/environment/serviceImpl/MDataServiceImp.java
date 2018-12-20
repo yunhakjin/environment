@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 import com.springboot.environment.bean.DData;
 import com.springboot.environment.bean.MData;
 import com.springboot.environment.bean.Norm;
+import com.springboot.environment.bean.Station;
 import com.springboot.environment.dao.DDataDao;
 import com.springboot.environment.dao.MDataDao;
 import com.springboot.environment.dao.NormDao;
@@ -165,7 +166,8 @@ public class MDataServiceImp implements MDataService {
         //有一个问题，这个是对不同站点的同一个时间段的分钟数据进行对比，那么应该是判断整个操作超过一定时间就返回的吧
         for(String station:stationList){
             String station_id=station;
-            String station_name=stationDao.findStationByStationId(station_id).getStationName();
+            Station station1=stationDao.findStationByStationId(station_id);
+            String station_name=station1.getStationName();
 
             List<MData> innerDataList=mDataDao.getByStationAndHour(station_id,date);//获得分钟数据中的整点信息
 
@@ -185,6 +187,7 @@ public class MDataServiceImp implements MDataService {
                     Map<String,String> normVal=new HashMap<String,String>();
                     normVal.put("station_id",station_id);
                     normVal.put("station_name",station_name);
+                    normVal.put("station_Sim",station1.getStationSim());
                     normVal.put("time",time);
                     normVal.put(mData.getNorm_code(),mData.getNorm_val());
                     innerMap.put(dateKey,normVal);
@@ -199,6 +202,7 @@ public class MDataServiceImp implements MDataService {
                         }
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
+                        map.put("station_Sim",station1.getStationSim());
                         map.put("time",date.substring(date.length()-2)+":00");
                         innerMap.put("00",map);
                     }
@@ -210,6 +214,7 @@ public class MDataServiceImp implements MDataService {
                         }
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
+                        map.put("station_Sim",station1.getStationSim());
                         map.put("time",date.substring(date.length()-2)+":0"+i);
                         innerMap.put("0"+i,map);
                     }
@@ -221,6 +226,7 @@ public class MDataServiceImp implements MDataService {
                         }
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
+                        map.put("station_Sim",station1.getStationSim());
                         map.put("time",date.substring(date.length()-2)+":"+i);
                         //System.out.println(date.substring(date.length()-2)+":"+i);
                         innerMap.put(""+i,map);

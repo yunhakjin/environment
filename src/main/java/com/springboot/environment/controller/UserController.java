@@ -84,6 +84,7 @@ public class UserController {
             User user=(User) subject.getPrincipal();
             List<Role> roles =roleService.getRoleByUserID(user.getUser_id());
             List<String> permissionList=new ArrayList<String>();
+            List<String> menulist=new ArrayList<String>();
             session.setAttribute("user", user);
             System.out.println(user);
             resultMap.put("status", 200);
@@ -93,8 +94,10 @@ public class UserController {
             resultMap.put("password",user.getPassword());
             for (int i = 0;i< roles.size();i++){
                 permissionList.add(roles.get(i).getPermission_list());
+                menulist.add(roles.get(i).getMenu_list());
             }
             resultMap.put("permissionList",permissionList);
+            resultMap.put("menuList",menulist);
         }catch(Exception e) {
             resultMap.put("status", 500);
             e.printStackTrace();

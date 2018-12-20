@@ -20,6 +20,12 @@ public interface RoleDao extends JpaRepository<Role,Integer> {
 
     @Transactional
     @Modifying
+    @Query(value = "update role set role_name=?2,describes=?3 where role_id=?1 ",nativeQuery = true)
+    void updateOne2(int role_id, String role_name,String describe);
+
+
+    @Transactional
+    @Modifying
     @Query(value = "delete from  user_role where role_id = ?1",nativeQuery = true)
     void deleteRoleUser(int role_id);
 
@@ -37,8 +43,8 @@ public interface RoleDao extends JpaRepository<Role,Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "insert into role(role_name) values(?1)",nativeQuery = true)
-    int addOne( String role_name);
+    @Query(value = "insert into role(role_name,describe) values(?1,?2)",nativeQuery = true)
+    int addOne(String role_name,String describe);
 
     @Transactional
     @Modifying
@@ -68,4 +74,9 @@ public interface RoleDao extends JpaRepository<Role,Integer> {
 
     @Query(value = "select * from  role where role_name=?1",nativeQuery = true)
     Role findByName(String name);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update role set  permission_list = ?2 , menu_list = ?3 where role_id= ?1",nativeQuery = true)
+    int updatePermissionAndMenuList(String role_id, String role_permissions, String menu_list);
 }
