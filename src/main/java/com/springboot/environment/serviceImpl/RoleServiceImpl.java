@@ -73,8 +73,8 @@ public class RoleServiceImpl implements RoleService {
 
         }else if(type.equals("edit")){
             String id=(String)params.get("id");
-            roleDao.updateOne2(Integer.parseInt(id),name,describe);
-            if(roleDao.findById(Integer.parseInt(id)).get().getRole_name().equals(name)){
+            int flag=roleDao.updateOne2(Integer.parseInt(id),name,describe);
+            if(flag==1){
                 resultMap.put("editRoleFlag","true");
             }else{
                 resultMap.put("editRoleFlag","false");
