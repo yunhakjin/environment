@@ -319,7 +319,8 @@ public class M5DataServiceImp implements M5DataService {
         int error_count=0;
         for(String station:stationList){
             String station_id=station;
-            String station_name=stationDao.findStationByStationId(station_id).getStationName();
+            Station station1=stationDao.findStationByStationId(station_id);
+            String station_name=station1.getStationName();
             List<M5Data> innerDataList=m5DataDao.getByStationAndHour(station_id,date);//获得5分钟数据中的整点信息
             if(innerDataList.isEmpty()) error_count++;
             List<Map> innerList=new ArrayList<Map>();
@@ -334,6 +335,7 @@ public class M5DataServiceImp implements M5DataService {
                     Map<String,String> normVal=new HashMap<String,String>();
                     normVal.put("station_id",station_id);
                     normVal.put("station_name",station_name);
+                    normVal.put("station_Sim",station1.getStationSim());
                     normVal.put("time",time);
                     normVal.put(m5Data.getNorm_code(),m5Data.getNorm_val());
                     innerMap.put(dateKey,normVal);
@@ -349,6 +351,7 @@ public class M5DataServiceImp implements M5DataService {
                         }
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
+                        map.put("station_Sim",station1.getStationSim());
                         map.put("time",date.substring(date.length()-2)+":00");
                         innerMap.put("00",map);
                     }
@@ -360,6 +363,7 @@ public class M5DataServiceImp implements M5DataService {
                         }
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
+                        map.put("station_Sim",station1.getStationSim());
                         map.put("time",date.substring(date.length()-2)+":05");
                         innerMap.put("05",map);
                     }
@@ -371,6 +375,7 @@ public class M5DataServiceImp implements M5DataService {
                         }
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
+                        map.put("station_Sim",station1.getStationSim());
                         map.put("time",date.substring(date.length()-2)+":"+5*i);
                         System.out.println(date.substring(date.length()-2)+":"+5*i);
                         innerMap.put(""+5*i,map);

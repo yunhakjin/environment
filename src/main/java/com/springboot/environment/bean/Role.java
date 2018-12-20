@@ -23,7 +23,8 @@ public class Role  implements Serializable {
     private int role_id;
     private String role_name;
     private String permission_list;
-
+    private String menu_list;
+    private String describes;
     public String getPermission_list() {
         return permission_list;
     }
@@ -32,16 +33,35 @@ public class Role  implements Serializable {
         this.permission_list = permission_list;
     }
 
+    public String getMenu_list() {
+        return menu_list;
+    }
+
+    public void setMenu_list(String menu_list) {
+        this.menu_list = menu_list;
+    }
+
+    public String getDescribe() {
+        return describes;
+    }
+
+    public void setDescribe(String describe) {
+        this.describes = describe;
+    }
+
     @Override
     public String toString() {
         return "Role{" +
                 "role_id=" + role_id +
                 ", role_name='" + role_name + '\'' +
                 ", permission_list='" + permission_list + '\'' +
+                ", menu_list='" + menu_list + '\'' +
+                ", describe='" + describes + '\'' +
                 ", users=" + users +
                 ", permissions=" + permissions +
                 '}';
     }
+
     // 用户 - 角色关系定义;多对多
     @ManyToMany(mappedBy = "roles" ,fetch = FetchType.LAZY)
 //    @JoinTable(name="e_user_role",joinColumns={@JoinColumn(name="role_id")},inverseJoinColumns={@JoinColumn(name="user_id")})

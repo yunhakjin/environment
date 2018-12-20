@@ -356,7 +356,8 @@ public class DataController {
         int error_count=0;
         for(String station:stationList){
             String station_id=station;
-            String station_name=stationService.queryStatiionByCode(station_id).getStationName();
+            Station station1=stationService.queryStatiionByCode(station_id);
+            String station_name=station1.getStationName();
             List<HData> innerDataList=hDataService.getByStationAndDate(station_id,date);
             if(innerDataList.isEmpty()) error_count++;
             List<Map> innerList=new ArrayList<Map>();
@@ -371,6 +372,7 @@ public class DataController {
                     Map<String,String> normVal=new HashMap<String,String>();
                     normVal.put("station_id",station_id);
                     normVal.put("station_name",station_name);
+                    normVal.put("station_Sim",station1.getStationSim());
                     normVal.put("time",time);
                     normVal.put(hData.getNorm_code(),hData.getNorm_val());
                     innerMap.put(dateKey,normVal);
@@ -384,6 +386,7 @@ public class DataController {
                     }
                     map.put("station_id",station_id);
                     map.put("station_name",station_name);
+                    map.put("station_Sim",station1.getStationSim());
                     map.put("time","0"+i+":00:00");
                     innerMap.put("0"+i,map);
                 }
@@ -396,6 +399,7 @@ public class DataController {
                     }
                     map.put("station_id",station_id);
                     map.put("station_name",station_name);
+                    map.put("station_Sim",station1.getStationSim());
                     map.put("time",i+":00:00");
                     innerMap.put(String.valueOf(i),map);
                 }
@@ -439,7 +443,8 @@ public class DataController {
         int error_count=0;
         for(String station:stationList){
             String station_id=station;
-            String station_name=stationService.queryStatiionByCode(station_id).getStationName();
+            Station station1=stationService.queryStatiionByCode(station_id);
+            String station_name=station1.getStationName();
             List<DData> innerDataList=dDataService.getByStationAndMonth(station_id,querytime);
             if(innerDataList.isEmpty()) error_count++;
             List<Map> innerList=new ArrayList<Map>();
@@ -453,6 +458,7 @@ public class DataController {
                     Map<String,String> normVal=new HashMap<String,String>();
                     normVal.put("station_id",station_id);
                     normVal.put("station_name",station_name);
+                    normVal.put("station_Sim",station1.getStationSim());
                     normVal.put("time",sdf2.format(dData.getData_time()));
                     normVal.put(dData.getNorm_code(),dData.getNorm_val());
                     innerMap.put(dateKey,normVal);
@@ -465,6 +471,7 @@ public class DataController {
                             Map<String,String> map=new HashMap<String,String>();
                             map.put("station_id",station_id);
                             map.put("station_name",station_name);
+                            map.put("station_Sim",station1.getStationSim());
                             map.put("time",year+"-"+month+"-"+"0"+i);
                             for(Norm norm:normList){
                                 map.put(norm.getNorm_code(),"");
@@ -477,6 +484,7 @@ public class DataController {
                             Map<String,String> map=new HashMap<String,String>();
                             map.put("station_id",station_id);
                             map.put("station_name",station_name);
+                            map.put("station_Sim",station1.getStationSim());
                             map.put("time",year+"-"+month+"-"+i);
                             for(Norm norm:normList){
                                 map.put(norm.getNorm_code(),"");
@@ -491,6 +499,7 @@ public class DataController {
                             Map<String,String> map=new HashMap<String,String>();
                             map.put("station_id",station_id);
                             map.put("station_name",station_name);
+                            map.put("station_Sim",station1.getStationSim());
                             map.put("time",year+"-"+month+"-"+"0"+i);
                             for(Norm norm:normList){
                                 map.put(norm.getNorm_code(),"");
@@ -503,6 +512,7 @@ public class DataController {
                             Map<String,String> map=new HashMap<String,String>();
                             map.put("station_id",station_id);
                             map.put("station_name",station_name);
+                            map.put("station_Sim",station1.getStationSim());
                             map.put("time",year+"-"+month+"-"+i);
                             for(Norm norm:normList){
                                 map.put(norm.getNorm_code(),"");
@@ -518,6 +528,7 @@ public class DataController {
                         Map<String,String> map=new HashMap<String,String>();
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
+                        map.put("station_Sim",station1.getStationSim());
                         map.put("time",year+"-"+month+"-"+"0"+i);
                         for(Norm norm:normList){
                             map.put(norm.getNorm_code(),"");
@@ -530,6 +541,7 @@ public class DataController {
                         Map<String,String> map=new HashMap<String,String>();
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
+                        map.put("station_Sim",station1.getStationSim());
                         map.put("time",year+"-"+month+"-"+i);
                         for(Norm norm:normList){
                             map.put(norm.getNorm_code(),"");
@@ -544,6 +556,7 @@ public class DataController {
                         Map<String,String> map=new HashMap<String,String>();
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
+                        map.put("station_Sim",station1.getStationSim());
                         map.put("time",year+"-"+month+"-"+"0"+i);
                         for(Norm norm:normList){
                             map.put(norm.getNorm_code(),"");
@@ -556,6 +569,7 @@ public class DataController {
                         Map<String,String> map=new HashMap<String,String>();
                         map.put("station_id",station_id);
                         map.put("station_name",station_name);
+                        map.put("station_Sim",station1.getStationSim());
                         map.put("time",year+"-"+month+"-"+i);
                         for(Norm norm:normList){
                             map.put(norm.getNorm_code(),"");
@@ -634,7 +648,7 @@ public class DataController {
     }
 
     //分钟数据对比查询超时的标志，flag=1 超时  flag=0 未超时
-    int flag=0;
+    //int flag=0;
     /*多站点指定日期分钟数据查询*/
     @ApiOperation(value="多站点指定日期分钟数据查询",notes = "需要传送包含站点id列表和查询时间的json")
     @ApiImplicitParam(name = "params",value="包含站点id和查询时间的json",dataType = "JSON")
