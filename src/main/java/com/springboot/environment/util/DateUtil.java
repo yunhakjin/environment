@@ -81,6 +81,35 @@ public class DateUtil {
     }
 
     /**
+     * 得到指定时间的后续指定分钟时间
+     * @param date
+     * @param minutes
+     * @return
+     * @throws ParseException
+     */
+    public static String getDateAfterMinutes(String date, int minutes) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date nowDate = sdf.parse(date);
+        Date afterMinutesDate = new Date(nowDate.getTime() + minutes * SECOND * MILLISECOND);
+        return new SimpleDateFormat("HH:mm").format(afterMinutesDate);
+    }
+
+    public static String getDateAfterHour(String date, int hour) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date nowDate = sdf.parse(date);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(nowDate);
+        calendar.add(Calendar.HOUR_OF_DAY, hour);
+        nowDate = calendar.getTime();
+        return new SimpleDateFormat("HH").format(nowDate);
+    }
+
+    public static String getHour(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("HH");
+        return sdf.format(date);
+    }
+
+    /**
      * 获取但前时间所在天的起始时间
      * @param date
      * @return
@@ -226,11 +255,14 @@ public class DateUtil {
 
     public static void main(String[] args) throws ParseException {
 
-//        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2018-12-01 00:00:00");
+        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2018-12-01 23:00:00");
 //        System.out.println(getStartDayBefore3Month(date));
 //        System.out.println(getDayBeforeTodayEndTime(date));
 //        System.out.println(getHdataTableName(date));
-        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2018-12-10 12:02:00").getTime());
+//        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2018-12-10 12:02:00").getTime());
+        System.out.println(getDateAfterMinutes("2018-12-10 12:00:00", 59));
+        System.out.println(getDateAfterHour("2018-12-19 00:00:00", 23));
+        System.out.println(getHour(date));
     }
 
 

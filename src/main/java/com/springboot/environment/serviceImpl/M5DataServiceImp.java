@@ -37,6 +37,8 @@ public class M5DataServiceImp implements M5DataService {
     @Autowired
     private NormDao normDao;
 
+    private static final int MINUTE_5 = 12;
+
     @Override
     public List<M5Data> getAll() {
         return m5DataDao.findAll();
@@ -61,6 +63,7 @@ public class M5DataServiceImp implements M5DataService {
 
     @Override
     public String queryM5dataByStationIdAndDatetime(String stationId, String date) {
+
         try {
             String startDate = DateUtil.getDateBefore1hour(date);
             String endDate = date;
@@ -84,17 +87,26 @@ public class M5DataServiceImp implements M5DataService {
                     }
                 }
 
-                System.out.println(map.toString());
+                for (int i = 0; i < MINUTE_5; i++) {
+                    String time = DateUtil.getDateAfterMinutes(startDate, 5 * i);
+                    JSONObject object = new JSONObject();
+                    object.put("time", time);
+                    m5dataArray.add(object);
+                }
 
                 for (List<M5Data> m5DataList : map.values()) {
-                    JSONObject object = new JSONObject();
-                    object.put("time", DateUtil.getHourAndMinuteAndSecond(m5DataList.get(0).getData_time()));
-                    for (M5Data m5Data : m5DataList) {
-                        if (m5Data.getNorm_code() != null && m5Data.getNorm_val() != null) {
-                            object.put(m5Data.getNorm_code(), m5Data.getNorm_val());
+                    String time = DateUtil.getHourAndMinute(m5DataList.get(0).getData_time());
+                    for (int i = 0; i < m5dataArray.size(); i++) {
+                        JSONObject object = m5dataArray.getJSONObject(i);
+                        if (time.equals(object.getString("time"))){
+                            for (M5Data m5Data : m5DataList) {
+                                if (m5Data.getNorm_code() != null && m5Data.getNorm_val() != null) {
+                                    object.put(m5Data.getNorm_code(), m5Data.getNorm_val());
+                                }
+                            }
+                            break;
                         }
                     }
-                    m5dataArray.add(object);
                 }
 
                 //获取最新数据的val值
@@ -106,7 +118,8 @@ public class M5DataServiceImp implements M5DataService {
                         latestCal = m5Data.getNorm_val();
                     }
                 }
-                dataJSON.put("count", map.size());
+                //一小时的固定5分钟数据是12条，从 00 到55
+                dataJSON.put("count", 12);
                 dataJSON.put("data", m5dataArray);
                 dataJSON.put("latest_calibration_value", latestCal);
                 m5dataJSON.put("siteData", dataJSON);

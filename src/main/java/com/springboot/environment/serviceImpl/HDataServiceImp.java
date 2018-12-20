@@ -33,6 +33,8 @@ public class HDataServiceImp implements HDataService {
     @Autowired
     private NormDao normDao;
 
+    private static final int HOUR = 24;
+
     @Override
     public List<HData> getAll() {
         return hDataDao.findAll();
@@ -81,17 +83,26 @@ public class HDataServiceImp implements HDataService {
                     }
                 }
 
-                System.out.println(map.toString());
+                for (int i = 0; i < HOUR; i++) {
+                    String time = DateUtil.getDateAfterHour(dayStartTime, i);
+                    JSONObject object = new JSONObject();
+                    object.put("time", time);
+                    hdataArray.add(object);
+                }
 
                 for (List<HData> hDataList : map.values()) {
-                    JSONObject object = new JSONObject();
-                    object.put("time", DateUtil.getHourAndMinute(hDataList.get(0).getData_time()));
-                    for (HData hData : hDataList) {
-                        if (hData.getNorm_code() != null && hData.getNorm_val() != null) {
-                            object.put(hData.getNorm_code(), hData.getNorm_val());
+                    String time = DateUtil.getHour(hDataList.get(0).getData_time());
+                    for (int i = 0; i < hdataArray.size(); i++) {
+                        JSONObject object = hdataArray.getJSONObject(i);
+                        if (time.equals(object.getString("time"))){
+                            for (HData hData : hDataList) {
+                                if (hData.getNorm_code() != null && hData.getNorm_val() != null) {
+                                    object.put(hData.getNorm_code(), hData.getNorm_val());
+                                }
+                            }
+                            break;
                         }
                     }
-                    hdataArray.add(object);
                 }
 
                 //获取最新数据的val值
@@ -103,7 +114,8 @@ public class HDataServiceImp implements HDataService {
                         latestCal = hData.getNorm_val();
                     }
                 }
-                dataJSON.put("count", map.size());
+                //小时数据固定位24条，从指定的00点到23点
+                dataJSON.put("count", 24);
                 dataJSON.put("data", hdataArray);
                 dataJSON.put("latest_calibration_value", latestCal);
                 hdataJSON.put("siteData", dataJSON);
@@ -111,7 +123,6 @@ public class HDataServiceImp implements HDataService {
                 System.out.println(hdataJSON.toJSONString());
                 return hdataJSON.toJSONString();
             }
-
             else {
                 dataJSON.put("count", 0);
                 dataJSON.put("data", "");

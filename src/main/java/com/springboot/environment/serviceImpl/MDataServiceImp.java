@@ -40,6 +40,8 @@ public class MDataServiceImp implements MDataService {
     @Autowired
     private StationDao stationDao;
 
+    private static final int MINUTES = 60;
+
     @Override
     public List<MData> getAll() {
         return mDataDao.findAll();
@@ -66,6 +68,7 @@ public class MDataServiceImp implements MDataService {
     public String queryMdataByStationIdAndDatetime(String stationId, String date) {
 
         try {
+            //数据库查询开始时间，例如 : 2018-10-10 12:00:00 一定是整小时。
             String startDate = DateUtil.getDateBefore1hour(date);
             String endDate = date;
 
@@ -89,17 +92,29 @@ public class MDataServiceImp implements MDataService {
                     }
                 }
 
-                for (List<MData> mDataList : map.values()) {
+                for (int i = 0; i < MINUTES; i++) {
+                    String time = DateUtil.getDateAfterMinutes(startDate, i);
                     JSONObject object = new JSONObject();
-                    object.put("time", DateUtil.getHourAndMinuteAndSecond(mDataList.get(0).getData_time()));
-                    for (MData mData : mDataList) {
-                        if (mData.getNorm_code() != null && mData.getNorm_val() != null) {
-                            object.put(mData.getNorm_code(), mData.getNorm_val());
-                        }
-                    }
+                    object.put("time", time);
                     mdataArray.add(object);
                 }
-                dataJSON.put("count", map.size());
+
+                for (List<MData> mDataList : map.values()) {
+                    String time = DateUtil.getHourAndMinute(mDataList.get(0).getData_time());
+                    for (int i = 0; i < mdataArray.size(); i++) {
+                        JSONObject object = mdataArray.getJSONObject(i);
+                        if (time.equals(object.getString("time"))){
+                            for (MData mData : mDataList) {
+                                if (mData.getNorm_code() != null && mData.getNorm_val() != null) {
+                                    object.put(mData.getNorm_code(), mData.getNorm_val());
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                //实时数据一小时固定位60条，从00到59
+                dataJSON.put("count",60);
                 dataJSON.put("data", mdataArray);
                 mdataJSON.put("siteData", dataJSON);
 
