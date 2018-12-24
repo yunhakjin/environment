@@ -225,6 +225,19 @@ public class Station implements Serializable {
         return radar;
     }
 
+    /**
+     * 运维单位编号*/
+    @Column(name = "operation_id")
+    private String operation_id;
+
+    public void setOperation_id(String operation_id) {
+        this.operation_id = operation_id;
+    }
+
+    public String getOperation_id() {
+        return operation_id;
+    }
+
     public int getId() {
         return id;
     }
