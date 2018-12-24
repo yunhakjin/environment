@@ -167,12 +167,16 @@ public class RoleServiceImpl implements RoleService {
                     map.put("id",roles.get(i).getRole_id()+"");
                     map.put("name",roles.get(i).getRole_name());
                     map.put("describe",roles.get(i).getDescribe());
-                    String[] permissions=roles.get(i).getPermission_list().split(",");
-                    List<String> permissionList=new ArrayList<String>();
-                    for(int j=0;j<permissions.length;j++){
-                        permissionList.add(permissions[j]);
+                    if(roles.get(i).getPermission_list()!=null){
+                        String[] permissions=roles.get(i).getPermission_list().split(",");
+                        List<String> permissionList=new ArrayList<String>();
+                        for(int j=0;j<permissions.length;j++){
+                            permissionList.add(permissions[j]);
+                        }
+                        map.put("permissions",permissionList);
+                    }else{
+                        map.put("permissions","");
                     }
-                    map.put("permissions",permissionList);
                     list.add(map);
                 }
                 resultMap.put("roleList",list);
