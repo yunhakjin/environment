@@ -714,6 +714,7 @@ public class StationServiceImpl implements StationService {
                 map.put("id",stations.get(i).getStationCode());
                 map.put("name",stations.get(i).getStationName());
                 map.put("region",stations.get(i).getDistrict());
+                map.put("OverLimit","否");
                 List<HData> hDatas= hDataDao.getLatestStationListByStationCode(stations.get(i).getStationCode());
                 map.put("time",(hDataDao.getLatestTimeByStationCode(stations.get(i).getStationCode().toString())));
                 for (int j= 0;j<hDatas.size();j++){
@@ -748,6 +749,11 @@ public class StationServiceImpl implements StationService {
                     map.put("O_status","自动");
                 }else if(stations.get(i).getStation_attribute()==0){
                     map.put("O_status","手动");
+                }
+                if(i<5){
+                    map.put("OverLimit","否");
+                }else{
+                    map.put("OverLimit","是");
                 }
                 Map<String,Object> mapGeometry=new HashMap<String,Object>();
                 mapGeometry.put("type","Point");
