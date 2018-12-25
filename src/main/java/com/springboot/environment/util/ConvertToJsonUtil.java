@@ -54,7 +54,7 @@ public class ConvertToJsonUtil {
             stationJson.put("companyCode",station.getCompany_code());
             stationJson.put("climate",station.getClimate());
             stationJson.put("radar",station.getRadar());
-
+            stationJson.put("operation_id",station.getOperation_id());
             stationsArray.add(stationJson);
         }
 

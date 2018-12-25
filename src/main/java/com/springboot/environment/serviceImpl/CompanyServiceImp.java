@@ -29,8 +29,8 @@ public class CompanyServiceImp implements CompanyService {
         String represent=company.getRepresent();
         String represent_tel=company.getRepresent_tel();
         String protection=company.getProtection();
-        String pretection_tel=company.getProtection_tel();
-        companyDao.insertCompany(company_code,company_name,company_type,industry,company_place,company_range,represent,represent_tel,protection,pretection_tel);
+        String protection_tel=company.getProtection_tel();
+        companyDao.insertCompany(company_code,company_name,company_type,industry,company_place,company_range,represent,represent_tel,protection,protection_tel);
     }
 
     @Override
@@ -49,8 +49,18 @@ public class CompanyServiceImp implements CompanyService {
         String represent=company.getRepresent();
         String represent_tel=company.getRepresent_tel();
         String protection=company.getProtection();
-        String pretection_tel=company.getProtection_tel();
-        companyDao.updateCompany(company_code,company_name,company_type,industry,company_place,company_range,represent,represent_tel,protection,pretection_tel,target);
+        String protection_tel=company.getProtection_tel();
+        companyDao.updateCompany(company_code,company_name,company_type,industry,company_place,company_range,represent,represent_tel,protection,protection_tel,target);
+    }
+
+    @Override
+    public List<Company> getOneCompany(String company_code){
+        return companyDao.getOneCompany(company_code);
+    }
+
+    @Override
+    public List<Company> getCompanyLike(String target){
+        return companyDao.getCompanyLike(target);
     }
 
 }

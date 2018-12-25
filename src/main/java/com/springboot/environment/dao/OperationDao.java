@@ -34,4 +34,10 @@ public interface OperationDao extends JpaRepository<Operation,String> {
             "operation_tel=?4,operation_target=?5 where operation_id=?6",nativeQuery = true)
     public void updateOperation(String operation_id,String operation_name,String operation_relate,String operation_tel,
                                 String operation_target,String target);
+
+    @Query(value="select * from operation where operation_id=?1",nativeQuery = true)
+    public List<Operation> getOneOperation(String operation_id);
+
+    @Query(value = "select * from operation where operation_id like %?1% or operation_name like %?1%",nativeQuery = true)
+    public List<Operation> getOperationLike(String target);
 }

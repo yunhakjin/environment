@@ -42,4 +42,14 @@ public class OperationServiceImp implements OperationService {
         String operation_target=operation.getOperation_target();
         operationDao.updateOperation(operation_id,operation_name,operation_relate,operation_tel,operation_target,target);
     }
+
+    @Override
+    public List<Operation> getOneOperation(String operation_id){
+        return operationDao.getOneOperation(operation_id);
+    }
+
+    @Override
+    public List<Operation> getOperationLike(String target){
+        return operationDao.getOperationLike(target);
+    }
 }

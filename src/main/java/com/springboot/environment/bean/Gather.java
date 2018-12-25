@@ -44,7 +44,7 @@ public class Gather {
         return id;
     }
 
-    @Column(name = "gather_id",length = 20,nullable = false)
+    @Column(name = "gather_id",length = 20)
     private String gather_id;
 
     public void setGather_id(String gather_id) {
@@ -55,7 +55,7 @@ public class Gather {
         return gather_id;
     }
 
-    @Column(name = "gather_code",length = 20,nullable = false)
+    @Column(name = "gather_code",length = 20)
     private  String gather_code;
 
     public void setGather_code(String gather_code) {
@@ -66,7 +66,7 @@ public class Gather {
         return gather_code;
     }
 
-    @Column(name = "gather_name",length = 50,nullable = false)
+    @Column(name = "gather_name",length = 50)
     private String gather_name;
     public void setGather_name(String gather_name) {
         this.gather_name = gather_name;
@@ -76,7 +76,7 @@ public class Gather {
         return gather_name;
     }
 
-    @Column(name="gather_status",length = 1,nullable = false)
+    @Column(name="gather_status",length = 1)
     private  int gather_status;
 
     public void setGather_status(int gather_status) {
@@ -98,7 +98,7 @@ public class Gather {
         return application;
     }
 
-    @Column(name="online_flag",length = 1,nullable = false)
+    @Column(name="online_flag",length = 1)
     private int online_flag;
 
     public void setOnline_flag(int online_flag) {
@@ -143,7 +143,7 @@ public class Gather {
     }
 
 
-    @Column(name = "street",length = 30,nullable = false)
+    @Column(name = "street",length = 30)
     private String street;
 
     public void setStreet(String street) {
@@ -154,7 +154,7 @@ public class Gather {
         return street;
     }
 
-    @Column(name = "district",length = 10,nullable = false)
+    @Column(name = "district",length = 10)
     private String district;
 
     public void setDistrict(String district) {
@@ -165,7 +165,7 @@ public class Gather {
         return district;
     }
 
-    @Column(name = "country_con",length = 1,nullable = false)
+    @Column(name = "country_con",length = 1)
     private int country_con;
 
     public void setCountry_con(int country_con) {
@@ -176,7 +176,7 @@ public class Gather {
         return country_con;
     }
 
-    @Column(name = "city_con",length = 1,nullable = false)
+    @Column(name = "city_con",length = 1)
     private int city_con;
 
     public void setCity_con(int city_con) {
@@ -187,7 +187,7 @@ public class Gather {
         return city_con;
     }
 
-    @Column(name = "domain_con",length = 1,nullable = false)
+    @Column(name = "domain_con",length = 1)
     private int domain_con;
 
     public void setDomain_con(int domain_con) {
@@ -223,7 +223,7 @@ public class Gather {
     /**
      *主管部门
      */
-    @Column(name = "gather_major",nullable = true)
+    @Column(name = "gather_major")
     private String gather_major;
 
     public void setGather_major(String gather_major) {
@@ -237,7 +237,7 @@ public class Gather {
     /**
      *建站单位
      */
-    @Column(name = "gather_setup",nullable = true)
+    @Column(name = "gather_setup")
     private String gather_setup;
 
     public void setGather_setup(String gather_setup) {
@@ -251,7 +251,7 @@ public class Gather {
     /**
      *建站时间
      */
-    @Column(name = "gather_setupdate",nullable = true)
+    @Column(name = "gather_setupdate")
     private Date gather_setupdate;
 
     public void setGather_setupdate(Date gather_setupdate) {
@@ -265,7 +265,7 @@ public class Gather {
     /**
      *企业代码
      */
-    @Column(name = "company_code",nullable = false)
+    @Column(name = "company_code")
     private String company_code;
 
     public void setCompany_code(String company_code) {
@@ -278,7 +278,7 @@ public class Gather {
 
     /**
      *是否有气象数据:1有,0无 */
-    @Column(name = "climate",nullable = false)
+    @Column(name = "climate")
     private int climate;
 
     public void setClimate(int climate) {
@@ -291,7 +291,7 @@ public class Gather {
 
     /**
      * 是否有雷达数据:1有,0无*/
-    @Column(name="radar",nullable = false)
+    @Column(name="radar")
     private int radar;
 
     public void setRadar(int radar) {
@@ -302,4 +302,16 @@ public class Gather {
         return radar;
     }
 
+    /**
+     * 运维单位*/
+    @Column(name = "operation_id")
+    private String operation_id;
+
+    public void setOperation_id(String operation_id) {
+        this.operation_id = operation_id;
+    }
+
+    public String getOperation_id() {
+        return operation_id;
+    }
 }

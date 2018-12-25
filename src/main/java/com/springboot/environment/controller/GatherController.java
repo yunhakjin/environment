@@ -71,6 +71,7 @@ public class GatherController {
             map.put("company_code",gather.getCompany_code());
             map.put("climate",gather.getClimate());
             map.put("radar",gather.getRadar());
+            map.put("operation_id",gather.getOperation_id());
             result.add(map);
         }
         return result;
@@ -208,6 +209,7 @@ public class GatherController {
            String company_code = params.get("companyCode");
            String climate = params.get("climate");
            String radar = params.get("radar");
+           String operation_id=params.get("operation_id");
            Gather gather = new Gather();
            gather.setApplication(application);
            gather.setArea(Integer.valueOf(area));
@@ -230,6 +232,7 @@ public class GatherController {
            gather.setCompany_code(company_code);
            gather.setClimate(Integer.valueOf(climate));
            gather.setRadar(Integer.valueOf(radar));
+           gather.setOperation_id(operation_id);
            if(gatherService.getOneGather(gather_id)!=null){
                return "已经存在此采集车";
            }
@@ -272,6 +275,7 @@ public class GatherController {
         String company_code = params.get("companyCode");
         String climate = params.get("climate");
         String radar = params.get("radar");
+        String operation_id=params.get("operation_id");
         String target=params.get("target");
         Gather gather = new Gather();
         gather.setApplication(application);
@@ -295,6 +299,7 @@ public class GatherController {
         gather.setCompany_code(company_code);
         gather.setClimate(Integer.valueOf(climate));
         gather.setRadar(Integer.valueOf(radar));
+        gather.setOperation_id(operation_id);
         if(gatherService.getOneGather(target)==null){
             return "不存在采集车";
         }
