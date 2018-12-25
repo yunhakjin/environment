@@ -316,6 +316,7 @@ public class StationController {
         String station_range=params.get("stationRange");
         String station_attribute=params.get("stationAttribute");
         String station_sim=params.get("stationSim");
+        String operation_id=params.get("operationId");
         Station station = new Station();
         station.setApplication(application);
         station.setArea(Integer.valueOf(area));
@@ -342,9 +343,12 @@ public class StationController {
         station.setRange(station_range);
         station.setStation_attribute(Integer.valueOf(station_attribute));
         station.setStationSim(station_sim);
+        station.setOperation_id(operation_id);
         if(stationService.getByStationId(station_code)!=null){
             return "已经存在此站点";
         }
+        if(station_setupdate==""||station_setupdate==null)
+            station_setupdate="1000-01-01 00:00:00";
         stationService.insertStation(station,station_setupdate);
         return "success";
     }
@@ -389,6 +393,7 @@ public class StationController {
         String station_range=params.get("stationRange");
         String station_attribute=params.get("stationAttribute");
         String station_sim=params.get("stationSim");
+        String operation_id=params.get("operationId");
         String target=params.get("target");
         Station station = new Station();
         station.setApplication(application);
@@ -416,9 +421,12 @@ public class StationController {
         station.setRange(station_range);
         station.setStation_attribute(Integer.valueOf(station_attribute));
         station.setStationSim(station_sim);
+        station.setOperation_id(operation_id);
         if(stationService.getByStationId(target)==null){
             return "不存在此站点";
         }
+        if(station_setupdate==""||station_setupdate==null)
+            station_setupdate="1000-01-01 00:00:00";
         stationService.updateStation(station,station_setupdate,target);
         return "success";
     }

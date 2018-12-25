@@ -25,7 +25,7 @@ public interface CompanyDao extends JpaRepository<Company,String> {
 
     @Transactional
     @Modifying
-    @Query(value="delete from company c where c.company_code=?1",nativeQuery = true)
+    @Query(value="delete from company where company_code=?1",nativeQuery = true)
     public void deleteCompany(String company_code);
 
     @Transactional
@@ -35,4 +35,9 @@ public interface CompanyDao extends JpaRepository<Company,String> {
     public void updateCompany(String company_code,String company_name,String company_type,String industry,String company_place,
                               String company_range,String represent,String represent_tel,String protection,String protection_tel,String target);
 
+    @Query(value = "select * from company where company_code=?1",nativeQuery = true)
+    public List<Company> getOneCompany(String company_code);
+
+    @Query(value = "select * from company where company_code like %?1% or company_name like %?1%",nativeQuery = true)
+    public List<Company> getCompanyLike(String target);
 }

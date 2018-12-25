@@ -650,9 +650,10 @@ public class StationServiceImpl implements StationService {
         String station_range=station.getRange();
         int station_attribute=station.getStation_attribute();
         String station_sim=station.getStationSim();
+        String operation_id=station.getOperation_id();
         stationDao.insertStation(application,area,city_con,country_con,district,domain,domain_con,station_code,
                 station_id,station_id_dz,station_name,station_status,online_flag,protocol,protocol_name,street,station_major,
-                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute,station_sim);
+                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute,station_sim,operation_id);
     }
 
     @Override
@@ -688,9 +689,10 @@ public class StationServiceImpl implements StationService {
         String station_range=station.getRange();
         int station_attribute=station.getStation_attribute();
         String station_sim=station.getStationSim();
+        String operation_id=station.getOperation_id();
         stationDao.updateStation(area,application,city_con,country_con,district,domain,domain_con,station_code,
                 station_id,station_id_dz,station_name,station_status,online_flag,protocol,protocol_name,street,station_major,
-                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute,station_sim,target);
+                station_setup,station_setupdate,company_code,climate,radar,station_position,station_range,station_attribute,station_sim,operation_id,target);
     }
 
     @Override
