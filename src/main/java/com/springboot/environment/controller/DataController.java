@@ -18,6 +18,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import net.sf.ehcache.util.TimeUtil;
+import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import java.text.DateFormat;
 
@@ -314,12 +316,14 @@ public class DataController {
             @ApiImplicitParam(name = "params",value="参数列表",dataType = "String")
     })
     @RequestMapping(value = "/queryDataByStationIdAndDatetime", method = RequestMethod.POST)
-    public String queryDataByStationIdAndDatetime(@RequestBody Map<String, Object> params){
+    public String queryDataByStationIdAndDatetime(@RequestBody Map<String, Object> params, HttpSession session){
 
         System.out.println(params.toString());
         String stationId= params.get("station_code").toString();
         int dataType = (Integer) params.get("data_type");
         String date = params.get("time").toString();
+//        User user =  (User) session.getAttribute("user");
+//        System.out.println(user.toString());
 
         if (dataType == DataTypeEnum.MDATA.getCode()){
             return mDataService.queryMdataByStationIdAndDatetime(stationId, date);
@@ -328,10 +332,12 @@ public class DataController {
             return m5DataService.queryM5dataByStationIdAndDatetime(stationId, date);
         }
         else if(dataType == DataTypeEnum.HDATA.getCode()){
-            return hDataService.queryHdataByStationIdAndDatetime(stationId, date);
+            int offset = (Integer) params.get("offset");
+            return hDataService.queryHdataByStationIdAndDatetime(stationId, date, offset);
         }
         else if(dataType == DataTypeEnum.DDATA.getCode()){
-            return dDataService.queryDdataByStationIdAndDatetime(stationId, date);
+            int offset = (Integer) params.get("offset");
+            return dDataService.queryDdataByStationIdAndDatetime(stationId, date, offset);
         }
         else {
             return null;

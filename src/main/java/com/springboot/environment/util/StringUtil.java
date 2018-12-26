@@ -40,4 +40,15 @@ public class StringUtil {
         }
         return false;
     }
+
+    /**
+     * 将字符串转换为整型数字百分比的形式
+     * @param string
+     * @return
+     */
+    public static String convertStringToInt(String string) {
+        float num = Float.parseFloat(string);
+        int number = (int) num;
+        return number + "%";
+    }
 }

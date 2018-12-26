@@ -57,12 +57,11 @@ public class HDataServiceImp implements HDataService {
     }
 
     @Override
-    public String queryHdataByStationIdAndDatetime(String stationId, String date) {
+    public String queryHdataByStationIdAndDatetime(String stationId, String date, int offset) {
 
-        try {
-
-            String dayStartTime = DateUtil.getThisDayStartTime(date);
-            String dayEndTIme = DateUtil.getThisDayEndTime(date);
+            String dateTime = DateUtil.getHDateTimeByOffset(date, offset);
+            String dayStartTime = DateUtil.getThisDayStartTime(dateTime);
+            String dayEndTIme = DateUtil.getThisDayEndTime(dateTime);
 
             List<HData> hDatas = hDataDao.queryHdataByStationIdAndTime(stationId, dayStartTime, dayEndTIme);
 
@@ -118,6 +117,7 @@ public class HDataServiceImp implements HDataService {
                 dataJSON.put("count", 24);
                 dataJSON.put("data", hdataArray);
                 dataJSON.put("latest_calibration_value", latestCal);
+                dataJSON.put("time", dateTime);
                 hdataJSON.put("siteData", dataJSON);
 
                 System.out.println(hdataJSON.toJSONString());
@@ -127,15 +127,12 @@ public class HDataServiceImp implements HDataService {
                 dataJSON.put("count", 0);
                 dataJSON.put("data", "");
                 dataJSON.put("latest_calibration_value", "");
+                dataJSON.put("time", dateTime);
                 hdataJSON.put("siteData", dataJSON);
 
                 System.out.println(hdataJSON.toJSONString());
                 return hdataJSON.toJSONString();
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     @Override

@@ -59,6 +59,16 @@ public interface HDataDao extends JpaRepository<HData,Integer> {
     @Query(value = "select * from hdata h where h.station_id = ?1 and h.data_time between ?2 and ?3", nativeQuery = true)
     List<HData> queryHdataByStationIdAndTime(String stationId, String startTime, String endTime);
 
+    /**
+     * 查询某一个指标的数据
+     * @param stationId
+     * @param startTime
+     * @param endTime
+     * @param normCode
+     * @return
+     */
+    @Query(value = "select * from hdata h where h.station_id = ?1 and h.data_time between ?2 and ?3 and h.norm_code = ?4", nativeQuery = true)
+    List<HData> getNormHdataByStationIdAndTime(String stationId, String startTime, String endTime, String normCode);
 
 
     @Query(value = "select max(data_time) from `hdata` where station_id=?1", nativeQuery = true)
