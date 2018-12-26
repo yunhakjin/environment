@@ -204,22 +204,6 @@ public class DDataServiceImp implements DDataService {
                         leqMap.get(day + "").add(hData);
                     }
                 }
-
-                for (int i = 1; i <= dayNums; i++) {
-                    System.out.println("当前时间" + i);
-                    if (leqMap.containsKey(i+"")) {
-                        System.out.println(leqMap.get(i + "").toString());
-                    }
-                    System.out.println("当前时间" + i + "day");
-                    if (leqMap.containsKey(i + "day")) {
-                        System.out.println(leqMap.get(i + "day").toString());
-                    }
-                    System.out.println("当前时间" + i + "night");
-                    if (leqMap.containsKey(i + "night")) {
-                        System.out.println(leqMap.get(i + "night").toString());
-                    }
-                }
-
                 //构造当天数据
                 for (int i = 0; i < ddataArray.size(); i++) {
                     JSONObject object = ddataArray.getJSONObject(i);
