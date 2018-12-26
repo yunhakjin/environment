@@ -92,6 +92,7 @@ public class UserController {
             resultMap.put("user_id", user.getUser_id());
             resultMap.put("user_name", user.getUser_name());
             resultMap.put("password",user.getPassword());
+            resultMap.put("frozeflag",user.getFrozenflag());
             for (int i = 0;i< roles.size();i++){
                 permissionList.add(roles.get(i).getPermission_list());
                 menulist.add(roles.get(i).getMenu_list());
