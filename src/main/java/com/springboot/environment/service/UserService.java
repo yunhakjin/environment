@@ -43,6 +43,8 @@ public interface UserService {
 
     Map pwdVerification(Map params);
 
+    Map frozenOrActiveUser(Map params);
+
 
     // Object login(String name, String pass, HttpSession session, HttpServletRequest request);
 

@@ -234,4 +234,6 @@ public interface StationDao extends JpaRepository<Station, Integer> {
                        String station_setupdate,String company_code,int climate,int radar,String station_position,String station_range,
                        int station_attribute,String station_sim,String operation_id,String target);
 
+    @Query(value = "select * from station s where (s.station_code like %?2% or s.station_name like %?2%) and district = ?1", nativeQuery = true)
+    List<Station> findByStationCodeNameLikeAndArea(String area, String query);
 }

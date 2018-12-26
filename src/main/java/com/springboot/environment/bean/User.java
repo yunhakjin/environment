@@ -31,6 +31,12 @@ public class User  implements Serializable {
     @Column(name = "user_prefer")
     private String user_prefer;
 
+    @Column(name = "frozenflag")
+    private int frozenflag;
+
+    @Column(name = "operation_id")
+    private String operation_id;
+
     //指定了多对多的关系，fetch=FetchType.LAZY属性表示在多的那一方通过延迟加载的方式加载对象（默认不是延迟加载）
     @ManyToMany(fetch= FetchType.LAZY)//立即从数据库中进行加载数据;
     @JoinTable(name = "user_role", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns ={@JoinColumn(name = "role_id") })
@@ -47,6 +53,22 @@ public class User  implements Serializable {
 
     public void setGroups(List<Group> groups) {
         this.groups = groups;
+    }
+
+    public int getFrozenflag() {
+        return frozenflag;
+    }
+
+    public void setFrozenflag(int frozenflag) {
+        this.frozenflag = frozenflag;
+    }
+
+    public String getOperation_id() {
+        return operation_id;
+    }
+
+    public void setOperation_id(String operation_id) {
+        this.operation_id = operation_id;
     }
 
     public Integer getUser_id() {
