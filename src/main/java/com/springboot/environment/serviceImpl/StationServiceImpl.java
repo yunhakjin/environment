@@ -502,7 +502,7 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("calibration_value",calibration_value);
                 stationJSON.put("sim", station.getStationSim());
                 stationJSON.put("flag", flag);
-                stationJSON.put("latest_time_h",DateUtil.getDateStr(hDatas.get(0).getData_time()));
+                stationJSON.put("latest_time_h",DateUtil.getDateBeforeSecond(hDatas.get(0).getData_time()));
                 stationJSON.put("count_h", nowdayHdataNum);
                 stationJSON.put("effective_rate_h", StringUtil.convertStringToInt(effective_rate_h));
                 stationJSON.put("LEQ_h", LEQ_h);
