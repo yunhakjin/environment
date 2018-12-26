@@ -236,4 +236,14 @@ public interface StationDao extends JpaRepository<Station, Integer> {
 
     @Query(value = "select * from station s where (s.station_code like %?2% or s.station_name like %?2%) and district = ?1", nativeQuery = true)
     List<Station> findByStationCodeNameLikeAndArea(String area, String query);
+
+
+    /**
+     * 根据站点district和domain查询stations
+     * @param district
+     * @param domain
+     * @return
+     */
+    @Query(value = "select * from station where district = ?1 and domain = ?2", nativeQuery = true)
+    List<Station> findByDistrictAndDomain(String district, int domain);
 }

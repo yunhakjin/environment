@@ -786,4 +786,10 @@ public class StationServiceImpl implements StationService {
         List<Station> stations = stationDao.findByStationCodeNameLikeAndArea(area,query);
         return stations;
     }
+
+    @Override
+    public List<Station> queryStationsByDistrictAndDomain(String district, int Domain) {
+        List<Station> stations = stationDao.findByDistrictAndDomain(district,Domain);
+        return stations;
+    }
 }

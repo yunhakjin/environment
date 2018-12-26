@@ -257,6 +257,27 @@ public class StationController {
         return  resultMap;
     }
 
+    @ApiOperation(value = "根据行政区和功能区查询")
+    @ApiImplicitParam(name = "params",value = "行政区，功能区",dataType = "JSON")
+    @RequestMapping(value = "/getStationsByDistrictAndDomain",method = RequestMethod.POST)
+    public Map getStationsByDistrictAndDomain(@RequestBody Map<String,Object> params){
+        String district = params.get("district_name").toString();
+        int domain = (Integer) params.get("domain_id");
+        Set<Map> stationSet=new HashSet<>();
+        List<Station> stationList=stationService.queryStationsByDistrictAndDomain(district,domain);
+        for(Station station:stationList){
+            Map<String,String> map=new HashMap<String,String>();
+            map.put("station_id",station.getStationCode());
+            map.put("station_name",station.getStationName());
+            stationSet.add(map);
+        }
+        List<Map> resultList=new ArrayList<Map>();
+        resultList.addAll(stationSet);
+        Map<String,List> resultMap=new HashMap<String,List>();
+        resultMap.put("stations",resultList);
+        return  resultMap;
+    }
+
     @ApiOperation(value="根据key模糊查询站点信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "params",value="模糊查询的key值,可能是id也可能是name",dataType = "String")

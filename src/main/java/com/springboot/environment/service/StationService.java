@@ -72,4 +72,6 @@ public interface StationService {
     List<Station> queryStationsByCodeLikeAndArea(String area, String query);
 
     List<Station> queryStationsByNameLikeAndArea(String area, String query);
+
+    List<Station> queryStationsByDistrictAndDomain(String district, int domain );
 }
