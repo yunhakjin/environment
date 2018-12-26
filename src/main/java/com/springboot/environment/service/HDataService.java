@@ -11,7 +11,7 @@ public interface HDataService {
     public List<HData> getHDataByData_id(String Data_id);
     public List<HData> getByStationAndTime(String station_id,String starttime,String endtime);
 
-    String queryHdataByStationIdAndDatetime(String stationId, String date);
+    String queryHdataByStationIdAndDatetime(String stationId, String date, int offset);
 
     public List<HData> getByStationAndDate(String station_id,String date);
 

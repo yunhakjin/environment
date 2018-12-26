@@ -4,13 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.springboot.environment.bean.DData;
-import com.springboot.environment.bean.HData;
-import com.springboot.environment.bean.Norm;
-import com.springboot.environment.bean.Station;
-import com.springboot.environment.dao.DDataDao;
-import com.springboot.environment.dao.NormDao;
-import com.springboot.environment.dao.StationDao;
+import com.springboot.environment.bean.*;
+import com.springboot.environment.dao.*;
 import com.springboot.environment.service.DDataService;
 import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.NormConstant;
@@ -36,6 +31,19 @@ public class DDataServiceImp implements DDataService {
 
     @Autowired
     private NormDao normDao;
+
+    @Autowired
+    private HDataDao hDataDao;
+
+    @Autowired
+    ThresholdDao thresholdDao;
+
+    private static final int MILLSECONDS = 1000;
+    private static final int SECONDS = 60;
+    private static final int MINUTES = 60;
+    private static final long ONE_DAY_TIMESTAMP = 24 * MILLSECONDS * SECONDS * MINUTES;
+
+    private static final String LEQ = "n00006";
 
     @Override
     public List<DData> getAll() {
@@ -75,76 +83,188 @@ public class DDataServiceImp implements DDataService {
     }
 
     @Override
-    public String queryDdataByStationIdAndDatetime(String stationId, String date) {
+    public String queryDdataByStationIdAndDatetime(String stationId, String date, int offset) {
 
-        try {
+        //需要查找的月份
+        String dateTime = DateUtil.getDdateTimeByOffset(date, offset);
+        //月初开始时间
+        String monthBeginTime = DateUtil.getMonthFirstDay(dateTime);
+        //月末结束时间
+        String monthEndTime = DateUtil.getMonthEndDay(dateTime);
+        //需要查询的小时数据的开始时间，如果是10月，那么小时数据的开始时间是9月30日6点
+        String hDataBeginTime = DateUtil.getLastMonthSixClock(monthBeginTime);
+        //需要查询的小时数据的结束时间,如果是10月，那么结束时间是10月31日6点
+        String hDataEndTime = DateUtil.getMonthDayEndTimeSixClock(dateTime);
 
-            String monthBeginTime = DateUtil.getMonthFirstDay(date);
-            String monthEndTime = DateUtil.getMonthEndDay(date);
+        //查询当月的天数
+        int dayNums = DateUtil.getDayNumOfMonth(dateTime);
+        List<DData> dDatas = dDataDao.queryDdataByStationIdAndTime(stationId, monthBeginTime, monthEndTime);
 
-            List<DData> dDatas = dDataDao.queryDdataByStationIdAndTime(stationId, monthBeginTime, monthEndTime);
+        JSONArray ddataArray = new JSONArray();
+        JSONObject ddataJSON = new JSONObject();
+        JSONObject dataJSON = new JSONObject();
+        //如果指定时间内有数据
+        if (!StringUtil.isNullOrEmpty(dDatas)){
+            //构造空的内容
+            for (int i = 1; i <= dayNums; i++) {
+                JSONObject object = new JSONObject();
+                object.put("time", i);
+                ddataArray.add(object);
+            }
 
-            JSONArray ddataArray = new JSONArray();
-            JSONObject ddataJSON = new JSONObject();
-            JSONObject dataJSON = new JSONObject();
+            //日数据按照日期分组
+            Map<Date, List<DData>> map = Maps.newTreeMap();
+            for (DData dData : dDatas) {
+                if (map.containsKey(dData.getData_time())) {
+                    map.get(dData.getData_time()).add(dData);
+                } else {
+                    List<DData> dDataList = Lists.newArrayList();
+                    dDataList.add(dData);
+                    map.put(dData.getData_time(), dDataList);
+                }
+            }
 
-            //如果指定时间内有数据
-            if (!StringUtil.isNullOrEmpty(dDatas)){
-                Map<Date, List<DData>> map = Maps.newTreeMap();
-                for (DData dData : dDatas) {
-                    if (map.containsKey(dData.getData_time())) {
-                        map.get(dData.getData_time()).add(dData);
-                    } else {
-                        List<DData> dDataList = Lists.newArrayList();
-                        dDataList.add(dData);
-                        map.put(dData.getData_time(), dDataList);
+            //将日数据的指标插入对应日期
+            for (List<DData> dDataList : map.values()) {
+                //当前时间的天数
+                int currDate = DateUtil.getDayOfThisDate(dDataList.get(0).getData_time());
+                JSONObject object = ddataArray.getJSONObject(currDate -1);
+                for (DData dData : dDataList) {
+                    if (dData.getNorm_code() != null && dData.getNorm_val() != null) {
+                        object.put(dData.getNorm_code(), dData.getNorm_val());
+                    }
+                    //此数据是LD值，需要显示有效率
+                    if (dData.getNorm_code().equals("n00008")){
+                        object.put("effective_rate_ld", StringUtil.convertStringToInt(dData.getNorm_vdr()));
+                    }
+                    //此数据是LN值，需要显示有效率
+                    if (dData.getNorm_code().equals("n00009")){
+                        object.put("effective_rate_ln", StringUtil.convertStringToInt(dData.getNorm_vdr()));
+                    }
+                    //如果此数值的Ldn值，需要显示有效率
+                    if (dData.getNorm_code().equals("n00007")){
+                        object.put("effective_rate_ldn", StringUtil.convertStringToInt(dData.getNorm_vdr()));
                     }
                 }
+            }
+            //构造日数据的其他信息(ld ln的最大值，达标率，超标率)
+            //查询出来一个月的所有小时数据
+            System.out.println(hDataBeginTime);
+            System.out.println(hDataEndTime);
+            //查询出当月的所有LEQ指标
+            List<HData> hdataList = hDataDao.getNormHdataByStationIdAndTime(stationId, hDataBeginTime, hDataEndTime, LEQ);
 
-                System.out.println(map.toString());
-
-                for (List<DData> dDataList : map.values()) {
-                    JSONObject object = new JSONObject();
-                    object.put("time", DateUtil.getYearMonthDay(dDataList.get(0).getData_time()));
-                    for (DData dData : dDataList) {
-                        if (dData.getNorm_code() != null && dData.getNorm_val() != null) {
-                            object.put(dData.getNorm_code(), dData.getNorm_val());
+            if (!StringUtil.isNullOrEmpty(hdataList)) {
+                //查询该站点的昼夜阈值
+                Threshold threshold = thresholdDao.getThresholdByStationCode(stationId);
+                float ldLimit = Float.parseFloat(threshold.getD_limit());
+                float lnLimit = Float.parseFloat(threshold.getN_limit());
+                //将LEQ指标根据日期和昼夜构造map
+                Map<String, List<HData>> leqMap = new HashMap<>();
+                for (HData hData : hdataList) {
+                    int day = DateUtil.getDayOfThisDate(hData.getData_time());
+                    int hour = DateUtil.gethourOfThisDate(hData.getData_time());
+                    if (hour >=6 && hour <= 22) {
+                        //map的key : 日期+day
+                        if (!leqMap.containsKey((DateUtil.getDayAfterThisDay(hData.getData_time())) + "day")){
+                            List<HData> list = new ArrayList<>();
+                            leqMap.put((DateUtil.getDayAfterThisDay(hData.getData_time())) + "day", list);
                         }
+                        leqMap.get((DateUtil.getDayAfterThisDay(hData.getData_time())) + "day").add(hData);
+                        if (!leqMap.containsKey(DateUtil.getDayAfterThisDay(hData.getData_time()) +"")){
+                            List<HData> list = new ArrayList<>();
+                            leqMap.put(DateUtil.getDayAfterThisDay(hData.getData_time()) + "", list);
+                        }
+                        leqMap.get(DateUtil.getDayAfterThisDay(hData.getData_time()) + "").add(hData);
                     }
-                    ddataArray.add(object);
+                    //下一天的夜数据
+                    else if (hour > 22 && hour <= 23){
+                        if (!leqMap.containsKey((DateUtil.getDayAfterThisDay(hData.getData_time())) + "night")){
+                            List<HData> list = new ArrayList<>();
+                            leqMap.put((DateUtil.getDayAfterThisDay(hData.getData_time())) + "night", list);
+                        }
+                        leqMap.get((DateUtil.getDayAfterThisDay(hData.getData_time())) + "night").add(hData);
+                        if (!leqMap.containsKey(DateUtil.getDayAfterThisDay(hData.getData_time()) +"")){
+                            List<HData> list = new ArrayList<>();
+                            leqMap.put(DateUtil.getDayAfterThisDay(hData.getData_time()) + "", list);
+                        }
+                        leqMap.get(DateUtil.getDayAfterThisDay(hData.getData_time()) + "").add(hData);
+                    }
+                    //当天的夜数据
+                    else if (hour >= 0 && hour < 6){
+                        if (!leqMap.containsKey(day + "night")){
+                            List<HData> list = new ArrayList<>();
+                            leqMap.put(day + "night", list);
+                        }
+                        leqMap.get(day + "night").add(hData);
+                        if (!leqMap.containsKey(day + "")){
+                            List<HData> list = new ArrayList<>();
+                            leqMap.put(day + "", list);
+                        }
+                        leqMap.get(day + "").add(hData);
+                    }
                 }
 
-                //获取最新数据的val值
-                String latestCal = null;
-                List<DData> latestDData = ((TreeMap<Date, List<DData>>) map).lastEntry().getValue();
-                System.out.println("最新的时间为:" + latestDData.get(0).getData_time());
-                for (DData dData : latestDData){
-                    if (dData.getNorm_code().equals("n00100")){
-                        latestCal = dData.getNorm_val();
+                for (int i = 1; i <= dayNums; i++) {
+                    System.out.println("当前时间" + i);
+                    if (leqMap.containsKey(i+"")) {
+                        System.out.println(leqMap.get(i + "").toString());
+                    }
+                    System.out.println("当前时间" + i + "day");
+                    if (leqMap.containsKey(i + "day")) {
+                        System.out.println(leqMap.get(i + "day").toString());
+                    }
+                    System.out.println("当前时间" + i + "night");
+                    if (leqMap.containsKey(i + "night")) {
+                        System.out.println(leqMap.get(i + "night").toString());
                     }
                 }
-                dataJSON.put("count", map.size());
-                dataJSON.put("data", ddataArray);
-                dataJSON.put("latest_calibration_value", latestCal);
-                ddataJSON.put("siteData", dataJSON);
 
-                System.out.println(ddataJSON.toJSONString());
-                return ddataJSON.toJSONString();
+                //构造当天数据
+                for (int i = 0; i < ddataArray.size(); i++) {
+                    JSONObject object = ddataArray.getJSONObject(i);
+                    int currDay = object.getInteger("time");
+                    //全天leq的最大值
+                    if (leqMap.containsKey(currDay + "")){
+                        List<HData> totalData = leqMap.get(currDay + "");
+                        String max_ldn = getMaxLEQInList(totalData);
+                        object.put("max_ldn", max_ldn);
+                    }
+                    if (leqMap.containsKey(currDay + "day")) {
+                        List<HData> dayData = leqMap.get(currDay + "day");
+                        String max_ld_day = getMaxLEQInList(dayData);
+                        object.put("max_ld_day", max_ld_day);
+                        int overRate = computeOverRate(dayData, ldLimit);
+                        int qualifiedRate = 100 - overRate;
+                        object.put("overRate_day", overRate + "%");
+                        object.put("qualifiedRate_day", qualifiedRate + "%");
+                    }
+                    if (leqMap.containsKey(currDay + "night")) {
+                        List<HData> nightData = leqMap.get(currDay + "night");
+                        int overRate = computeOverRate(nightData, lnLimit);
+                        int qualifiedRate = 100 - overRate;
+                        object.put("overRate_night", overRate + "%");
+                        object.put("qualifiedRate_night", qualifiedRate + "%");
+                    }
+                }
             }
+            dataJSON.put("count", dayNums);
+            dataJSON.put("data", ddataArray);
+            dataJSON.put("time", dateTime);
+            ddataJSON.put("siteData", dataJSON);
 
-            else {
-                dataJSON.put("count", 0);
-                dataJSON.put("data", "");
-                dataJSON.put("latest_calibration_value", "");
-                ddataJSON.put("siteData", dataJSON);
-
-                System.out.println(ddataJSON.toJSONString());
-                return ddataJSON.toJSONString();
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
+            System.out.println(ddataJSON.toJSONString());
+            return ddataJSON.toJSONString();
         }
-        return null;
+        else {
+            dataJSON.put("count", 0);
+            dataJSON.put("data", "");
+            dataJSON.put("time", dateTime);
+            ddataJSON.put("siteData", dataJSON);
+
+            System.out.println(ddataJSON.toJSONString());
+            return ddataJSON.toJSONString();
+        }
     }
 
     @Override
@@ -464,5 +584,33 @@ public class DDataServiceImp implements DDataService {
         resultMap.put("time2",time2Map);
 
         return resultMap;
+    }
+
+    /**
+     * 得到一个list中的指标最小值
+     * @param list
+     * @return
+     */
+    private String getMaxLEQInList(List<HData> list) {
+        if (list == null) {
+            return "";
+        }
+        float max = Float.MIN_VALUE;
+        for (HData hData : list){
+            float curr = Float.parseFloat(hData.getNorm_val());
+            max = curr > max ? curr : max;
+        }
+        return max + "";
+    }
+
+    private int computeOverRate(List<HData> list, float limit) {
+        int overCount = 0;
+        for (HData hData : list){
+            float currValue = Float.parseFloat(hData.getNorm_val());
+            if (currValue >= limit){
+                overCount ++;
+            }
+        }
+        return overCount / list.size() * 100;
     }
 }

@@ -34,4 +34,12 @@ public interface ThresholdDao extends JpaRepository<Threshold,Integer> {
     @Modifying
     @Query(value = "delete from threshold where id=?1",nativeQuery = true)
     void deleteThreshold(int id);
+
+    /**
+     * 根据站点code查询站点所属功能区的阈值
+     * @param stationCode
+     * @return
+     */
+    @Query(value = "select t.* from threshold t, station s where t.target_domain = s.DOMAIN and s.STATION_CODE = ?1", nativeQuery = true)
+    Threshold getThresholdByStationCode(String stationCode);
 }

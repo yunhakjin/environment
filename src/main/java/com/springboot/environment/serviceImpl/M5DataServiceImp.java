@@ -64,85 +64,77 @@ public class M5DataServiceImp implements M5DataService {
     @Override
     public String queryM5dataByStationIdAndDatetime(String stationId, String date) {
 
-        try {
-            String startDate = DateUtil.getDateBefore1hour(date);
-            String endDate = date;
+        String startDate = DateUtil.getDateBefore1hour(date);
+        String endDate = date;
 
-            List<M5Data> m5Datas = m5DataDao.queryMdataByStationIdAndTime(stationId, startDate, endDate);
+        List<M5Data> m5Datas = m5DataDao.queryMdataByStationIdAndTime(stationId, startDate, endDate);
 
-            JSONArray m5dataArray = new JSONArray();
-            JSONObject m5dataJSON = new JSONObject();
-            JSONObject dataJSON = new JSONObject();
+        JSONArray m5dataArray = new JSONArray();
+        JSONObject m5dataJSON = new JSONObject();
+        JSONObject dataJSON = new JSONObject();
 
-            //如果指定时间内有数据
-            if (!StringUtil.isNullOrEmpty(m5Datas)){
-                Map<Date, List<M5Data>> map = Maps.newTreeMap();
-                for (M5Data m5Data : m5Datas) {
-                    if (map.containsKey(m5Data.getData_time())) {
-                        map.get(m5Data.getData_time()).add(m5Data);
-                    } else {
-                        List<M5Data> m5DataList = Lists.newArrayList();
-                        m5DataList.add(m5Data);
-                        map.put(m5Data.getData_time(), m5DataList);
-                    }
+        //如果指定时间内有数据
+        if (!StringUtil.isNullOrEmpty(m5Datas)){
+            Map<Date, List<M5Data>> map = Maps.newTreeMap();
+            for (M5Data m5Data : m5Datas) {
+                if (map.containsKey(m5Data.getData_time())) {
+                    map.get(m5Data.getData_time()).add(m5Data);
+                } else {
+                    List<M5Data> m5DataList = Lists.newArrayList();
+                    m5DataList.add(m5Data);
+                    map.put(m5Data.getData_time(), m5DataList);
                 }
+            }
 
-                for (int i = 0; i < MINUTE_5; i++) {
-                    String time = DateUtil.getDateAfterMinutes(startDate, 5 * i);
-                    JSONObject object = new JSONObject();
-                    object.put("time", time);
-                    m5dataArray.add(object);
-                }
+            for (int i = 0; i < MINUTE_5; i++) {
+                String time = DateUtil.getDateAfterMinutes(startDate, 5 * i);
+                JSONObject object = new JSONObject();
+                object.put("time", time);
+                m5dataArray.add(object);
+            }
 
-                for (List<M5Data> m5DataList : map.values()) {
-                    String time = DateUtil.getHourAndMinute(m5DataList.get(0).getData_time());
-                    for (int i = 0; i < m5dataArray.size(); i++) {
-                        JSONObject object = m5dataArray.getJSONObject(i);
-                        if (time.equals(object.getString("time"))){
-                            for (M5Data m5Data : m5DataList) {
-                                if (m5Data.getNorm_code() != null && m5Data.getNorm_val() != null) {
-                                    object.put(m5Data.getNorm_code(), m5Data.getNorm_val());
-                                }
+            for (List<M5Data> m5DataList : map.values()) {
+                String time = DateUtil.getHourAndMinute(m5DataList.get(0).getData_time());
+                for (int i = 0; i < m5dataArray.size(); i++) {
+                    JSONObject object = m5dataArray.getJSONObject(i);
+                    if (time.equals(object.getString("time"))){
+                        for (M5Data m5Data : m5DataList) {
+                            if (m5Data.getNorm_code() != null && m5Data.getNorm_val() != null) {
+                                object.put(m5Data.getNorm_code(), m5Data.getNorm_val());
                             }
-                            break;
                         }
+                        break;
                     }
                 }
-
-                //获取最新数据的val值
-                String latestCal = null;
-                List<M5Data> latestM5Data = ((TreeMap<Date, List<M5Data>>) map).lastEntry().getValue();
-                System.out.println("最新的时间为:" + latestM5Data.get(0).getData_time());
-                for (M5Data m5Data : latestM5Data){
-                    if (m5Data.getNorm_code().equals("n00100")){
-                        latestCal = m5Data.getNorm_val();
-                    }
+            }
+            //获取最新数据的val值
+            String latestCal = null;
+            List<M5Data> latestM5Data = ((TreeMap<Date, List<M5Data>>) map).lastEntry().getValue();
+            System.out.println("最新的时间为:" + latestM5Data.get(0).getData_time());
+            for (M5Data m5Data : latestM5Data){
+                if (m5Data.getNorm_code().equals("n00100")){
+                    latestCal = m5Data.getNorm_val();
                 }
-                //一小时的固定5分钟数据是12条，从 00 到55
-                dataJSON.put("count", 12);
-                dataJSON.put("data", m5dataArray);
-                dataJSON.put("latest_calibration_value", latestCal);
-                m5dataJSON.put("siteData", dataJSON);
-
-                System.out.println(m5dataJSON.toJSONString());
-                return m5dataJSON.toJSONString();
             }
+            //一小时的固定5分钟数据是12条，从 00 到55
+            dataJSON.put("count", 12);
+            dataJSON.put("data", m5dataArray);
+            dataJSON.put("latest_calibration_value", latestCal);
+            m5dataJSON.put("siteData", dataJSON);
 
-            else {
-                dataJSON.put("count", 0);
-                dataJSON.put("data", "");
-                dataJSON.put("latest_calibration_value", "");
-                m5dataJSON.put("siteData", dataJSON);
-
-                System.out.println(m5dataJSON.toJSONString());
-                return m5dataJSON.toJSONString();
-            }
-
-        } catch (ParseException e) {
-            e.printStackTrace();
+            System.out.println(m5dataJSON.toJSONString());
+            return m5dataJSON.toJSONString();
         }
 
-        return null;
+        else {
+            dataJSON.put("count", 0);
+            dataJSON.put("data", "");
+            dataJSON.put("latest_calibration_value", "");
+            m5dataJSON.put("siteData", dataJSON);
+
+            System.out.println(m5dataJSON.toJSONString());
+            return m5dataJSON.toJSONString();
+        }
     }
 
     @Override

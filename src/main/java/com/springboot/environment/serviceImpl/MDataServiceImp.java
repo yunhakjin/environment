@@ -68,72 +68,67 @@ public class MDataServiceImp implements MDataService {
     @Override
     public String queryMdataByStationIdAndDatetime(String stationId, String date) {
 
-        try {
-            //数据库查询开始时间，例如 : 2018-10-10 12:00:00 一定是整小时。
-            String startDate = DateUtil.getDateBefore1hour(date);
-            String endDate = date;
+        //数据库查询开始时间，例如 : 2018-10-10 12:00:00 一定是整小时。
+        String startDate = DateUtil.getDateBefore1hour(date);
+        String endDate = date;
 
-            List<MData> mDatas = mDataDao.queryMdataByStationIdAndTime(stationId, startDate, endDate);
+        List<MData> mDatas = mDataDao.queryMdataByStationIdAndTime(stationId, startDate, endDate);
 
-            //设置比较的起始时间
-            JSONArray mdataArray = new JSONArray();
-            JSONObject mdataJSON = new JSONObject();
-            JSONObject dataJSON = new JSONObject();
+        //设置比较的起始时间
+        JSONArray mdataArray = new JSONArray();
+        JSONObject mdataJSON = new JSONObject();
+        JSONObject dataJSON = new JSONObject();
 
-            //如果查询后有数据
-            if (!StringUtil.isNullOrEmpty(mDatas)) {
-                Map<Date, List<MData>> map = Maps.newTreeMap();
-                for (MData mData : mDatas) {
-                    if (map.containsKey(mData.getData_time())) {
-                        map.get(mData.getData_time()).add(mData);
-                    } else {
-                        List<MData> mDataList = Lists.newArrayList();
-                        mDataList.add(mData);
-                        map.put(mData.getData_time(), mDataList);
-                    }
+        //如果查询后有数据
+        if (!StringUtil.isNullOrEmpty(mDatas)) {
+            Map<Date, List<MData>> map = Maps.newTreeMap();
+            for (MData mData : mDatas) {
+                if (map.containsKey(mData.getData_time())) {
+                    map.get(mData.getData_time()).add(mData);
+                } else {
+                    List<MData> mDataList = Lists.newArrayList();
+                    mDataList.add(mData);
+                    map.put(mData.getData_time(), mDataList);
                 }
+            }
 
-                for (int i = 0; i < MINUTES; i++) {
-                    String time = DateUtil.getDateAfterMinutes(startDate, i);
-                    JSONObject object = new JSONObject();
-                    object.put("time", time);
-                    mdataArray.add(object);
-                }
+            for (int i = 0; i < MINUTES; i++) {
+                String time = DateUtil.getDateAfterMinutes(startDate, i);
+                JSONObject object = new JSONObject();
+                object.put("time", time);
+                mdataArray.add(object);
+            }
 
-                for (List<MData> mDataList : map.values()) {
-                    String time = DateUtil.getHourAndMinute(mDataList.get(0).getData_time());
-                    for (int i = 0; i < mdataArray.size(); i++) {
-                        JSONObject object = mdataArray.getJSONObject(i);
-                        if (time.equals(object.getString("time"))){
-                            for (MData mData : mDataList) {
-                                if (mData.getNorm_code() != null && mData.getNorm_val() != null) {
-                                    object.put(mData.getNorm_code(), mData.getNorm_val());
-                                }
+            for (List<MData> mDataList : map.values()) {
+                String time = DateUtil.getHourAndMinute(mDataList.get(0).getData_time());
+                for (int i = 0; i < mdataArray.size(); i++) {
+                    JSONObject object = mdataArray.getJSONObject(i);
+                    if (time.equals(object.getString("time"))){
+                        for (MData mData : mDataList) {
+                            if (mData.getNorm_code() != null && mData.getNorm_val() != null) {
+                                object.put(mData.getNorm_code(), mData.getNorm_val());
                             }
-                            break;
                         }
+                        break;
                     }
                 }
-                //实时数据一小时固定位60条，从00到59
-                dataJSON.put("count",60);
-                dataJSON.put("data", mdataArray);
-                mdataJSON.put("siteData", dataJSON);
-
-                System.out.println(mdataJSON.toJSONString());
-                return mdataJSON.toJSONString();
             }
-            else {
-                dataJSON.put("count", 0);
-                dataJSON.put("data", "");
-                mdataJSON.put("siteData", dataJSON);
+            //实时数据一小时固定位60条，从00到59
+            dataJSON.put("count",60);
+            dataJSON.put("data", mdataArray);
+            mdataJSON.put("siteData", dataJSON);
 
-                System.out.println(mdataJSON.toJSONString());
-                return mdataJSON.toJSONString();
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
+            System.out.println(mdataJSON.toJSONString());
+            return mdataJSON.toJSONString();
         }
-        return null;
+        else {
+            dataJSON.put("count", 0);
+            dataJSON.put("data", "");
+            mdataJSON.put("siteData", dataJSON);
+
+            System.out.println(mdataJSON.toJSONString());
+            return mdataJSON.toJSONString();
+        }
     }
 
     @Override

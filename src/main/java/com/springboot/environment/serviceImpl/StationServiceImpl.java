@@ -359,6 +359,7 @@ public class StationServiceImpl implements StationService {
                 //最新数据的时间戳
                 maxDataTime = (String) maxMdataJson.get("data_time");
                 maxDataTime = maxDataTime.split("\\.")[0];
+                maxDataTime = DateUtil.getTimeUntilMM(maxDataTime);
 
                 String LA = null;
                 String LEQ = null;
@@ -380,6 +381,7 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
                 stationJSON.put("station_code", station.getStationCode());
+                stationJSON.put("sim", station.getStationSim());
                 stationJSON.put("latest_time", maxDataTime);
                 stationJSON.put("count_r", thisDayCount == null ? 0 : thisDayCount);
                 stationJSON.put("LA", LA);
@@ -390,6 +392,7 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
                 stationJSON.put("station_code", station.getStationCode());
+                stationJSON.put("sim", station.getStationSim());
                 stationJSON.put("latest_time", "");
                 stationJSON.put("count_r", thisDayCount == null ? 0 : thisDayCount);
                 stationJSON.put("LA", "");
@@ -459,6 +462,7 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
                 stationJSON.put("station_code", station.getStationCode());
+                stationJSON.put("sim", station.getStationSim());
                 stationJSON.put("calibration_value","");
                 stationJSON.put("flag", "");
                 stationJSON.put("latest_time_h","");
@@ -488,6 +492,7 @@ public class StationServiceImpl implements StationService {
                     }
                     if (hdata.getNorm_code().equals("n00010")){
                         LMX_h = hdata.getNorm_val();
+                        effective_rate_h = hdata.getNorm_vdr();
                     }
                 }
 
@@ -495,10 +500,11 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("station_id", station.getStationId());
                 stationJSON.put("station_code", station.getStationCode());
                 stationJSON.put("calibration_value",calibration_value);
+                stationJSON.put("sim", station.getStationSim());
                 stationJSON.put("flag", flag);
                 stationJSON.put("latest_time_h",DateUtil.getDateStr(hDatas.get(0).getData_time()));
                 stationJSON.put("count_h", nowdayHdataNum);
-                stationJSON.put("effective_rate_h", effective_rate_h);
+                stationJSON.put("effective_rate_h", StringUtil.convertStringToInt(effective_rate_h));
                 stationJSON.put("LEQ_h", LEQ_h);
                 stationJSON.put("LMX_h", LMX_h);
             }
@@ -565,6 +571,7 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
                 stationJSON.put("station_code", station.getStationCode());
+                stationJSON.put("sim", station.getStationSim());
                 stationJSON.put("Ld", "");
                 stationJSON.put("effective_rate_Ld", "");
                 stationJSON.put("Ln", "");
@@ -583,9 +590,11 @@ public class StationServiceImpl implements StationService {
                 for (DData dData : dDatas){
                     if (dData.getNorm_code().equals("n00008")){
                         Ld = dData.getNorm_val();
+                        effective_rate_Ld = dData.getNorm_vdr();
                     }
                     if (dData.getNorm_code().equals("n00009")){
                         Ln = dData.getNorm_val();
+                        effective_rate_Ln = dData.getNorm_vdr();
                     }
                     if (dData.getNorm_code().equals("n00021")){
                         Lnm = dData.getNorm_val();
@@ -595,10 +604,11 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("station_name", station.getStationName());
                 stationJSON.put("station_id", station.getStationId());
                 stationJSON.put("station_code", station.getStationCode());
+                stationJSON.put("sim", station.getStationSim());
                 stationJSON.put("Ld", Ld);
-                stationJSON.put("effective_rate_Ld", "");
+                stationJSON.put("effective_rate_Ld", StringUtil.convertStringToInt(effective_rate_Ld));
                 stationJSON.put("Ln", Ln);
-                stationJSON.put("effective_rate_Ln", "");
+                stationJSON.put("effective_rate_Ln", StringUtil.convertStringToInt(effective_rate_Ln));
                 stationJSON.put("Lnm", Lnm);
             }
 
