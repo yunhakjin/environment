@@ -163,6 +163,7 @@ public class UserServiceImpl implements UserService {
                     userMap.put("user_tel",users.get(i).getUser_tel().toString());
                     userMap.put("user_mail",users.get(i).getUser_mail().toString());
                     userMap.put("password",users.get(i).getPassword().toString());
+                    userMap.put("frozenflag",users.get(i).getFrozenflag());
                     userMap.put("role_id",role.getRole_id());
                     userMap.put("role_name",role.getRole_name());
                 }else{
@@ -171,6 +172,7 @@ public class UserServiceImpl implements UserService {
                     userMap.put("user_tel",users.get(i).getUser_tel().toString());
                     userMap.put("user_mail",users.get(i).getUser_mail().toString());
                     userMap.put("password",users.get(i).getPassword().toString());
+                    userMap.put("frozenflag",users.get(i).getFrozenflag());
                 }
                 userList.add(userMap);
 
@@ -189,12 +191,14 @@ public class UserServiceImpl implements UserService {
                 userMap.put("password",user.getPassword().toString());
                 userMap.put("role_id",role.getRole_id());
                 userMap.put("role_name",role.getRole_name());
+                userMap.put("frozenflag",user.getFrozenflag());
             }else {
                 userMap.put("user_id",user.getUser_id().toString());
                 userMap.put("user_name",user.getUser_name().toString());
                 userMap.put("user_tel",user.getUser_tel().toString());
                 userMap.put("user_mail",user.getUser_mail().toString());
                 userMap.put("password",user.getPassword().toString());
+                userMap.put("frozenflag",user.getFrozenflag());
             }
             userList.add(userMap);
             System.out.println(userMap);
@@ -312,6 +316,35 @@ public class UserServiceImpl implements UserService {
         }else{
             resultMap.put("flag","false");
         }
+        return resultMap;
+    }
+
+    @Override
+    public Map frozenOrActiveUser(Map params) {
+        String user_id=(String)params.get("user_id");
+        boolean froze=(boolean)params.get("froze");
+        Map<String,String> resultMap=new LinkedHashMap<String,String>();
+        User user=userDao.loadByUserId(Integer.parseInt(user_id));
+        if(user!=null){
+            if(froze==false&&user.getFrozenflag()==0){
+                int flag=userDao.updateActiveFlag(user_id);
+                if(flag==1){
+                    resultMap.put("activeFlag","true");
+                }else{
+                    resultMap.put("activeFlag","false");
+                }
+            }else if(froze==true&&user.getFrozenflag()==1){
+                int flag=userDao.updateFrozenFlag(user_id);
+                if(flag==1){
+                    resultMap.put("frozeFlag","true");
+                }else{
+                    resultMap.put("frozeFlag","false");
+                }
+            }
+        }else{
+            System.out.println("此用户不存在");
+        }
+
         return resultMap;
     }
 }

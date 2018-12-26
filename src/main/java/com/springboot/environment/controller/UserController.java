@@ -217,6 +217,15 @@ public class UserController {
         return userService.pwdVerification(params);
     }
 
+    /*
+         * 冻结用户by id
+         * */
+    @ApiOperation(value = "冻结用户by id",notes = "冻结用户by id")
+    @ApiImplicitParam(name = "params",value="冻结状态和激活状态，userid",dataType = "JSON")
+    @RequestMapping(value = "/frozenOrActiveUser",method = RequestMethod.POST)
+    public Map frozenOrActiveUser(@RequestBody Map<String,Object> params){
+        return userService.frozenOrActiveUser(params);
+    }
 
 
 }

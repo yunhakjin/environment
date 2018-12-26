@@ -243,25 +243,17 @@ public class StationController {
     @RequestMapping(value = "/getStationLike",method = RequestMethod.POST)
     public Map getStationsLike(@RequestBody Map<String,String> params){
         String query=params.get("key");
-        Set<Map> stationSet=new HashSet<>();
-        List<Station> stationList=stationService.queryStationsByNameLike(query);
+        String area=params.get("area");
+        List<Map> stationsList=new ArrayList<>();
+        List<Station> stationList=stationService.queryStationsByNameLikeAndArea(area,query);
         for(Station station:stationList){
             Map<String,String> map=new HashMap<String,String>();
             map.put("station_id",station.getStationCode());
             map.put("station_name",station.getStationName());
-            stationSet.add(map);
+            stationsList.add(map);
         }
-        stationList=stationService.queryStationsByCodeLike(query);
-        for(Station station:stationList){
-            Map<String,String> map=new HashMap<String,String>();
-            map.put("station_id",station.getStationCode());
-            map.put("station_name",station.getStationName());
-            stationSet.add(map);
-        }
-        List<Map> resultList=new ArrayList<Map>();
-        resultList.addAll(stationSet);
         Map<String,List> resultMap=new HashMap<String,List>();
-        resultMap.put("stations",resultList);
+        resultMap.put("stations",stationsList);
         return  resultMap;
     }
 
