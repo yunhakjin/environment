@@ -796,4 +796,9 @@ public class StationServiceImpl implements StationService {
         List<Station> stations = stationDao.findByStationCodeNameLikeAndArea(area,query);
         return stations;
     }
+
+    @Override
+    public void updateStationOperation(String operation_id,String station_code){
+        stationDao.updateStationOperation(operation_id,station_code);
+    }
 }

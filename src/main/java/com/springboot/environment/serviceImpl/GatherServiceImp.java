@@ -91,4 +91,9 @@ public class GatherServiceImp implements GatherService {
                 gather_id,gather_id_dz,gather_name,gather_status,online_flag,protocol,protocol_name,street,gather_major,
                 gather_setup,gather_setupdate,company_code,climate,radar,operation_id,target);
     }
+
+    @Override
+    public void updateGatherOperation(String operation_id,String gather_id){
+        gatherDao.updateGatherOperation(operation_id,gather_id);
+    }
 }

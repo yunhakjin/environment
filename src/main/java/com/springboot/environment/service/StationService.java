@@ -72,4 +72,6 @@ public interface StationService {
     List<Station> queryStationsByCodeLikeAndArea(String area, String query);
 
     List<Station> queryStationsByNameLikeAndArea(String area, String query);
+
+    void updateStationOperation(String operation_id,String station_code);
 }
