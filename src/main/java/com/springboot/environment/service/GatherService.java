@@ -10,4 +10,5 @@ public interface GatherService {
     public void insertGather(Gather gather,String setupdate);
     public void deleteGather(String gather_id);
     public void updateGather(Gather gather,String setupdate,String target);
+    public void updateGatherOperation(String operation_id,String gather_id);
 }
