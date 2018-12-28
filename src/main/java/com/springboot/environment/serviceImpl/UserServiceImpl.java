@@ -179,6 +179,7 @@ public class UserServiceImpl implements UserService {
                     userMap.put("user_mail",users.get(i).getUser_mail().toString());
                     userMap.put("password",users.get(i).getPassword().toString());
                     userMap.put("frozenflag",users.get(i).getFrozenflag());
+                    userMap.put("operation_id",users.get(i).getOperation_id());
                     userMap.put("role_id",role.getRole_id());
                     userMap.put("role_name",role.getRole_name());
                 }else{
@@ -188,6 +189,7 @@ public class UserServiceImpl implements UserService {
                     userMap.put("user_mail",users.get(i).getUser_mail().toString());
                     userMap.put("password",users.get(i).getPassword().toString());
                     userMap.put("frozenflag",users.get(i).getFrozenflag());
+                    userMap.put("operation_id",users.get(i).getOperation_id());
                 }
                 userList.add(userMap);
 
@@ -207,6 +209,7 @@ public class UserServiceImpl implements UserService {
                 userMap.put("role_id",role.getRole_id());
                 userMap.put("role_name",role.getRole_name());
                 userMap.put("frozenflag",user.getFrozenflag());
+                userMap.put("operation_id",user.getOperation_id());
             }else {
                 userMap.put("user_id",user.getUser_id().toString());
                 userMap.put("user_name",user.getUser_name().toString());
@@ -214,6 +217,7 @@ public class UserServiceImpl implements UserService {
                 userMap.put("user_mail",user.getUser_mail().toString());
                 userMap.put("password",user.getPassword().toString());
                 userMap.put("frozenflag",user.getFrozenflag());
+                userMap.put("operation_id",user.getOperation_id());
             }
             userList.add(userMap);
             System.out.println(userMap);
@@ -234,12 +238,17 @@ public class UserServiceImpl implements UserService {
         String newPs = new SimpleHash("MD5", password, salt, 1024).toHex();
         String user_tel=(String)params.get("user_tel");
         String user_mail=(String)params.get("user_mail");
+        String operation_id=(String)params.get("operation_id");
+        String frozenflag=(String)params.get("frozenflag");
+
         User user=new User();
         user.setUser_id(Integer.parseInt(user_id));
         user.setUser_name(user_name);
         user.setPassword(newPs);
         user.setUser_tel(user_tel);
         user.setUser_mail(user_mail);
+        user.setOperation_id(operation_id);
+        user.setFrozenflag(Integer.parseInt(frozenflag));
         if(type.equals("add")){
             user.setPassword(newPs);
             User u=userDao.loadByUserId(Integer.parseInt(user_id));
@@ -259,7 +268,8 @@ public class UserServiceImpl implements UserService {
 
         }else if(type.equals("edit")){
             //判断user-id是否有，如果有，那么
-            user.setPassword(password);
+
+            user.setPassword(newPs);
             User u=userDao.loadByUserId(Integer.parseInt(user_id));
             if(u!=null){
                 userDao.save(user);
