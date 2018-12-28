@@ -465,8 +465,9 @@ public class StationController {
     @ApiOperation(value="GEOJSON 返回接口信息")
     @ApiImplicitParam(name = "params")
     @RequestMapping(value = "/GEOJson", method = RequestMethod.POST)
-    public Map GEOJson(@RequestBody Map<String,String> params){
-        return stationService.GEOJson(params);
+    public Map GEOJson(@RequestBody Map<String,String> params,HttpSession session){
+        String operation_id = GetStationListByUser(session);
+        return stationService.GEOJson(params,operation_id);
     }
 
     @ApiOperation(value="通过用户id获取stationList")
