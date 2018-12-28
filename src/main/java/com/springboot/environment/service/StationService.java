@@ -67,7 +67,7 @@ public interface StationService {
 
     Station getByStationId(String station_id);
 
-    Map GEOJson(Map params);
+    Map GEOJson(Map params, String operation_id);
 
     List<Station> queryStationsByCodeLikeAndArea(String area, String query);
 
