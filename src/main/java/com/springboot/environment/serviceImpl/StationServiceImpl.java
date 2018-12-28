@@ -219,6 +219,65 @@ public class StationServiceImpl implements StationService {
                 for(int i=0;i<areas.size();i++){
                     List<Station> stations=stationDao.getAreasByAreasName(areas.get(i));
                     for (Station station:stations) {
+                        if(operation_id.equals("0")){
+                            for(int j=0;j<funcCodes.size();j++){//从获得的stationslist中查找功能让区为get(j)的站点，并把这个站点加入到list中
+                                if(funcCodes.get(j).equals((station.getDomain()+""))){
+                                    Map<String, String> innerMap = new LinkedHashMap<String, String>();
+                                    innerMap.put("station_id",station.getStationCode());
+                                    innerMap.put("station_name",station.getStationName());
+                                    innerMapList.add(innerMap);
+                                }
+                            }
+                        }else{
+                            if(station.getOperation_id().equals(operation_id)){
+                                for(int j=0;j<funcCodes.size();j++){//从获得的stationslist中查找功能让区为get(j)的站点，并把这个站点加入到list中
+                                    if(funcCodes.get(j).equals((station.getDomain()+""))){
+                                        Map<String, String> innerMap = new LinkedHashMap<String, String>();
+                                        innerMap.put("station_id",station.getStationCode());
+                                        innerMap.put("station_name",station.getStationName());
+                                        innerMapList.add(innerMap);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }else{//列表中不是全部的areas，但是是全部的func
+                for(int i=0;i<areas.size();i++){
+                    List<Station> stations=stationDao.getAreasByAreasName(areas.get(i));
+                    for (Station station:stations) {
+                        if(operation_id.equals("0")){
+                            Map<String, String> innerMap = new LinkedHashMap<String, String>();
+                            innerMap.put("station_id",station.getStationId());
+                            innerMap.put("station_name",station.getStationName());
+                            innerMapList.add(innerMap);
+                        }else{
+                            if(station.getOperation_id().equals(operation_id)){
+                                Map<String, String> innerMap = new LinkedHashMap<String, String>();
+                                innerMap.put("station_id",station.getStationId());
+                                innerMap.put("station_name",station.getStationName());
+                                innerMapList.add(innerMap);
+                            }
+                        }
+
+                    }
+                }
+            }
+        }else {
+            //获取所有的areas，然后再判断funcCodes
+            List<Station> stations=stationDao.findAll();
+            if(funcCodes_checkedAll.equals("false")){
+                for (Station station:stations) {
+                    if(operation_id.equals("0")){
+                        for(int j=0;j<funcCodes.size();j++){//从获得的stationslist中查找功能让区为get(j)的站点，并把这个站点加入到list中
+                            if(funcCodes.get(j).equals((station.getDomain()+""))){
+                                Map<String, String> innerMap = new LinkedHashMap<String, String>();
+                                innerMap.put("station_id",station.getStationCode());
+                                innerMap.put("station_name",station.getStationName());
+                                innerMapList.add(innerMap);
+                            }
+                        }
+                    }else{
                         if(station.getOperation_id().equals(operation_id)){
                             for(int j=0;j<funcCodes.size();j++){//从获得的stationslist中查找功能让区为get(j)的站点，并把这个站点加入到list中
                                 if(funcCodes.get(j).equals((station.getDomain()+""))){
@@ -230,45 +289,22 @@ public class StationServiceImpl implements StationService {
                             }
                         }
                     }
-                }
-            }else{//列表中不是全部的areas，但是是全部的func
-                for(int i=0;i<areas.size();i++){
-                    List<Station> stations=stationDao.getAreasByAreasName(areas.get(i));
-                    for (Station station:stations) {
-                        if(station.getOperation_id().equals(operation_id)){
-                            Map<String, String> innerMap = new LinkedHashMap<String, String>();
-                            innerMap.put("station_id",station.getStationId());
-                            innerMap.put("station_name",station.getStationName());
-                            innerMapList.add(innerMap);
-                        }
-
-                    }
-                }
-            }
-        }else {
-            //获取所有的areas，然后再判断funcCodes
-            List<Station> stations=stationDao.findAll();
-            if(funcCodes_checkedAll.equals("false")){
-                for (Station station:stations) {
-                    if(station.getOperation_id().equals(operation_id)){
-                        for(int j=0;j<funcCodes.size();j++){//从获得的stationslist中查找功能让区为get(j)的站点，并把这个站点加入到list中
-                            if(funcCodes.get(j).equals((station.getDomain()+""))){
-                                Map<String, String> innerMap = new LinkedHashMap<String, String>();
-                                innerMap.put("station_id",station.getStationCode());
-                                innerMap.put("station_name",station.getStationName());
-                                innerMapList.add(innerMap);
-                            }
-                        }
-                    }
 
                 }
             }else{
                 for (Station station:stations) {
-                    if(station.getOperation_id().equals(operation_id)){
+                    if(operation_id.equals("0")){
                         Map<String, String> innerMap = new LinkedHashMap<String, String>();
                         innerMap.put("station_id",station.getStationCode());
                         innerMap.put("station_name",station.getStationName());
                         innerMapList.add(innerMap);
+                    }else{
+                        if(station.getOperation_id().equals(operation_id)){
+                            Map<String, String> innerMap = new LinkedHashMap<String, String>();
+                            innerMap.put("station_id",station.getStationCode());
+                            innerMap.put("station_name",station.getStationName());
+                            innerMapList.add(innerMap);
+                        }
                     }
 
                 }

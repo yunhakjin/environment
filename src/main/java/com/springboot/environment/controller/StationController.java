@@ -247,7 +247,14 @@ public class StationController {
             List<Map> stationsList=new ArrayList<>();
             List<Station> stationList=stationService.queryStationsByNameLike(query);
             for(Station station:stationList){
-                if(station.getOperation_id().equals(operation_id)){
+                if(!operation_id.equals("0")){
+                    if(station.getOperation_id().equals(operation_id)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station.getStationCode());
+                        map.put("station_name",station.getStationName());
+                        stationsList.add(map);
+                    }
+                }else{
                     Map<String,String> map=new HashMap<String,String>();
                     map.put("station_id",station.getStationCode());
                     map.put("station_name",station.getStationName());
@@ -259,11 +266,20 @@ public class StationController {
             List<Map> stationsList=new ArrayList<>();
             List<Station> stationList=stationService.queryStationsByNameLikeAndArea(area,query);
             for(Station station:stationList){
-                if(station.getOperation_id().equals(operation_id)){
-                    Map<String,String> map=new HashMap<String,String>();
-                    map.put("station_id",station.getStationCode());
-                    map.put("station_name",station.getStationName());
-                    stationsList.add(map);
+                if(!operation_id.equals("0")){
+                    if(station.getOperation_id().equals(operation_id)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station.getStationCode());
+                        map.put("station_name",station.getStationName());
+                        stationsList.add(map);
+                    }
+                }else{
+                    if(station.getOperation_id().equals(operation_id)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station.getStationCode());
+                        map.put("station_name",station.getStationName());
+                        stationsList.add(map);
+                    }
                 }
 
             }
@@ -460,6 +476,10 @@ public class StationController {
         User user=(User) session.getAttribute("user");
         System.out.println("userOnline"+user);
         String operatationId=user.getOperation_id();
+        if(operatationId==null){
+            System.out.println("超级管理员");
+            operatationId="0";
+        }
         return operatationId;
     }
 
