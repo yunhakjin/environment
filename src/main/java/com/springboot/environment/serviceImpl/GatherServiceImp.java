@@ -96,4 +96,9 @@ public class GatherServiceImp implements GatherService {
     public void updateGatherOperation(String operation_id,String gather_id){
         gatherDao.updateGatherOperation(operation_id,gather_id);
     }
+
+    @Override
+    public List<Gather> findByOperationId(String operatationId) {
+        return gatherDao.findByOperationId(operatationId);
+    }
 }
