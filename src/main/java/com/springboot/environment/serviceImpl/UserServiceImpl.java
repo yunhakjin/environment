@@ -1,15 +1,21 @@
 package com.springboot.environment.serviceImpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.springboot.environment.bean.Gather;
 import com.springboot.environment.bean.Role;
+import com.springboot.environment.bean.Station;
 import com.springboot.environment.bean.User;
+import com.springboot.environment.dao.GatherDao;
 import com.springboot.environment.dao.RoleDao;
+import com.springboot.environment.dao.StationDao;
 import com.springboot.environment.dao.UserDao;
 import com.springboot.environment.service.UserService;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 import io.swagger.models.auth.In;
+import org.apache.catalina.connector.Request;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
@@ -33,6 +40,14 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private RoleDao roleDao;
+
+    @Autowired
+    private StationDao stationDao;
+
+    @Autowired
+    private GatherDao gatherDao;
+
+
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -347,4 +362,7 @@ public class UserServiceImpl implements UserService {
 
         return resultMap;
     }
+
+
+
 }
