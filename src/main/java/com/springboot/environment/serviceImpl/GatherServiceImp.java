@@ -99,10 +99,11 @@ public class GatherServiceImp implements GatherService {
 
     @Override
     public List<Gather> getGatherByOperation_id(String operation_id){
-        return gatherDao.getGatherByOperation_id(operation_id);
+        return gatherDao.getGatherByOperation_id(operation_id);}
 
-    public List<Gather> findByOperationId(String operatationId) {
-        return gatherDao.findByOperationId(operatationId);
+    @Override
+    public List<Gather> findByOperationId(String operationId) {
+        return gatherDao.findByOperationId(operationId);
 
     }
 }
