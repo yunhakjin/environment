@@ -27,8 +27,12 @@ public class DateUtil {
     public static String getTodayStr(Date nowDate){
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-        String nowDateStr = sdf.format(nowDate);
-        return nowDateStr;
+        return sdf.format(nowDate);
+    }
+
+    public static String getTodayEndStr(Date nowDate){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+        return sdf.format(nowDate);
     }
 
 

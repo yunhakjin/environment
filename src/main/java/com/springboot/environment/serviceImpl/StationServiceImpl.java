@@ -45,6 +45,9 @@ public class StationServiceImpl implements StationService {
     @Autowired
     RedisTemplate<String, String> redisTemplate;
 
+    @Autowired
+    MDataBasicDao mDataBasicDao;
+
 
     @Override
     public List<Station> findALl() {
@@ -300,6 +303,7 @@ public class StationServiceImpl implements StationService {
 
         //方法开始时间
         long startTime  = System.currentTimeMillis();
+        Date nowDate = new Date();
 
         JSONObject dataJson = new JSONObject();
         JSONObject siteData = new JSONObject();
@@ -340,12 +344,12 @@ public class StationServiceImpl implements StationService {
         }
 
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
-        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
         for (Station station : stations){
 
             JSONObject stationJSON = new JSONObject();
 
-            String thisDayCount = hashOperations.get("count", station.getStationCode());
+            //取得当天的数据条数
+            int thisDayCount = mDataBasicDao.getMDataCountByStationIdAndTime(station.getStationCode(), DateUtil.getTodayStr(nowDate), DateUtil.getDateStr(nowDate));
             //取得第一个数据
             Set<String> maxScoreMdata = zSetOperations.reverseRange(station.getStationCode(), 0, 0);
             String maxDataTime = null;
@@ -383,7 +387,7 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("station_code", station.getStationCode());
                 stationJSON.put("sim", station.getStationSim());
                 stationJSON.put("latest_time", maxDataTime);
-                stationJSON.put("count_r", thisDayCount == null ? 0 : thisDayCount);
+                stationJSON.put("count_r", thisDayCount == 0 ? "" : thisDayCount);
                 stationJSON.put("LA", LA);
                 stationJSON.put("LEQ", LEQ);
                 stationJSON.put("LMX", LMX);
@@ -394,7 +398,7 @@ public class StationServiceImpl implements StationService {
                 stationJSON.put("station_code", station.getStationCode());
                 stationJSON.put("sim", station.getStationSim());
                 stationJSON.put("latest_time", "");
-                stationJSON.put("count_r", thisDayCount == null ? 0 : thisDayCount);
+                stationJSON.put("count_r", thisDayCount == 0 ? "" : thisDayCount);
                 stationJSON.put("LA", "");
                 stationJSON.put("LEQ", "");
                 stationJSON.put("LMX", "");
