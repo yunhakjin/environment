@@ -269,7 +269,7 @@ public class UserServiceImpl implements UserService {
         }else if(type.equals("edit")){
             //判断user-id是否有，如果有，那么
 
-            user.setPassword(newPs);
+            user.setPassword(password);
             User u=userDao.loadByUserId(Integer.parseInt(user_id));
             if(u!=null){
                 userDao.save(user);
@@ -288,10 +288,32 @@ public class UserServiceImpl implements UserService {
 
              }
 
-
             }else{
                 System.out.println("不存在此用户");
                 resultMap.put("editFlag","false");
+            }
+        }else if(type.equals("updatePWD")){
+            //判断user-id是否有，如果有，那么
+            user.setPassword(newPs);
+            User u=userDao.loadByUserId(Integer.parseInt(user_id));
+            if(u!=null){
+                userDao.save(user);
+                User user1=userDao.loadByUserId(Integer.parseInt(user_id));
+                if(user1.getUser_name().equals(user_name)&&user1.getPassword().equals(newPs)&&user1.getUser_mail().equals(user_mail)&&user1.getUser_tel().equals(user_tel)){
+                    resultMap.put("updateFlag","true");
+                }else{
+                    resultMap.put("updateFlag","false");
+                }
+                int userRoleCount=userDao.Count(Integer.parseInt(user_id));
+                System.out.println(userRoleCount+"userRoleCount");
+                if(userRoleCount==1){
+                    userDao.updateRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
+                }else {
+                    userDao.addRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
+                }
+            }else{
+                System.out.println("不存在此用户");
+                resultMap.put("updateFlag","false");
             }
         }
         return resultMap;
