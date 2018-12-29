@@ -24,8 +24,7 @@ public class OperationServiceImp implements OperationService {
         String operation_name=operation.getOperation_name();
         String operation_relate=operation.getOperation_relate();
         String operation_tel=operation.getOperation_tel();
-        String operation_target=operation.getOperation_target();
-        operationDao.insertOperation(operation_id,operation_name,operation_relate,operation_tel,operation_target);
+        operationDao.insertOperation(operation_id,operation_name,operation_relate,operation_tel);
     }
 
     @Override
@@ -39,8 +38,7 @@ public class OperationServiceImp implements OperationService {
         String operation_name=operation.getOperation_name();
         String operation_relate=operation.getOperation_relate();
         String operation_tel=operation.getOperation_tel();
-        String operation_target=operation.getOperation_target();
-        operationDao.updateOperation(operation_id,operation_name,operation_relate,operation_tel,operation_target,target);
+        operationDao.updateOperation(operation_id,operation_name,operation_relate,operation_tel,target);
     }
 
     @Override

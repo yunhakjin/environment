@@ -58,14 +58,4 @@ public class Operation {
         return operation_relate;
     }
 
-    @Column(name = "operation_target")
-    private String operation_target;
-
-    public void setOperation_target(String operation_target) {
-        this.operation_target = operation_target;
-    }
-
-    public String getOperation_target() {
-        return operation_target;
-    }
 }

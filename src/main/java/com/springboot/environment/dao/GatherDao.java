@@ -9,11 +9,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 @Repository
 public interface GatherDao extends JpaRepository<Gather,Integer> {
     @Query(value = "select distinct * from gather where gather_id=?1",nativeQuery = true)
     public Gather getAllByGather_id(String gather_id);
+
+    @Query(value="select distinct * from gather where operation_id=?1",nativeQuery = true)
+    public List<Gather> getGatherByOperation_id(String operation_id);
 
     @Transactional
     @Modifying
