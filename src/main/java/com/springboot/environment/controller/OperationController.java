@@ -59,13 +59,12 @@ public class OperationController {
         map.put("operation_tel",operation.getOperation_tel());
         List<Map> station_set=new ArrayList<Map>();
         List<Map> station_unset=new ArrayList<Map>();
-        List<Map> gather_set=new ArrayList<Map>();
-        List<Map> gather_unset=new ArrayList<Map>();
+        List<Map> gatherSet=new ArrayList<Map>();
         List<Station> stationList=stationService.findALl();
         List<Gather> gatherList=gatherService.getAllGather();
         for(Station station:stationList){
             Map<String,String> innermap=new HashMap<String,String>();
-            if(station.getOperation_id().equals(operation_id)){
+            if(!station.getOperation_id().equals("")&&station.getOperation_id().equals(operation_id)){
                 innermap.put("stationCode",station.getStationCode());
                 innermap.put("stationSim",station.getStationSim());
                 innermap.put("stationName",station.getStationName());
@@ -82,23 +81,24 @@ public class OperationController {
         }
         for(Gather gather:gatherList){
             Map<String,String> innermap=new HashMap<String,String>();
-            if(gather.getOperation_id().equals(operation_id)){
+            if(!gather.getOperation_id().equals("")&&gather.getOperation_id()!=null&&gather.getOperation_id().equals(operation_id)){
                 innermap.put("gatherId",gather.getGather_id());
                 innermap.put("gatherCode",gather.getGather_code());
                 innermap.put("gatherName",gather.getGather_name());
-                gather_set.add(innermap);
+                innermap.put("flag","true");
+                gatherSet.add(innermap);
             }
             else if(gather.getOperation_id().equals("")||gather.getOperation_id()==null){
                 innermap.put("gatherId",gather.getGather_id());
                 innermap.put("gatherCode",gather.getGather_code());
                 innermap.put("gatherName",gather.getGather_name());
-                gather_unset.add(innermap);
+                innermap.put("flag","false");
+                gatherSet.add(innermap);
             }
         }
         map.put("station_set",station_set);
         map.put("station_unset",station_unset);
-        map.put("gather_set",gather_set);
-        map.put("gather_unset",gather_unset);
+        map.put("gather",gatherSet);
         return map;
     }
 
@@ -120,14 +120,13 @@ public class OperationController {
         operation.setOperation_tel(operation_tel);
         operationService.insertOperation(operation);
         List<String> station_set=(List)params.get("stationSet");
-        List<String> station_unset=(List)params.get("stationUnset");
-        List<String> gather_set=(List)params.get("gatherSet");
-        List<String> gather_unset=(List)params.get("gatherUnset");
+        List<Map> gather_set=(List)params.get("gather");
         for(String station:station_set){
             stationService.updateStationOperation(operation_id,station);
         }
-        for(String gather:gather_set){
-            gatherService.updateGatherOperation(operation_id,gather);
+        for(Map map:gather_set){
+            if(map.get("flag").equals("true")){
+            gatherService.updateGatherOperation(operation_id,(String)map.get("gatherId"));}
         }
         return "success";
     }
@@ -172,8 +171,20 @@ public class OperationController {
 
         List<String> station_set=(List)params.get("stationSet");
         List<String> station_unset=(List)params.get("stationUnset");
-        List<String> gather_set=(List)params.get("gatherSet");
-        List<String> gather_unset=(List)params.get("gatherUnset");
+        List<Map> gatherList=(List)params.get("gather");
+        List<String> gather_set=new ArrayList<String>();
+        List<String> gather_unset=new ArrayList<String>();
+        for(Map map:gatherList){
+            String gather_id=(String)map.get("gatherId");
+            String flag=(String)map.get("flag");
+            if(flag.equals("true")){
+                gather_set.add(gather_id);
+            }
+            else{
+                gather_unset.add(gather_id);
+            }
+        }
+        System.out.println(station_set);
         for(String station:station_set){
             stationService.updateStationOperation(operation_id,station);
         }
@@ -195,6 +206,21 @@ public class OperationController {
     public List<Operation> getOperationLike(@RequestBody Map<String,String> params){
         String target=params.get("target");
         return operationService.getOperationLike(target);
+    }
+
+    @ApiOperation(value="站点模糊查询")
+    @ApiImplicitParam(value = "运维单位id的JSON",name = "params",dataType = "JSON")
+    @RequestMapping(value = "getstation",method=RequestMethod.POST)
+    public List<Station> getStation(@RequestBody Map<String,String> params){
+        String operation_id=params.get("operationId");
+        String key=params.get("key");
+        String district=params.get("area");
+        if(district.equals("*")){
+            return stationService.getOperationStationLikeAll(operation_id,key);
+        }
+        else {
+            return stationService.getOperationStationLike(district, operation_id, key);
+        }
     }
 
 
