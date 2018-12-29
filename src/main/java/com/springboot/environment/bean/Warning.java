@@ -95,10 +95,10 @@ public class Warning {
     }
 
 
-    @Column(name = "limit_type",length = 1)
-    private int limit_type;
-    public int getLimit_type() { return limit_type; }
-    public void setLimit_type(int limit_type) { this.limit_type = limit_type; }
+//    @Column(name = "limit_type",length = 1)
+//    private int limit_type;
+//    public int getLimit_type() { return limit_type; }
+//    public void setLimit_type(int limit_type) { this.limit_type = limit_type; }
 
 
     @Column(name = "norm_code", length = 5)

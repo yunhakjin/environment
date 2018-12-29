@@ -27,7 +27,7 @@ public interface WarningDao extends JpaRepository<Warning,String> {
      * @param endTime
      * @return
      */
-    @Query(value = "select * from warning  where warning_domain = ?2 and warning_district = ?1 and warning_start_time between ?2 and ?3 and station_id = ?4", nativeQuery = true)
+    @Query(value = "select * from warning  where warning_domain = ?2 and warning_district = ?1 and station_id = ?5 and warning_start_time between ?3 and ?4 ", nativeQuery = true)
     List<Warning> queryWarningByDomainAndTimeAndDistrictAndStation(String warningDistrict, int warningDomain, String startTime, String endTime, String station_id);
 
 

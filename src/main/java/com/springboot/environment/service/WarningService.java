@@ -15,7 +15,7 @@ import java.util.Map;
 
 public interface WarningService {
     public Page<Warning> getAllPage(int page, int size);
-    public String queryWarningByDomainAndTimeAndDistrictAndStation(String warning_district, int warning_domain, String station_id,String start_time, String end_time) throws ParseException;
+    public String queryWarningByDomainAndTimeAndDistrictAndStation(String warning_district, int warning_domain, String start_time, String end_time,String station_id) throws ParseException;
     public List<Warning> queryNewWarning(int lastNum);
     public int getCount();
 }

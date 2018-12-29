@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class WarningServiceImp implements WarningService {
     }
 
     @Override
-    public String queryWarningByDomainAndTimeAndDistrictAndStation(String warning_district,int warning_domain, String station_id,String start_time, String end_time) {
+    public String queryWarningByDomainAndTimeAndDistrictAndStation(String warning_district,int warning_domain, String start_time, String end_time,String station_id) {
 
             JSONArray warningArray = new JSONArray();
             JSONObject warningData = new JSONObject();
@@ -44,21 +45,25 @@ public class WarningServiceImp implements WarningService {
 
             List<Warning> warnings = warningDao.queryWarningByDomainAndTimeAndDistrictAndStation(warning_district,warning_domain,start_time,end_time, station_id);
 
+            System.out.println(warnings.size());
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH");
 
-            if (!StringUtil.isNullOrEmpty(warnings)) {
+            if (warnings.size() > 0) {
 
                 for (Warning warning : warnings) {
                     JSONObject warningJSON = new JSONObject();
                     warningJSON.put("station_name",warning.getStation_name());
                     warningJSON.put("norm_code",warning.getNorm_code());
                     warningJSON.put("threshold",warning.getLimit_value());
-                    warningJSON.put("warning_start_time",warning.getWarning_start_time());
-                    warningJSON.put("warning_end_time",warning.getWarning_end_time());
+                    warningJSON.put("warning_start_time",sdf.format(warning.getWarning_start_time()));
+                    warningJSON.put("warning_end_time",sdf.format(warning.getWarning_end_time()));
                     warningJSON.put("leq",warning.getReal_value());
                     warningJSON.put("lmx",warning.getLmx());
                     warningJSON.put("sd",warning.getSd());
                     warningJSON.put("cal",warning.getCal());
                     warningJSON.put("vdr",warning.getVdr());
+
+                    System.out.print(warningJSON);
 
                     warningArray.add(warningJSON);
 

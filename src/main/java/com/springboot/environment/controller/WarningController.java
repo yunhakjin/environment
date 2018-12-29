@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 //import com.springboot.environment.util.SendMessageUtil;
 import com.springboot.environment.util.ConvertToJsonUtil;
 
+import javax.xml.soap.SAAJResult;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -39,17 +40,17 @@ public class WarningController {
     @RequestMapping(value = "/queryWarningByDomainAndTimeAndDistrictAndStation",method = RequestMethod.POST)
     public String getWarningByDomainAndTimeAndDistrictAndStation(@RequestBody Map<String,Object> params) throws ParseException {
         System.out.println(params.toString());
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-mm-dd HH:00:00");
+        //SimpleDateFormat sdf=new SimpleDateFormat("yyyy-mm-dd HH:00:00");
 
         String warning_district = params.get("district_name").toString();
         int warning_domain = (Integer) params.get("domain_id");
         String station_id = params.get("station_id").toString();
-        String start_time = sdf.format(params.get("requestStartTime"));
-        String end_time = sdf.format(params.get("requestEndTime"));
+        String start_time = params.get("requestStartTime").toString();
+        String end_time = params.get("requestEndTime").toString();
 //        int pageSize = (Integer) params.get("each_page_num");
 //        int pageNum = (Integer) params.get("current_page");
 
-        return warningService.queryWarningByDomainAndTimeAndDistrictAndStation(warning_district,warning_domain,station_id,start_time,end_time);
+        return warningService.queryWarningByDomainAndTimeAndDistrictAndStation(warning_district,warning_domain,start_time,end_time,station_id);
     }
 
 //    @ApiOperation(value = "查询实时报警信息", notes = "")
