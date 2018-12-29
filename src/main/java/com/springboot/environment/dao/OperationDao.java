@@ -18,10 +18,10 @@ public interface OperationDao extends JpaRepository<Operation,String> {
 
     @Transactional
     @Modifying
-    @Query(value="insert into operation(operation_id,operation_name,operation_relate,operation_tel," +
-            "operation_target) values(?1,?2,?3,?4,?5)",nativeQuery = true)
+    @Query(value="insert into operation(operation_id,operation_name,operation_relate,operation_tel" +
+            ") values(?1,?2,?3,?4)",nativeQuery = true)
     public void insertOperation(String operation_id,String operation_name,String operation_relate,
-                                String operation_tel,String operation_target);
+                                String operation_tel);
 
     @Transactional
     @Modifying
@@ -31,9 +31,9 @@ public interface OperationDao extends JpaRepository<Operation,String> {
     @Transactional
     @Modifying
     @Query(value = "update operation set operation_id=?1,operation_name=?2,operation_relate=?3," +
-            "operation_tel=?4,operation_target=?5 where operation_id=?6",nativeQuery = true)
+            "operation_tel=?4 where operation_id=?5",nativeQuery = true)
     public void updateOperation(String operation_id,String operation_name,String operation_relate,String operation_tel,
-                                String operation_target,String target);
+                                String target);
 
     @Query(value="select * from operation where operation_id=?1",nativeQuery = true)
     public List<Operation> getOneOperation(String operation_id);

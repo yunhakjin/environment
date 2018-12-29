@@ -17,6 +17,9 @@ public interface GatherDao extends JpaRepository<Gather,Integer> {
     @Query(value = "select distinct * from gather where gather_id=?1",nativeQuery = true)
     public Gather getAllByGather_id(String gather_id);
 
+    @Query(value="select distinct * from gather where operation_id=?1",nativeQuery = true)
+    public List<Gather> getGatherByOperation_id(String operation_id);
+
     @Transactional
     @Modifying
     @Query(value="insert into gather(application,area,city_con,country_con,district,domain,domain_con,gather_code," +

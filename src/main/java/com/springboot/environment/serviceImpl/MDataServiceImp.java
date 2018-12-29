@@ -49,20 +49,8 @@ public class MDataServiceImp implements MDataService {
     }
 
     @Override
-    public Page<MData> getAllPage(int page, int size){
-        Pageable pageable=PageRequest.of(page,size);
-        return mDataDao.findAll(pageable);
-    }
-
-    @Override
     public List<MData> getMDataByData_id(String Data_id) {
         return mDataDao.getAllByData_id(Data_id);
-    }
-
-    @Override
-    public Page<MData> getByStationAndTime(String station_id, String starttime, String endtime, int data_check, int data_status, int page, int size) {
-        Pageable pageable=PageRequest.of(page,size);
-        return mDataDao.getByStationAndTime(station_id,starttime,endtime,data_check,data_status,pageable);
     }
 
     @Override

@@ -51,12 +51,6 @@ public class DDataServiceImp implements DDataService {
     }
 
     @Override
-    public Page<DData> getAllPage(int page,int size){
-        Pageable pageable=PageRequest.of(page,size);
-        return dDataDao.findAll(pageable);
-    }
-
-    @Override
     public List<DData> getDDataByData_id(String Data_id) {
           return dDataDao.getAllByData_id(Data_id);
     }
@@ -69,12 +63,6 @@ public class DDataServiceImp implements DDataService {
     @Override
     public void delDData(String Data_id) {
         dDataDao.deleteAll(getDDataByData_id(Data_id));
-    }
-
-    @Override
-    public Page<DData> getByStationAndTime(String station_id, String starttime, String endtime, int data_check, int data_status, int page, int size) {
-        Pageable pageable=PageRequest.of(page,size);
-        return dDataDao.getByStationAndTime(station_id,starttime,endtime,data_check,data_status,pageable);
     }
 
     @Override
