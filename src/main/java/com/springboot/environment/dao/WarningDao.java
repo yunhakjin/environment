@@ -25,11 +25,10 @@ public interface WarningDao extends JpaRepository<Warning,String> {
      * @param warningDomain
      * @param startTime
      * @param endTime
-     * @param pageable
      * @return
      */
-    @Query(value = "select station_name,date_format(warning_start_time,'%Y-%m-%d %H') as ,date_format(warning_end_time,'%Y-%m-%d %H'),leq,lmx,cal,sd,vdr,threshold,norm_code,manager_tel from warning  where warning_domain = ?2 and warning_district = ?1 and warning_start_time between ?2 and ?3 ", nativeQuery = true)
-    Page<Warning> queryWarningByDomainAndTime(String warningDistrict, int warningDomain, String startTime, String endTime, Pageable pageable);
+    @Query(value = "select * from warning  where warning_domain = ?2 and warning_district = ?1 and warning_start_time between ?2 and ?3 and station_id = ?4", nativeQuery = true)
+    List<Warning> queryWarningByDomainAndTimeAndDistrictAndStation(String warningDistrict, int warningDomain, String startTime, String endTime, String station_id);
 
 
 

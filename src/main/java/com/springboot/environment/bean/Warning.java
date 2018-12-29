@@ -118,6 +118,24 @@ public class Warning {
     public String getManger_tel() { return  manger_tel; }
     public void  setManger_tel(String manger_tel) { this.manger_tel = manger_tel; }
 
+    @Column(name = "cal")
+    private String cal;
+    public String getCal() { return cal; }
+    public void setCal(String cal) { this.cal = cal; }
 
+    @Column(name = "lmx")
+    private String lmx;
+    public String getLmx() { return lmx; }
+    public void setLmx(String lmx) { this.lmx = lmx; }
+
+    @Column(name = "sd")
+    private String sd;
+    public String getSd() { return sd; }
+    public void setSd(String sd) { this.sd = sd; }
+
+    @Column(name = "vdr")
+    private int vdr;
+    public int getVdr() { return vdr; }
+    public void setVdr(int vdr) {this.vdr = vdr; }
 
 }

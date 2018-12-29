@@ -3,6 +3,7 @@ package com.springboot.environment.service;
 import com.springboot.environment.bean.Warning;
 import org.springframework.data.domain.Page;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ import java.util.Map;
 
 public interface WarningService {
     public Page<Warning> getAllPage(int page, int size);
-    public Page<Warning> queryWarningByDomainAndTime(String warning_district, int warning_domain, String start_time, String end_time, int page, int size);
+    public String queryWarningByDomainAndTimeAndDistrictAndStation(String warning_district, int warning_domain, String station_id,String start_time, String end_time) throws ParseException;
     public List<Warning> queryNewWarning(int lastNum);
     public int getCount();
 }
