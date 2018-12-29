@@ -1,12 +1,8 @@
 package com.springboot.environment.controller;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.Station;
-import com.springboot.environment.request.QueryStationsByKeyReq;
-import com.springboot.environment.request.QuerydDataByStationAreaReq;
-import com.springboot.environment.request.QueryhDataByStationAreaReq;
-import com.springboot.environment.request.QuerymDataByStationsAreaReq;
+import com.springboot.environment.bean.User;
+import com.springboot.environment.service.GatherService;
 import com.springboot.environment.service.StationService;
 import com.springboot.environment.util.ConvertToJsonUtil;
 import com.springboot.environment.util.StationConstant;
@@ -15,12 +11,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import javafx.scene.chart.ValueAxis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import sun.misc.Request;
 
-import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @RestController
@@ -32,6 +26,8 @@ public class StationController {
     @Autowired
     StationService stationService;
 
+    @Autowired
+    GatherService gatherService;
 
 
     @ApiOperation(value="查询所有站点信息")
@@ -234,26 +230,61 @@ public class StationController {
     @ApiOperation(value = "根据区域与功能区筛选站点",notes = "根据所选区域与功能区筛选站点")
     @ApiImplicitParam(name = "params",value="包含所选功能区与站点区域",dataType = "JSON")
     @RequestMapping(value = "/getStationsByAreasAndFuncCodes",method = RequestMethod.POST)
-    public Map<String,Object> getStationsByAreasAndFuncCodes(@RequestBody Map<String,Object> params){
-        return stationService.getStationsByAreasAndFuncCodes(params);
+    public Map getStationsByAreasAndFuncCodes(@RequestBody Map<String,Object> params, HttpSession session){
+        String operation_id = GetStationListByUser(session);
+        return stationService.getStationsByAreasAndFuncCodes(params,operation_id);
     }
 
-    @ApiOperation(value = "根据站点编号和站点名称模糊查询")
+    @ApiOperation(value = "根据所属区和站点编号和站点名称模糊查询")
     @ApiImplicitParam(name = "params",value = "模糊查询的字符串",dataType = "String")
     @RequestMapping(value = "/getStationLike",method = RequestMethod.POST)
-    public Map getStationsLike(@RequestBody Map<String,String> params){
+    public Map getStationsLike(@RequestBody Map<String,String> params,HttpSession session){
+        Map<String,List> resultMap=new HashMap<String,List>();
+        String operation_id = GetStationListByUser(session);
         String query=params.get("key");
         String area=params.get("area");
-        List<Map> stationsList=new ArrayList<>();
-        List<Station> stationList=stationService.queryStationsByNameLikeAndArea(area,query);
-        for(Station station:stationList){
-            Map<String,String> map=new HashMap<String,String>();
-            map.put("station_id",station.getStationCode());
-            map.put("station_name",station.getStationName());
-            stationsList.add(map);
+        if(area.equals("*")){
+            List<Map> stationsList=new ArrayList<>();
+            List<Station> stationList=stationService.queryStationsByNameLike(query);
+            for(Station station:stationList){
+                if(!operation_id.equals("0")){
+                    if(station.getOperation_id().equals(operation_id)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station.getStationCode());
+                        map.put("station_name",station.getStationName());
+                        stationsList.add(map);
+                    }
+                }else{
+                    Map<String,String> map=new HashMap<String,String>();
+                    map.put("station_id",station.getStationCode());
+                    map.put("station_name",station.getStationName());
+                    stationsList.add(map);
+                }
+            }
+            resultMap.put("stations",stationsList);
+        }else{
+            List<Map> stationsList=new ArrayList<>();
+            List<Station> stationList=stationService.queryStationsByNameLikeAndArea(area,query);
+            for(Station station:stationList){
+                if(!operation_id.equals("0")){
+                    if(station.getOperation_id().equals(operation_id)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station.getStationCode());
+                        map.put("station_name",station.getStationName());
+                        stationsList.add(map);
+                    }
+                }else{
+                    if(station.getOperation_id().equals(operation_id)){
+                        Map<String,String> map=new HashMap<String,String>();
+                        map.put("station_id",station.getStationCode());
+                        map.put("station_name",station.getStationName());
+                        stationsList.add(map);
+                    }
+                }
+
+            }
+            resultMap.put("stations",stationsList);
         }
-        Map<String,List> resultMap=new HashMap<String,List>();
-        resultMap.put("stations",stationsList);
         return  resultMap;
     }
 
@@ -434,8 +465,23 @@ public class StationController {
     @ApiOperation(value="GEOJSON 返回接口信息")
     @ApiImplicitParam(name = "params")
     @RequestMapping(value = "/GEOJson", method = RequestMethod.POST)
-    public Map GEOJson(@RequestBody Map<String,String> params){
-        return stationService.GEOJson(params);
+    public Map GEOJson(@RequestBody Map<String,String> params,HttpSession session){
+        String operation_id = GetStationListByUser(session);
+        return stationService.GEOJson(params,operation_id);
+    }
+
+    @ApiOperation(value="通过用户id获取stationList")
+    @ApiImplicitParam(name = "params")
+    @RequestMapping(value = "/GetStationListByUser", method = RequestMethod.GET)
+    public String GetStationListByUser(HttpSession session){
+        User user=(User) session.getAttribute("user");
+        System.out.println("userOnline"+user);
+        String operatationId=user.getOperation_id();
+        if(operatationId==null){
+            System.out.println("超级管理员");
+            operatationId="0";
+        }
+        return operatationId;
     }
 
 

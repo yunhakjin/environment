@@ -3,6 +3,7 @@ package com.springboot.environment.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.Gather;
 import com.springboot.environment.bean.GatherData;
+import com.springboot.environment.bean.User;
 import com.springboot.environment.service.GatherDataService;
 import com.springboot.environment.service.GatherService;
 import io.swagger.annotations.Api;
@@ -12,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -44,8 +46,16 @@ public class GatherController {
 
     @ApiOperation(value = "返回所有的采集车信息")
     @RequestMapping(value = "/getallgatherInfo",method = RequestMethod.GET)
-    public List getAllGatherInfo(){
-        List<Gather> gatherList=gatherService.getAllGather();
+    public List getAllGatherInfo(HttpSession httpSession){
+        List<Gather> gatherList=new ArrayList<Gather>();
+        User user=(User)httpSession.getAttribute("user");
+        String operation_id=user.getOperation_id();
+        if(operation_id==null||operation_id.equals("")){
+            gatherList=gatherService.getAllGather();
+        }
+        else{
+            gatherList=gatherService.getGatherByOperation_id(operation_id);
+        }
         List<Map> result=new ArrayList<Map>();
         for(Gather gather:gatherList){
             Map<String,Object> map=new HashMap<String,Object>();

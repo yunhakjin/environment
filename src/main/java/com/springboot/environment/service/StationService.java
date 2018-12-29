@@ -55,7 +55,7 @@ public interface StationService {
 
     Map getDomainFromStation();
 
-    Map getStationsByAreasAndFuncCodes(Map<String, Object> params);
+    Map getStationsByAreasAndFuncCodes(Map<String, Object> params, String operation_id);
 
     List<String> getAllStreet();
 
@@ -67,9 +67,13 @@ public interface StationService {
 
     Station getByStationId(String station_id);
 
-    Map GEOJson(Map params);
+    Map GEOJson(Map params, String operation_id);
 
     List<Station> queryStationsByCodeLikeAndArea(String area, String query);
 
     List<Station> queryStationsByNameLikeAndArea(String area, String query);
+
+    void updateStationOperation(String operation_id,String station_code);
+
+    List<Station> findByOperationId(String operatationId);
 }

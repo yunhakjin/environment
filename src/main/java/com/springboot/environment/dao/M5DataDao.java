@@ -17,11 +17,6 @@ import java.util.List;
 public interface M5DataDao extends JpaRepository<M5Data,Integer> {
     @Query(value = "select *from m5data d where d.data_id=?1",nativeQuery = true)
     List<M5Data> getAllByData_id(String data_id);
-
-    @Query(value="select * from m5data d where d.station_id=?1 and d.data_time between ?2 and ?3 and data_check=?4 and data_status=?5",nativeQuery = true)
-    Page<M5Data> getByStationAndTime(String station_id, String starttime, String endtime, int data_check, int data_status, Pageable pageable);
-
-
     /**
      * 根据站点id和指定时间查询5分钟数据
      * @param stationId

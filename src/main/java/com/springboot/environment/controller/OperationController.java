@@ -1,7 +1,13 @@
 package com.springboot.environment.controller;
 
+import com.alibaba.druid.support.spring.stat.annotation.Stat;
+import com.springboot.environment.bean.Gather;
 import com.springboot.environment.bean.Operation;
+import com.springboot.environment.bean.Station;
+import com.springboot.environment.bean.User;
+import com.springboot.environment.service.GatherService;
 import com.springboot.environment.service.OperationService;
+import com.springboot.environment.service.StationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -11,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,21 +30,86 @@ public class OperationController {
     @Autowired
     private OperationService operationService;
 
+    @Autowired
+    private StationService stationService;
+
+    @Autowired
+    private GatherService gatherService;
+
     @ApiOperation(value = "查询所有的运维单位")
     @RequestMapping(value = "/getalloperation",method = RequestMethod.GET)
     public List<Operation> getAllOperation(){
         return operationService.getAllOperation();
     }
 
-    @ApiOperation(value="增加运维单位")
-    @ApiImplicitParam(value = "新增运维单位的json",name = "parmas",dataType = "JSON")
-    @RequestMapping(value = "/addoperation",method = RequestMethod.POST)
-    public String addOperation(@RequestBody Map<String,String> params){
+    @ApiOperation(value="查询单个运维单位")
+    @ApiImplicitParam(value="查询某一个运维站点Id的JSON",name = "params",dataType = "JSON")
+    @RequestMapping(value = "/getoneoperation",method = RequestMethod.POST)
+    public Map getOneOperation(@RequestBody Map<String,String> params){
         String operation_id=params.get("operationId");
-        String operation_name=params.get("operationName");
-        String operation_relate=params.get("operationRelate");
-        String operation_tel=params.get("operationTel");
-        String operation_target=params.get("operationTarget");
+        List<Operation> operationList=operationService.getOneOperation(operation_id);
+        Operation operation=new Operation();
+        for(Operation operation1:operationList){
+            operation=operation1;
+        }
+        Map<String,Object> map=new HashMap<String,Object>();
+        map.put("operation_id",operation.getOperation_id());
+        map.put("operation_name",operation.getOperation_name());
+        map.put("operation_relate",operation.getOperation_relate());
+        map.put("operation_tel",operation.getOperation_tel());
+        List<Map> station_set=new ArrayList<Map>();
+        List<Map> station_unset=new ArrayList<Map>();
+        List<Map> gather_set=new ArrayList<Map>();
+        List<Map> gather_unset=new ArrayList<Map>();
+        List<Station> stationList=stationService.findALl();
+        List<Gather> gatherList=gatherService.getAllGather();
+        for(Station station:stationList){
+            Map<String,String> innermap=new HashMap<String,String>();
+            if(station.getOperation_id().equals(operation_id)){
+                innermap.put("stationCode",station.getStationCode());
+                innermap.put("stationSim",station.getStationSim());
+                innermap.put("stationName",station.getStationName());
+                innermap.put("stationDistrict",station.getDistrict());
+                station_set.add(innermap);
+            }
+            else if(station.getOperation_id().equals("")){
+                innermap.put("stationCode",station.getStationCode());
+                innermap.put("stationSim",station.getStationSim());
+                innermap.put("stationName",station.getStationName());
+                innermap.put("stationDistrict",station.getDistrict());
+                station_unset.add(innermap);
+            }
+        }
+        for(Gather gather:gatherList){
+            Map<String,String> innermap=new HashMap<String,String>();
+            if(gather.getOperation_id().equals(operation_id)){
+                innermap.put("gatherId",gather.getGather_id());
+                innermap.put("gatherCode",gather.getGather_code());
+                innermap.put("gatherName",gather.getGather_name());
+                gather_set.add(innermap);
+            }
+            else if(gather.getOperation_id().equals("")||gather.getOperation_id()==null){
+                innermap.put("gatherId",gather.getGather_id());
+                innermap.put("gatherCode",gather.getGather_code());
+                innermap.put("gatherName",gather.getGather_name());
+                gather_unset.add(innermap);
+            }
+        }
+        map.put("station_set",station_set);
+        map.put("station_unset",station_unset);
+        map.put("gather_set",gather_set);
+        map.put("gather_unset",gather_unset);
+        return map;
+    }
+
+    @ApiOperation(value="增加运维单位")
+    @ApiImplicitParam(value = "新增运维单位的json",name = "params",dataType = "JSON")
+    @RequestMapping(value = "/addoperation",method = RequestMethod.POST)
+    public String addOperation(@RequestBody Map<String,Object> params){
+        String operation_id=(String)params.get("operationId");
+        String operation_name=(String)params.get("operationName");
+        String operation_relate=(String)params.get("operationRelate");
+        String operation_tel=(String)params.get("operationTel");
         if(!operationService.getOneOperation(operation_id).isEmpty()){
             return "已存在此运维单位";
         }
@@ -44,8 +118,17 @@ public class OperationController {
         operation.setOperation_name(operation_name);
         operation.setOperation_relate(operation_relate);
         operation.setOperation_tel(operation_tel);
-        operation.setOperation_target(operation_target);
         operationService.insertOperation(operation);
+        List<String> station_set=(List)params.get("stationSet");
+        List<String> station_unset=(List)params.get("stationUnset");
+        List<String> gather_set=(List)params.get("gatherSet");
+        List<String> gather_unset=(List)params.get("gatherUnset");
+        for(String station:station_set){
+            stationService.updateStationOperation(operation_id,station);
+        }
+        for(String gather:gather_set){
+            gatherService.updateGatherOperation(operation_id,gather);
+        }
         return "success";
     }
 
@@ -55,26 +138,54 @@ public class OperationController {
     public String delOperation(@RequestBody Map<String,String> params){
         String operation_id=params.get("operationId");
         operationService.deleteOperation(operation_id);
+        List<Station> stationList=stationService.findALl();
+        for(Station station:stationList){
+            if(station.getOperation_id().equals(operation_id)){
+                stationService.updateStationOperation("",station.getStationCode());
+            }
+        }
+        List<Gather> gatherList=gatherService.getAllGather();
+        for(Gather gather:gatherList){
+            if(gather.getOperation_id().equals(operation_id)){
+                gatherService.updateGatherOperation("",gather.getGather_id());
+            }
+        }
         return "success";
     }
+
 
     @ApiOperation(value="修改运维单位")
     @ApiImplicitParam(value="修改运维单位的json",name = "params",dataType = "JSON")
     @RequestMapping(value = "/updateoperation",method = RequestMethod.POST)
-    public String updateOperation(@RequestBody Map<String,String> params){
-        String operation_id=params.get("operationId");
-        String operation_name=params.get("operationName");
-        String operation_relate=params.get("operationRelate");
-        String operation_tel=params.get("operationTel");
-        String operation_target=params.get("operationTarget");
-        String target=params.get("target");
+    public String updateOperation(@RequestBody Map<String,Object> params){
+        String operation_id=(String)params.get("operationId");
+        String operation_name=(String)params.get("operationName");
+        String operation_relate=(String)params.get("operationRelate");
+        String operation_tel=(String)params.get("operationTel");
+        String target=(String)params.get("target");
         Operation operation=new Operation();
         operation.setOperation_id(operation_id);
         operation.setOperation_name(operation_name);
         operation.setOperation_relate(operation_relate);
         operation.setOperation_tel(operation_tel);
-        operation.setOperation_target(operation_target);
         operationService.updateOperation(operation,target);
+
+        List<String> station_set=(List)params.get("stationSet");
+        List<String> station_unset=(List)params.get("stationUnset");
+        List<String> gather_set=(List)params.get("gatherSet");
+        List<String> gather_unset=(List)params.get("gatherUnset");
+        for(String station:station_set){
+            stationService.updateStationOperation(operation_id,station);
+        }
+        for(String station:station_unset){
+            stationService.updateStationOperation("",station);
+        }
+        for(String gather:gather_set){
+            gatherService.updateGatherOperation(operation_id,gather);
+        }
+        for(String gather:gather_unset){
+            gatherService.updateGatherOperation("",gather);
+        }
         return "success";
     }
 
@@ -85,4 +196,6 @@ public class OperationController {
         String target=params.get("target");
         return operationService.getOperationLike(target);
     }
+
+
 }

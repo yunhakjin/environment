@@ -44,21 +44,10 @@ public class M5DataServiceImp implements M5DataService {
         return m5DataDao.findAll();
     }
 
-    @Override
-    public Page<M5Data> getAllPage(int page, int size){
-        Pageable pageable=PageRequest.of(page,size);
-        return m5DataDao.findAll(pageable);
-    }
 
     @Override
     public List<M5Data> getM5DataByData_id(String Data_id) {
         return m5DataDao.getAllByData_id(Data_id);
-    }
-
-    @Override
-    public Page<M5Data> getByStationAndTime(String station_id, String starttime, String endtime, int data_check, int data_status, int page, int size) {
-        Pageable pageable=PageRequest.of(page,size);
-        return m5DataDao.getByStationAndTime(station_id,starttime,endtime,data_check,data_status,pageable);
     }
 
     @Override

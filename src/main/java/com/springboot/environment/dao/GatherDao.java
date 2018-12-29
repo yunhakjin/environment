@@ -9,11 +9,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 @Repository
 public interface GatherDao extends JpaRepository<Gather,Integer> {
     @Query(value = "select distinct * from gather where gather_id=?1",nativeQuery = true)
     public Gather getAllByGather_id(String gather_id);
+
+    @Query(value="select distinct * from gather where operation_id=?1",nativeQuery = true)
+    public List<Gather> getGatherByOperation_id(String operation_id);
 
     @Transactional
     @Modifying
@@ -41,4 +46,14 @@ public interface GatherDao extends JpaRepository<Gather,Integer> {
                       String gather_code,String gather_id,String gather_id_dz,String gather_name,int gather_status,
                       int online_flag,int protocol,String protocol_name,String street,String gather_major,String gather_setup,
                       String gather_setupdate,String company_code,int climate,int radar,String operation_id,String target);
+
+    /**
+     * 修改某一个采集车的运维单位*/
+    @Transactional
+    @Modifying
+    @Query(value = "update gather set operation_id=?1 where gather_id=?2",nativeQuery = true)
+    void updateGatherOperation(String operation_id,String gather);
+
+    @Query(value = "select * from gather s where operation_id = ?1", nativeQuery = true)
+    List<Gather> findByOperationId(String operatationId);
 }

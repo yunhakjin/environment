@@ -107,7 +107,7 @@ public interface StationDao extends JpaRepository<Station, Integer> {
      * @param stationName
      * @return
      */
-    @Query(value = "select * from station s where s.STATION_NAME like %?1%", nativeQuery = true)
+    @Query(value = "select * from station s where (s.station_code like %?1% or s.station_name like %?1%)", nativeQuery = true)
     List<Station> findByStationNameLike(String stationName);
 
     /**
@@ -236,4 +236,14 @@ public interface StationDao extends JpaRepository<Station, Integer> {
 
     @Query(value = "select * from station s where (s.station_code like %?2% or s.station_name like %?2%) and district = ?1", nativeQuery = true)
     List<Station> findByStationCodeNameLikeAndArea(String area, String query);
+
+    /**
+     * 修改某一个站点的运维单位信息*/
+    @Transactional
+    @Modifying
+    @Query(value = "update station set operation_id=?1 where station_code=?2",nativeQuery = true)
+    void updateStationOperation(String operation_id,String station_code);
+
+    @Query(value = "select * from station s where operation_id = ?1", nativeQuery = true)
+    List<Station> findByOperationId(String operatationId);
 }
