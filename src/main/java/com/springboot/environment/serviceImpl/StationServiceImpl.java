@@ -1102,4 +1102,11 @@ public class StationServiceImpl implements StationService {
     public List<Station> findByOperationId(String operatationId) {
         return stationDao.findByOperationId(operatationId);
     }
+
+
+    @Override
+    public List<Station> queryStationsByDistrictAndDomain(String district, int Domain) {
+        List<Station> stations = stationDao.findByDistrictAndDomain(district, Domain);
+        return stations;
+    }
 }

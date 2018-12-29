@@ -246,4 +246,8 @@ public interface StationDao extends JpaRepository<Station, Integer> {
 
     @Query(value = "select * from station s where operation_id = ?1", nativeQuery = true)
     List<Station> findByOperationId(String operatationId);
+
+
+    @Query(value = "select * from station where district = ?1 and domain = ?2", nativeQuery = true)
+    List<Station> findByDistrictAndDomain(String district, int domain);
 }
