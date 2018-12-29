@@ -4,7 +4,10 @@ package com.springboot.environment.bean;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.checkerframework.checker.units.qual.C;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.*;
 import java.util.Date;
 
@@ -313,5 +316,35 @@ public class Gather {
 
     public String getOperation_id() {
         return operation_id;
+    }
+
+    @Override
+    public String toString() {
+        return "Gather{" +
+                "id=" + id +
+                ", gather_id='" + gather_id + '\'' +
+                ", gather_code='" + gather_code + '\'' +
+                ", gather_name='" + gather_name + '\'' +
+                ", gather_status=" + gather_status +
+                ", application='" + application + '\'' +
+                ", online_flag=" + online_flag +
+                ", gather_id_dz='" + gather_id_dz + '\'' +
+                ", protocol=" + protocol +
+                ", protocol_name='" + protocol_name + '\'' +
+                ", street='" + street + '\'' +
+                ", district='" + district + '\'' +
+                ", country_con=" + country_con +
+                ", city_con=" + city_con +
+                ", domain_con=" + domain_con +
+                ", area=" + area +
+                ", domain=" + domain +
+                ", gather_major='" + gather_major + '\'' +
+                ", gather_setup='" + gather_setup + '\'' +
+                ", gather_setupdate=" + gather_setupdate +
+                ", company_code='" + company_code + '\'' +
+                ", climate=" + climate +
+                ", radar=" + radar +
+                ", operation_id='" + operation_id + '\'' +
+                '}';
     }
 }

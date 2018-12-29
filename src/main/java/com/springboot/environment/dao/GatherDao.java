@@ -53,4 +53,7 @@ public interface GatherDao extends JpaRepository<Gather,Integer> {
     @Modifying
     @Query(value = "update gather set operation_id=?1 where gather_id=?2",nativeQuery = true)
     void updateGatherOperation(String operation_id,String gather);
+
+    @Query(value = "select * from gather s where operation_id = ?1", nativeQuery = true)
+    List<Gather> findByOperationId(String operatationId);
 }

@@ -12,4 +12,5 @@ public interface GatherService {
     public void updateGather(Gather gather,String setupdate,String target);
     public void updateGatherOperation(String operation_id,String gather_id);
     public List<Gather> getGatherByOperation_id(String operation_id);
+    List<Gather> findByOperationId(String operatationId);
 }
