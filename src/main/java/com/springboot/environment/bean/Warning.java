@@ -21,6 +21,7 @@ public class Warning {
     @Id
     @GeneratedValue
     private Integer warning_id;
+    public Integer getWarning_id() { return warning_id; }
 
 
     @Column(name="station_id",length=20)

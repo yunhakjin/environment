@@ -3,6 +3,7 @@ package com.springboot.environment.util;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.Station;
+import com.springboot.environment.bean.Warning;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,5 +62,36 @@ public class ConvertToJsonUtil {
         System.out.println("查询到的站点信息为");
 
         return stationsArray.toJSONString();
+    }
+
+    public static String warningListConvertToJson(List<Warning> warnings) {
+        if (warnings == null || warnings.size() == 0 || warnings.isEmpty()){
+            JSONObject emptyStation = new JSONObject();
+            emptyStation.put("message", "查询结果为空");
+            return emptyStation.toJSONString();
+        }
+
+        JSONArray warningsArray = new JSONArray();
+        for(Warning warning : warnings){
+            JSONObject warningJson = new JSONObject();
+            warningJson.put("warning_id", warning.getWarning_id());
+            warningJson.put("station_name",warning.getStation_name());
+            warningJson.put("station_id",warning.getStation_id());
+            warningJson.put("warning_start_time",warning.getWarning_start_time());
+            warningJson.put("warning_end_time",warning.getWarning_end_time());
+            warningJson.put("warning_domain",warning.getWarning_domain());
+            warningJson.put("warning_district",warning.getWarning_district());
+            warningJson.put("threshold",warning.getLimit_value());
+            warningJson.put("norm_code",warning.getNorm_code());
+            warningJson.put("leq", warning.getReal_value());
+            warningJson.put("manager_tel",warning.getManger_tel());
+
+            warningsArray.add(warningJson);
+        }
+
+        System.out.println("查询到的站点信息为");
+
+        return warningsArray.toJSONString();
+
     }
 }
