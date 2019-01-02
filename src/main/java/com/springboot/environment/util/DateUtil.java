@@ -1,12 +1,14 @@
 package com.springboot.environment.util;
 
 import org.apache.tomcat.jni.Local;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import javax.xml.crypto.Data;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -89,6 +91,22 @@ public class DateUtil {
         return null;
     }
 
+    public static String getDateAfter1Hour(String date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Calendar calendar = Calendar.getInstance();
+        Date nowDate = null;
+        try {
+            nowDate = sdf.parse(date);
+            calendar.setTime(nowDate);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
+            return sdf.format(calendar.getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * 得到指定时间的后续指定分钟时间
      * @param date
@@ -142,8 +160,7 @@ public class DateUtil {
         Date nowDate = null;
         try {
             nowDate = sdf.parse(date);
-            String dayBeginTime = new SimpleDateFormat("yyyy-MM-dd 00:00:00").format(nowDate);
-            return dayBeginTime;
+            return new SimpleDateFormat("yyyy-MM-dd 00:00").format(nowDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -203,8 +220,7 @@ public class DateUtil {
         Date nowDate = null;
         try {
             nowDate = sdf.parse(date);
-            String dayEndTime = new SimpleDateFormat("yyyy-MM-dd 23:59:59").format(nowDate);
-            return dayEndTime;
+            return new SimpleDateFormat("yyyy-MM-dd 23:59").format(nowDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -235,7 +251,7 @@ public class DateUtil {
         Date nowDate = null;
         try {
             nowDate = sdf.parse(date);
-            String firstDay = new SimpleDateFormat("yyyy-MM-01 00:00:00").format(nowDate);
+            String firstDay = new SimpleDateFormat("yyyy-MM-01 00:00").format(nowDate);
             return firstDay;
         } catch (ParseException e) {
             e.printStackTrace();
@@ -249,7 +265,7 @@ public class DateUtil {
      * @return
      */
     public static String getLastMonthSixClock(String date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Calendar calendar = Calendar.getInstance();
         try {
             Date nowDate = sdf.parse(date);
@@ -307,7 +323,7 @@ public class DateUtil {
             calendar.set(Calendar.HOUR_OF_DAY,23);
             calendar.set(Calendar.MINUTE, 59);
             calendar.set(Calendar.SECOND, 59);
-            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(calendar.getTimeInMillis()));
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(calendar.getTimeInMillis()));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -330,7 +346,7 @@ public class DateUtil {
             calendar.set(Calendar.HOUR_OF_DAY, 6);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
-            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(calendar.getTime());
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -374,6 +390,11 @@ public class DateUtil {
 
     }
 
+    /**
+     * 得到昨天的结束时间
+     * @param date
+     * @return
+     */
     public static String getDayBeforeTodayEndTime(Date date){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Calendar calendar = Calendar.getInstance();
@@ -402,17 +423,62 @@ public class DateUtil {
         return sdf.format(date);
     }
 
-    public static String getSunDayOfLastWeek(){
+    /**
+     * 取得上周一的时间
+     * @return
+     */
+    public static String getMonDayOfLastWeek(){
         LocalDate today = LocalDate.now();
-        LocalDate sundaytoLastWeek = today.minusWeeks(1).with(DayOfWeek.SUNDAY);
-         return sundaytoLastWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        LocalDate montoLastWeek = today.minusWeeks(1).with(DayOfWeek.MONDAY);
+         return montoLastWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
-    public static String getStartDayBefore3Month(Date date){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+    /**
+     * 得到本周一的开始时间
+     * @param date
+     * @return
+     */
+    public static String getThisWeekMon(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String dateStr = sdf.format(date);
+        LocalDate localDate = LocalDate.parse(dateStr);
+        localDate = localDate.minusWeeks(0).with(DayOfWeek.MONDAY);
+        return localDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
+
+    /**
+     * 取得上周一的开始时间
+     * @return
+     */
+    public static String getMonDayOfLastWeekBeginTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String monDayOfLastWeek = getMonDayOfLastWeek();
+        try {
+            Date date = sdf.parse(monDayOfLastWeek);
+            return simpleDateFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String getSunDayOfLastWeekEndTime() {
+        LocalDate today = LocalDate.now();
+        LocalDate sunOfLastWeek = today.minusWeeks(1).with(DayOfWeek.SUNDAY);
+        return sunOfLastWeek.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
+    }
+
+    /**
+     * 得到上个月的开始时间 2018-12-01 00:00:00
+     * @param date
+     * @return
+     */
+    public static String getStartDayBeforeOneMonth(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-01 00:00:00");
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        calendar.add(Calendar.MONTH, -3);
+        calendar.add(Calendar.MONTH, -1);
         date = calendar.getTime();
         return sdf.format(date);
     }
@@ -422,9 +488,29 @@ public class DateUtil {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        calendar.add(Calendar.MONTH, -3);
+        calendar.add(Calendar.MONTH, -1);
         date = calendar.getTime();
         return sdf.format(date);
+    }
+
+    /**
+     * 得到当前的年份和月份
+     * @param date
+     * @return
+     */
+    public static String getYearAndMonth(Date date){
+        return new SimpleDateFormat("yyyyMM").format(date);
+    }
+
+    public static String getYearAndMonth(String dateTime){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        try {
+            Date date = sdf.parse(dateTime);
+            return getYearAndMonth(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -468,7 +554,14 @@ public class DateUtil {
 //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 //        Date date = sdf.parse(s);
 //        System.out.println(getThisDateOfDay(date));
-        System.out.println(getDayAfterThisDay(new Date(getTime("2018-9-30 22:00:00"))));
+//        System.out.println(getDayAfterThisDay(new Date(getTime("2018-9-30 22:00:00"))));
+//        System.out.println(getStartDayBeforeOneMonth(new Date(System.currentTimeMillis())));
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+        System.out.println(sdf.format(calendar.getTime()));
+
     }
 
 

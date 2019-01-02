@@ -53,7 +53,9 @@ public class HDataServiceImp implements HDataService {
 
     @Override
     public List<HData> getByStationAndTime(String station_id, String starttime, String endtime) {
-        return hDataDao.queryHdataByStationIdAndTime(station_id,starttime,endtime);
+        String dayStartTime = DateUtil.getThisDayStartTime(starttime);
+        String dayEndTime = DateUtil.getThisDayEndTime(endtime);
+        return hDataDao.queryHdataByStationIdAndTime(station_id,dayStartTime,dayEndTime);
     }
 
     @Override

@@ -403,7 +403,7 @@ public class StationServiceImpl implements StationService {
             JSONObject stationJSON = new JSONObject();
 
             //取得当天的数据条数
-            int thisDayCount = mDataBasicDao.getMDataCountByStationIdAndTime(station.getStationCode(), DateUtil.getTodayStr(nowDate), DateUtil.getDateStr(nowDate));
+            int thisDayCount = mDataDao.querymDataNumBetween(station.getStationCode(), DateUtil.getTodayStr(nowDate), DateUtil.getDateStr(nowDate));
             //取得第一个数据
             Set<String> maxScoreMdata = zSetOperations.reverseRange(station.getStationCode(), 0, 0);
             String maxDataTime = null;

@@ -79,9 +79,9 @@ public class DDataServiceImp implements DDataService {
         String monthBeginTime = DateUtil.getMonthFirstDay(dateTime);
         //月末结束时间
         String monthEndTime = DateUtil.getMonthEndDay(dateTime);
-        //需要查询的小时数据的开始时间，如果是10月，那么小时数据的开始时间是9月30日6点
+        //需要查询的小时数据的开始时间，如果是10月，那么小时数据的开始时间是9月30日6点，日期格式没有秒
         String hDataBeginTime = DateUtil.getLastMonthSixClock(monthBeginTime);
-        //需要查询的小时数据的结束时间,如果是10月，那么结束时间是10月31日6点
+        //需要查询的小时数据的结束时间,如果是10月，那么结束时间是10月31日6点，日期格式没有秒
         String hDataEndTime = DateUtil.getMonthDayEndTimeSixClock(dateTime);
 
         //查询当月的天数

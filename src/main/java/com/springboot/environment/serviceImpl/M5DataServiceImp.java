@@ -53,8 +53,8 @@ public class M5DataServiceImp implements M5DataService {
     @Override
     public String queryM5dataByStationIdAndDatetime(String stationId, String date) {
 
-        String startDate = DateUtil.getDateBefore1hour(date);
-        String endDate = date;
+        String startDate = date;
+        String endDate = DateUtil.getDateAfter1Hour(startDate);
 
         List<M5Data> m5Datas = m5DataDao.queryMdataByStationIdAndTime(stationId, startDate, endDate);
 
@@ -155,30 +155,32 @@ public class M5DataServiceImp implements M5DataService {
         SimpleDateFormat sdf3=new SimpleDateFormat("mm");
 
 
-        for(int i=0;i<dDatas_time1.size();i++){
-            String trackTime=sdf3.format(dDatas_time1.get(i).getData_time());
-            Map<String,String> normVal=new HashMap<String,String>();
-            if(innertrackMap.containsKey(trackTime)){
-                normVal.put(dDatas_time1.get(i).getNorm_code(),dDatas_time1.get(i).getNorm_val());
-                innertrackMap.get(trackTime).putAll(normVal);
-            }
-            else{
-                normVal.put("time",sdf2.format(dDatas_time1.get(i).getData_time()));
-                normVal.put(dDatas_time1.get(i).getNorm_code(),dDatas_time1.get(i).getNorm_val());
-                innertrackMap.put(trackTime,normVal);
+        if (dDatas_time1 != null) {
+            for (int i = 0; i < dDatas_time1.size(); i++) {
+                String trackTime = sdf3.format(dDatas_time1.get(i).getData_time());
+                Map<String, String> normVal = new HashMap<String, String>();
+                if (innertrackMap.containsKey(trackTime)) {
+                    normVal.put(dDatas_time1.get(i).getNorm_code(), dDatas_time1.get(i).getNorm_val());
+                    innertrackMap.get(trackTime).putAll(normVal);
+                } else {
+                    normVal.put("time", sdf2.format(dDatas_time1.get(i).getData_time()));
+                    normVal.put(dDatas_time1.get(i).getNorm_code(), dDatas_time1.get(i).getNorm_val());
+                    innertrackMap.put(trackTime, normVal);
+                }
             }
         }
-        for(int i=0;i<dDatas_time2.size();i++){
-            String trackTime=sdf3.format(dDatas_time2.get(i).getData_time());
-            Map<String,String> normVal=new HashMap<String,String>();
-            if(innertrack2Map.containsKey(trackTime)){
-                normVal.put(dDatas_time2.get(i).getNorm_code(),dDatas_time2.get(i).getNorm_val());
-                innertrack2Map.get(trackTime).putAll(normVal);
-            }
-            else{
-                normVal.put("time",sdf2.format(dDatas_time2.get(i).getData_time()));
-                normVal.put(dDatas_time2.get(i).getNorm_code(),dDatas_time2.get(i).getNorm_val());
-                innertrack2Map.put(trackTime,normVal);
+        if (dDatas_time2 != null) {
+            for (int i = 0; i < dDatas_time2.size(); i++) {
+                String trackTime = sdf3.format(dDatas_time2.get(i).getData_time());
+                Map<String, String> normVal = new HashMap<String, String>();
+                if (innertrack2Map.containsKey(trackTime)) {
+                    normVal.put(dDatas_time2.get(i).getNorm_code(), dDatas_time2.get(i).getNorm_val());
+                    innertrack2Map.get(trackTime).putAll(normVal);
+                } else {
+                    normVal.put("time", sdf2.format(dDatas_time2.get(i).getData_time()));
+                    normVal.put(dDatas_time2.get(i).getNorm_code(), dDatas_time2.get(i).getNorm_val());
+                    innertrack2Map.put(trackTime, normVal);
+                }
             }
         }
 
@@ -303,23 +305,24 @@ public class M5DataServiceImp implements M5DataService {
             Station station1=stationDao.findStationByStationId(station_id);
             String station_name=station1.getStationName();
             List<M5Data> innerDataList=m5DataDao.getByStationAndHour(station_id,date);//获得5分钟数据中的整点信息
-            if(innerDataList.isEmpty()) error_count++;
+            if(innerDataList == null || innerDataList.isEmpty()) error_count++;
             List<Map> innerList=new ArrayList<Map>();
             Map<String,Map> innerMap=new HashMap<String,Map>();
-            for(M5Data m5Data:innerDataList){
-                String dateKey=sdf.format(m5Data.getData_time());
-                String time=sdf2.format(m5Data.getData_time());
-                if(innerMap.containsKey(dateKey)){
-                    innerMap.get(dateKey).put(m5Data.getNorm_code(),m5Data.getNorm_val());
-                }
-                else{
-                    Map<String,String> normVal=new HashMap<String,String>();
-                    normVal.put("station_id",station_id);
-                    normVal.put("station_name",station_name);
-                    normVal.put("station_Sim",station1.getStationSim());
-                    normVal.put("time",time);
-                    normVal.put(m5Data.getNorm_code(),m5Data.getNorm_val());
-                    innerMap.put(dateKey,normVal);
+            if (innerDataList != null) {
+                for (M5Data m5Data : innerDataList) {
+                    String dateKey = sdf.format(m5Data.getData_time());
+                    String time = sdf2.format(m5Data.getData_time());
+                    if (innerMap.containsKey(dateKey)) {
+                        innerMap.get(dateKey).put(m5Data.getNorm_code(), m5Data.getNorm_val());
+                    } else {
+                        Map<String, String> normVal = new HashMap<String, String>();
+                        normVal.put("station_id", station_id);
+                        normVal.put("station_name", station_name);
+                        normVal.put("station_Sim", station1.getStationSim());
+                        normVal.put("time", time);
+                        normVal.put(m5Data.getNorm_code(), m5Data.getNorm_val());
+                        innerMap.put(dateKey, normVal);
+                    }
                 }
             }
             for(int i=0;i<12;i++){

@@ -1,21 +1,18 @@
 package com.springboot.environment.dao;
 
-import com.springboot.environment.bean.DData;
 import com.springboot.environment.bean.MData;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.springboot.environment.repositoiry.MDataRepositoiry;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 
 @Component
 @Repository
-public interface MDataDao extends JpaRepository<MData,Integer> {
+public interface MDataDao extends JpaRepository<MData,Integer>, MDataRepositoiry {
     @Query(value = "select *from mdata d where d.data_id=?1",nativeQuery = true)
     List<MData> getAllByData_id(String data_id);
 
@@ -25,7 +22,7 @@ public interface MDataDao extends JpaRepository<MData,Integer> {
      * @param endDate
      * @return
      */
-    @Query(value = "select count(*) from (select * from mdata m where m.station_id = ?1 and m.data_time between ?2 and ?3 group by m.data_time asc ) mdg", nativeQuery = true)
+    @Query(value = "select count(*) from (select m.data_time from mdata m where m.station_id = ?1 and m.data_time between ?2 and ?3 group by m.data_time) mdg", nativeQuery = true)
     int querymDataNumBetween(String stationId, String startDate, String endDate);
 
     /**
@@ -45,20 +42,6 @@ public interface MDataDao extends JpaRepository<MData,Integer> {
     @Query(value = "select count(*) from mdata m where m.station_id = ?1", nativeQuery = true)
     int querymDataNumByStationId(String stationId);
 
-
-    /**
-     * 根据站点id和指定时间查询实时数据
-     * @param statonId
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    @Query(value = "select * from mdata m where m.station_id = ?1 and m.data_time between ?2 and ?3", nativeQuery = true)
-    List<MData> queryMdataByStationIdAndTime(String statonId, String startTime, String endTime);
-
-
-    @Query(value = "select * from mdata m where m.station_id = ?1 and DATE_FORMAT(m.data_time,'%Y-%m-%d %H')=?2", nativeQuery = true)
-    List<MData> getByStationAndHour(String station_id, String date);
 
     /**
      * 该方法只是向redis写入数据使用，线上不允许使用此sql

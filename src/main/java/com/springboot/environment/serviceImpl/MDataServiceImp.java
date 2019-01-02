@@ -56,10 +56,12 @@ public class MDataServiceImp implements MDataService {
     @Override
     public String queryMdataByStationIdAndDatetime(String stationId, String date) {
 
-        //数据库查询开始时间，例如 : 2018-10-10 12:00:00 一定是整小时。
-        String startDate = DateUtil.getDateBefore1hour(date);
-        String endDate = date;
+        //数据库查询开始时间，例如 : 2018-10-10 12:00 一定是整小时。
+        String startDate = date;
+        String endDate = DateUtil.getDateAfter1Hour(date);
 
+        System.out.println("查询开始时间" + startDate);
+        System.out.println("查询结束时间" + endDate);
         List<MData> mDatas = mDataDao.queryMdataByStationIdAndTime(stationId, startDate, endDate);
 
         //设置比较的起始时间
@@ -106,7 +108,7 @@ public class MDataServiceImp implements MDataService {
             dataJSON.put("data", mdataArray);
             mdataJSON.put("siteData", dataJSON);
 
-            System.out.println(mdataJSON.toJSONString());
+//            System.out.println(mdataJSON.toJSONString());
             return mdataJSON.toJSONString();
         }
         else {
@@ -114,7 +116,7 @@ public class MDataServiceImp implements MDataService {
             dataJSON.put("data", "");
             mdataJSON.put("siteData", dataJSON);
 
-            System.out.println(mdataJSON.toJSONString());
+//            System.out.println(mdataJSON.toJSONString());
             return mdataJSON.toJSONString();
         }
     }
@@ -171,24 +173,25 @@ public class MDataServiceImp implements MDataService {
 
 
             //System.out.println(innerDataList);
-            if(innerDataList.isEmpty()) error_count++;
+            if(innerDataList == null || innerDataList.isEmpty()) error_count++;
             List<Map> innerList=new ArrayList<Map>();
             Map<String,Map> innerMap=new HashMap<String,Map>();
-            for(MData mData:innerDataList){
-                String dateKey=sdf.format(mData.getData_time());
-                //System.out.println("datekey:"+dateKey);
-                String time=sdf2.format(mData.getData_time());
-                if(innerMap.containsKey(dateKey)){
-                    innerMap.get(dateKey).put(mData.getNorm_code(),mData.getNorm_val());
-                }
-                else{
-                    Map<String,String> normVal=new HashMap<String,String>();
-                    normVal.put("station_id",station_id);
-                    normVal.put("station_name",station_name);
-                    normVal.put("station_Sim",station1.getStationSim());
-                    normVal.put("time",time);
-                    normVal.put(mData.getNorm_code(),mData.getNorm_val());
-                    innerMap.put(dateKey,normVal);
+            if (innerDataList != null) {
+                for (MData mData : innerDataList) {
+                    String dateKey = sdf.format(mData.getData_time());
+                    //System.out.println("datekey:"+dateKey);
+                    String time = sdf2.format(mData.getData_time());
+                    if (innerMap.containsKey(dateKey)) {
+                        innerMap.get(dateKey).put(mData.getNorm_code(), mData.getNorm_val());
+                    } else {
+                        Map<String, String> normVal = new HashMap<String, String>();
+                        normVal.put("station_id", station_id);
+                        normVal.put("station_name", station_name);
+                        normVal.put("station_Sim", station1.getStationSim());
+                        normVal.put("time", time);
+                        normVal.put(mData.getNorm_code(), mData.getNorm_val());
+                        innerMap.put(dateKey, normVal);
+                    }
                 }
             }
             for(int i=0;i<60;i++){

@@ -24,22 +24,21 @@ public class M5dataTask {
     EntityManager entityManager;
 
     /**
-     * 每个星期日将m5data分表
-     * 每个星期日0时运行定时任务，将上一个星期的数据分表
-     * 数据的范围从星期日到星期六
+     * 每个星期一将m5data分表
+     * 每个星期一1时30分运行定时任务，将上一个星期的数据分表
+     * 数据的范围从星期一到星期日
      * 例如在2018-12-02 00:00:00运行定时任务 数据时间：2018-11-25 00：00：00 ～ 2018-11-1 23：59：59
-     * 表名：m5data_20181125，以上个星期日为日期存储
+     * 表名：m5data_20181125，以上个星期一为日期存储
      */
-//    @Scheduled(cron = "0 30 1 ? * SUN")
+//    @Scheduled(cron = "0 30 1 ? * MON")
     public void createNewM5dataTableByWeek(){
         long begintime = System.currentTimeMillis();
 
-        Date date = new Date();
         StringBuilder tableName = new StringBuilder("m5data_");
-        tableName.append(DateUtil.getSunDayOfLastWeek());
+        tableName.append(DateUtil.getMonDayOfLastWeek());
         System.out.println("表名为" + tableName);
-        String startTime = DateUtil.getDayBeforeOneWeekStartTime(date);
-        String endTime = DateUtil.getDayBeforeTodayEndTime(date);
+        String startTime = DateUtil.getMonDayOfLastWeekBeginTime();
+        String endTime = DateUtil.getSunDayOfLastWeekEndTime();
 
         String sql = "create table if not exists " + tableName.toString() + " like m5data";
         entityManager.createNativeQuery(sql).executeUpdate();
@@ -51,13 +50,12 @@ public class M5dataTask {
         System.out.println("数据成功 影响 " + result + " 耗时 " + (System.currentTimeMillis() - begintime));
     }
 
-//    @Scheduled(cron = "0 30 2 ? * SUN")
+//    @Scheduled(cron = "0 30 2 ? * MON")
     public void deleteM5dataByWeek() {
         long begintime = System.currentTimeMillis();
 
-        Date date = new Date();
         StringBuilder tableName = new StringBuilder("m5data_");
-        tableName.append(DateUtil.getSunDayOfLastWeek());
+        tableName.append(DateUtil.getMonDayOfLastWeek());
         System.out.println("表名为" + tableName);
 
         String sql = "SELECT table_name FROM information_schema.TABLES WHERE table_name = \'" + tableName.toString() + "\'";
@@ -74,8 +72,8 @@ public class M5dataTask {
             System.out.println("m5data分表中没有数据，请检查数据库");
             return;
         }
-        String startTime = DateUtil.getDayBeforeOneWeekStartTime(date);
-        String endTime = DateUtil.getDayBeforeTodayEndTime(date);
+        String startTime = DateUtil.getMonDayOfLastWeekBeginTime();
+        String endTime = DateUtil.getSunDayOfLastWeekEndTime();
         sql = "delete from " + "m5data" + " where data_time between \'" + startTime + "\' and \'" + endTime + "\'";
         System.out.println(sql);
         int deleteResult = entityManager.createNativeQuery(sql).executeUpdate();
