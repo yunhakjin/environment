@@ -41,6 +41,8 @@ public class HDataRepositoiryImpl implements HDataRepositority {
         List<HData> dataList = new ArrayList<>();
         //开始和结束时间在同一分表中
         if (tableNameList.size() == 1) {
+            System.out.println("开始时间 : " + startTime + " 结束时间 : " + endTime);
+            //可能会有空指针异常
             return getHData(stationId, tableNameList.get(0), startTime, endTime, normCode);
         }
         else {
@@ -48,14 +50,16 @@ public class HDataRepositoiryImpl implements HDataRepositority {
                 //开始时间一定是给定的时间
                 if (i == 0){
                     String queryEndTime = getTableEndTime(tableNameList.get(i));
+                    System.out.println("开始时间 : " + startTime + " 结束时间 : " + queryEndTime);
                     List<HData> result = getHData(stationId, tableNameList.get(i), startTime, queryEndTime, normCode);
                     if (!StringUtil.isNullOrEmpty(result)){
                         dataList.addAll(result);
                     }
                 }
                 //结束时间一定是最后表的结束时间
-                if (i == tableNameList.size() - 1){
+                else if (i == tableNameList.size() - 1){
                     String queryStartTime = getTableStartTime(tableNameList.get(i));
+                    System.out.println("开始时间 : " + queryStartTime + " 结束时间 : " + endTime);
                     List<HData> result = getHData(stationId, tableNameList.get(i), queryStartTime, endTime, normCode);
                     if (!StringUtil.isNullOrEmpty(result)){
                         dataList.addAll(result);
@@ -64,6 +68,7 @@ public class HDataRepositoiryImpl implements HDataRepositority {
                 else {
                     String queryStartTime = getTableStartTime(tableNameList.get(i));
                     String queryEndTime = getTableEndTime(tableNameList.get(i));
+                    System.out.println("开始时间 : " + queryStartTime + " 结束时间 : " + queryEndTime);
                     List<HData> result = getHData(stationId, tableNameList.get(i), queryStartTime, queryEndTime, normCode);
                     if (!StringUtil.isNullOrEmpty(result)){
                         dataList.addAll(result);
@@ -71,6 +76,7 @@ public class HDataRepositoiryImpl implements HDataRepositority {
                 }
             }
         }
+        System.out.println("查询的结果集长度" + dataList.size());
         return dataList;
     }
 
@@ -94,6 +100,10 @@ public class HDataRepositoiryImpl implements HDataRepositority {
         System.out.println(sql);
         List<String> nameResult = entityManager.createNativeQuery(sql).getResultList();
         if (StringUtil.isNullOrEmpty(nameResult)){
+            /**
+             * 可能分表线程没有启动，数据还存在于主表
+             * 或者分表操作异常，数据存留在主表
+             */
             if (normCode == null || normCode.length() == 0){
                 sql = "select * from hdata m where m.station_id = ? and m.data_time between ? and ?";
                 query = entityManager.createNativeQuery(sql, HData.class);
@@ -164,9 +174,7 @@ public class HDataRepositoiryImpl implements HDataRepositority {
             //按顺构造表名
             for (int i = 0; i <= monthOffset; i++) {
                 int year = (Integer.parseInt(startMonth) + i) / 12;
-                System.out.println(year);
                 int month = (Integer.parseInt(startMonth) + i) % 12;
-                System.out.println(month);
                 if (month == 0){
                     tableName.add("hdata_" + (Integer.parseInt(startYear) + year - 1) + "12");
                 }

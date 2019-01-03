@@ -11,7 +11,6 @@ import com.springboot.environment.dao.StationDao;
 import com.springboot.environment.repositoiry.HDataRepositority;
 import com.springboot.environment.service.HDataService;
 import com.springboot.environment.util.DateUtil;
-import com.springboot.environment.util.NormConstant;
 import com.springboot.environment.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -168,44 +166,41 @@ public class HDataServiceImp implements HDataService {
 
         Map<String, Object> time1Map = new LinkedHashMap<String, Object>();//time1
         Map<String, Object> time2Map = new LinkedHashMap<String, Object>();//time2
-        Map<String, List> data1Map = new LinkedHashMap<String, List>();//data1
-        Map<String, List> data2Map = new LinkedHashMap<String, List>();//data2
         time1Map.put("time",time1);
         time2Map.put("time",time2);
         Map<String,Map> innertrackMap=new HashMap<String,Map>();
         Map<String,Map> innertrack2Map=new HashMap<String,Map>();
 
         SimpleDateFormat sdf=new SimpleDateFormat("HH");
-        SimpleDateFormat sdf2=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        SimpleDateFormat sdf3=new SimpleDateFormat("MM");
 
-
-        for(int i=0;i<dDatas_time1.size();i++){
-            //String trackTime=dDatas_time1.get(i).getData_time().toString();
-            String trackTime=sdf.format(dDatas_time1.get(i).getData_time());
-            Map<String,String> normVal=new HashMap<String,String>();
-            if(innertrackMap.containsKey(trackTime)){
-                normVal.put(dDatas_time1.get(i).getNorm_code(),dDatas_time1.get(i).getNorm_val());
-                innertrackMap.get(trackTime).putAll(normVal);
-            }
-            else{
-                normVal.put("time",dDatas_time1.get(i).getData_time().toString());
-                normVal.put(dDatas_time1.get(i).getNorm_code(),dDatas_time1.get(i).getNorm_val());
-                innertrackMap.put(trackTime,normVal);
+        if (!StringUtil.isNullOrEmpty(dDatas_time1)) {
+            for (int i = 0; i < dDatas_time1.size(); i++) {
+                //String trackTime=dDatas_time1.get(i).getData_time().toString();
+                String trackTime = sdf.format(dDatas_time1.get(i).getData_time());
+                Map<String, String> normVal = new HashMap<String, String>();
+                if (innertrackMap.containsKey(trackTime)) {
+                    normVal.put(dDatas_time1.get(i).getNorm_code(), dDatas_time1.get(i).getNorm_val());
+                    innertrackMap.get(trackTime).putAll(normVal);
+                } else {
+                    normVal.put("time", dDatas_time1.get(i).getData_time().toString());
+                    normVal.put(dDatas_time1.get(i).getNorm_code(), dDatas_time1.get(i).getNorm_val());
+                    innertrackMap.put(trackTime, normVal);
+                }
             }
         }
-        for(int i=0;i<dDatas_time2.size();i++){
-            //String trackTime=dDatas_time2.get(i).getData_time().toString();
-            String trackTime=sdf.format(dDatas_time2.get(i).getData_time());
-            Map<String,String> normVal=new HashMap<String,String>();
-            if(innertrack2Map.containsKey(trackTime)){
-                normVal.put(dDatas_time2.get(i).getNorm_code(),dDatas_time2.get(i).getNorm_val());
-                innertrack2Map.get(trackTime).putAll(normVal);
-            }
-            else{
-                normVal.put("time",dDatas_time2.get(i).getData_time().toString());
-                normVal.put(dDatas_time2.get(i).getNorm_code(),dDatas_time2.get(i).getNorm_val());
-                innertrack2Map.put(trackTime,normVal);
+        if (!StringUtil.isNullOrEmpty(dDatas_time2)) {
+            for (int i = 0; i < dDatas_time2.size(); i++) {
+                //String trackTime=dDatas_time2.get(i).getData_time().toString();
+                String trackTime = sdf.format(dDatas_time2.get(i).getData_time());
+                Map<String, String> normVal = new HashMap<String, String>();
+                if (innertrack2Map.containsKey(trackTime)) {
+                    normVal.put(dDatas_time2.get(i).getNorm_code(), dDatas_time2.get(i).getNorm_val());
+                    innertrack2Map.get(trackTime).putAll(normVal);
+                } else {
+                    normVal.put("time", dDatas_time2.get(i).getData_time().toString());
+                    normVal.put(dDatas_time2.get(i).getNorm_code(), dDatas_time2.get(i).getNorm_val());
+                    innertrack2Map.put(trackTime, normVal);
+                }
             }
         }
 

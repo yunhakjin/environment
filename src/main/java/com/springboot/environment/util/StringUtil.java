@@ -23,7 +23,7 @@ public class StringUtil {
      * @return
      */
     public static boolean isNullOrEmpty(List list){
-        if (list.size() == 0 || list == null){
+        if (list == null || list.size() == 0){
             return true;
         }
         return false;
@@ -35,7 +35,7 @@ public class StringUtil {
      * @return
      */
     public static boolean isNullOrEmpty(Map map){
-        if (map.size() == 0 || map == null){
+        if (map == null || map.size() == 0){
             return true;
         }
         return false;

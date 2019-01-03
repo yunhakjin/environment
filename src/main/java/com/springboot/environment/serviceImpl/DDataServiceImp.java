@@ -9,15 +9,10 @@ import com.springboot.environment.dao.*;
 import com.springboot.environment.repositoiry.HDataRepositority;
 import com.springboot.environment.service.DDataService;
 import com.springboot.environment.util.DateUtil;
-import com.springboot.environment.util.NormConstant;
 import com.springboot.environment.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -41,11 +36,6 @@ public class DDataServiceImp implements DDataService {
 
     @Autowired
     HDataRepositority hDataRepositority;
-
-    private static final int MILLSECONDS = 1000;
-    private static final int SECONDS = 60;
-    private static final int MINUTES = 60;
-    private static final long ONE_DAY_TIMESTAMP = 24 * MILLSECONDS * SECONDS * MINUTES;
 
     private static final String LEQ = "n00006";
 

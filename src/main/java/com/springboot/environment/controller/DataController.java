@@ -13,6 +13,7 @@ import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 import com.springboot.environment.bean.*;
 import com.springboot.environment.service.*;
+import com.springboot.environment.util.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -104,7 +105,7 @@ public class DataController {
             }
         }
         List<HData> hDataList=hDataService.getByStationAndDate(station_code,date);
-        if(hDataList.isEmpty()){
+        if(hDataList == null ||  hDataList.isEmpty()){
             return null;
         }
         List<Map> dataList=new ArrayList<Map>();
@@ -301,23 +302,24 @@ public class DataController {
             Station station1=stationService.queryStatiionByCode(station_id);
             String station_name=station1.getStationName();
             List<HData> innerDataList=hDataService.getByStationAndDate(station_id,date);
-            if(innerDataList.isEmpty()) error_count++;
+            if(innerDataList == null || innerDataList.isEmpty()) error_count++;
             List<Map> innerList=new ArrayList<Map>();
             Map<String,Map> innerMap=new HashMap<String,Map>();
-            for(HData hData:innerDataList){
-                String dateKey=sdf.format(hData.getData_time());
-                String time=sdf2.format(hData.getData_time());
-                if(innerMap.containsKey(dateKey)){
-                    innerMap.get(dateKey).put(hData.getNorm_code(),hData.getNorm_val());
-                }
-                else{
-                    Map<String,String> normVal=new HashMap<String,String>();
-                    normVal.put("station_id",station_id);
-                    normVal.put("station_name",station_name);
-                    normVal.put("station_Sim",station1.getStationSim());
-                    normVal.put("time",time);
-                    normVal.put(hData.getNorm_code(),hData.getNorm_val());
-                    innerMap.put(dateKey,normVal);
+            if (!StringUtil.isNullOrEmpty(innerDataList)) {
+                for (HData hData : innerDataList) {
+                    String dateKey = sdf.format(hData.getData_time());
+                    String time = sdf2.format(hData.getData_time());
+                    if (innerMap.containsKey(dateKey)) {
+                        innerMap.get(dateKey).put(hData.getNorm_code(), hData.getNorm_val());
+                    } else {
+                        Map<String, String> normVal = new HashMap<String, String>();
+                        normVal.put("station_id", station_id);
+                        normVal.put("station_name", station_name);
+                        normVal.put("station_Sim", station1.getStationSim());
+                        normVal.put("time", time);
+                        normVal.put(hData.getNorm_code(), hData.getNorm_val());
+                        innerMap.put(dateKey, normVal);
+                    }
                 }
             }
             for(int i=0;i<10;i++){

@@ -4,6 +4,7 @@ import com.springboot.environment.bean.HData;
 import com.springboot.environment.bean.Norm;
 import com.springboot.environment.bean.Station;
 import com.springboot.environment.service.*;
+import com.springboot.environment.util.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -165,23 +166,24 @@ public class ReportController {
             List<HData> hDataList=hDataService.getByStationAndDate(station_code,time);
             if(hDataList.isEmpty()) error_count++;
             Map<String,Map> timeMap=new HashMap<String,Map>();
-            for(HData hData:hDataList){
-                String dateKey=hData.getData_time().toString();
-                if(timeMap.containsKey(dateKey)){
-                    timeMap.get(dateKey).put(hData.getNorm_code(),hData.getNorm_val());
-                }
-                else{
-                    Map<String,String> normVal=new HashMap<String,String>();
-                    normVal.put("station_id",station_id);
-                    normVal.put("station_name",station_name);
-                    normVal.put("month",sdf_month.format(hData.getData_time()));
-                    normVal.put("date",sdf_day.format(hData.getData_time()));
-                    normVal.put("hour",sdf_hour.format(hData.getData_time()));
-                    normVal.put("minute",sdf_minute.format(hData.getData_time()));
-                    normVal.put("noise_code",noise_code);
-                    normVal.put("remark","");
-                    normVal.put(hData.getNorm_code(),hData.getNorm_val());
-                    timeMap.put(dateKey,normVal);
+            if(!StringUtil.isNullOrEmpty(hDataList)) {
+                for (HData hData : hDataList) {
+                    String dateKey = hData.getData_time().toString();
+                    if (timeMap.containsKey(dateKey)) {
+                        timeMap.get(dateKey).put(hData.getNorm_code(), hData.getNorm_val());
+                    } else {
+                        Map<String, String> normVal = new HashMap<String, String>();
+                        normVal.put("station_id", station_id);
+                        normVal.put("station_name", station_name);
+                        normVal.put("month", sdf_month.format(hData.getData_time()));
+                        normVal.put("date", sdf_day.format(hData.getData_time()));
+                        normVal.put("hour", sdf_hour.format(hData.getData_time()));
+                        normVal.put("minute", sdf_minute.format(hData.getData_time()));
+                        normVal.put("noise_code", noise_code);
+                        normVal.put("remark", "");
+                        normVal.put(hData.getNorm_code(), hData.getNorm_val());
+                        timeMap.put(dateKey, normVal);
+                    }
                 }
             }
             timeMap=timeMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
@@ -218,24 +220,25 @@ public class ReportController {
             String noise_code=String.valueOf(station.getProtocol());
             List<HData> hDataList=hDataService.getByStationAndDate(station_code,time);
             Map<String,Map> timeMap=new HashMap<String,Map>();
-            for(HData hData:hDataList){
-                String dateKey=hData.getData_time().toString();
-                if(timeMap.containsKey(dateKey)){
-                    timeMap.get(dateKey).put(hData.getNorm_code(),hData.getNorm_val());
-                }
-                else{
-                    Map<String,String> normVal=new HashMap<String,String>();
-                    normVal.put("station_id",station_id);
-                    normVal.put("station_name",station_name);
-                    normVal.put("month",sdf_month.format(hData.getData_time()));
-                    normVal.put("date",sdf_day.format(hData.getData_time()));
-                    normVal.put("hour",sdf_hour.format(hData.getData_time()));
-                    normVal.put("minute",sdf_minute.format(hData.getData_time()));
-                    normVal.put("remark","");
-                    normVal.put("large_car",String.valueOf((int)(Math.random()*50+51)));
-                    normVal.put("small_car",String.valueOf((int)(Math.random()*50)));
-                    normVal.put(hData.getNorm_code(),hData.getNorm_val());
-                    timeMap.put(dateKey,normVal);
+            if (!StringUtil.isNullOrEmpty(hDataList)) {
+                for (HData hData : hDataList) {
+                    String dateKey = hData.getData_time().toString();
+                    if (timeMap.containsKey(dateKey)) {
+                        timeMap.get(dateKey).put(hData.getNorm_code(), hData.getNorm_val());
+                    } else {
+                        Map<String, String> normVal = new HashMap<String, String>();
+                        normVal.put("station_id", station_id);
+                        normVal.put("station_name", station_name);
+                        normVal.put("month", sdf_month.format(hData.getData_time()));
+                        normVal.put("date", sdf_day.format(hData.getData_time()));
+                        normVal.put("hour", sdf_hour.format(hData.getData_time()));
+                        normVal.put("minute", sdf_minute.format(hData.getData_time()));
+                        normVal.put("remark", "");
+                        normVal.put("large_car", String.valueOf((int) (Math.random() * 50 + 51)));
+                        normVal.put("small_car", String.valueOf((int) (Math.random() * 50)));
+                        normVal.put(hData.getNorm_code(), hData.getNorm_val());
+                        timeMap.put(dateKey, normVal);
+                    }
                 }
             }
             timeMap=timeMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
@@ -264,7 +267,7 @@ public class ReportController {
         SimpleDateFormat sdf_hour=new SimpleDateFormat("HH");
         SimpleDateFormat sdf_minute=new SimpleDateFormat("mm");
         List<HData> hDataList=hDataService.getByStationAndDate(station_id,time);
-        if(hDataList.isEmpty()){
+        if(hDataList == null || hDataList.isEmpty()){
             return null;
         }
         List<Norm> normList=normService.getAllByHflag();
@@ -347,24 +350,25 @@ public class ReportController {
             String remark="";
             List<HData> hDataList=hDataService.getByStationAndTime(station_code,start,end);
             Map<String,Map> timeMap=new HashMap<String,Map>();
-            for(HData hData:hDataList){
-                String dateKey=hData.getData_time().toString();
-                if(timeMap.containsKey(dateKey)){
-                    timeMap.get(dateKey).put(hData.getNorm_code(),hData.getNorm_val());
-                }
-                else{
-                    Map<String,String> normVal=new HashMap<String,String>();
-                    normVal.put("station_id",station_id);
-                    normVal.put("station_name",station_name);
-                    normVal.put("month",sdf_month.format(hData.getData_time()));
-                    normVal.put("date",sdf_date.format(hData.getData_time()));
-                    normVal.put("hour",sdf_hour.format(hData.getData_time()));
-                    normVal.put("minute",sdf_minute.format(hData.getData_time()));
-                    normVal.put("noise_code",noise_code);
-                    normVal.put("area_id",area);
-                    normVal.put("remark",remark);
-                    normVal.put(hData.getNorm_code(),hData.getNorm_val());
-                    timeMap.put(dateKey,normVal);
+            if (!StringUtil.isNullOrEmpty(hDataList)) {
+                for (HData hData : hDataList) {
+                    String dateKey = hData.getData_time().toString();
+                    if (timeMap.containsKey(dateKey)) {
+                        timeMap.get(dateKey).put(hData.getNorm_code(), hData.getNorm_val());
+                    } else {
+                        Map<String, String> normVal = new HashMap<String, String>();
+                        normVal.put("station_id", station_id);
+                        normVal.put("station_name", station_name);
+                        normVal.put("month", sdf_month.format(hData.getData_time()));
+                        normVal.put("date", sdf_date.format(hData.getData_time()));
+                        normVal.put("hour", sdf_hour.format(hData.getData_time()));
+                        normVal.put("minute", sdf_minute.format(hData.getData_time()));
+                        normVal.put("noise_code", noise_code);
+                        normVal.put("area_id", area);
+                        normVal.put("remark", remark);
+                        normVal.put(hData.getNorm_code(), hData.getNorm_val());
+                        timeMap.put(dateKey, normVal);
+                    }
                 }
             }
             timeMap=timeMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
@@ -401,24 +405,25 @@ public class ReportController {
             String remark="";
             List<HData> hDataList=hDataService.getByStationAndTime(station_code,start,end);
             Map<String,Map> timeMap=new HashMap<String,Map>();
-            for(HData hData:hDataList){
-                String dateKey=hData.getData_time().toString();
-                if(timeMap.containsKey(dateKey)){
-                    timeMap.get(dateKey).put(hData.getNorm_code(),hData.getNorm_val());
-                }
-                else{
-                    Map<String,String> normVal=new HashMap<String,String>();
-                    normVal.put("station_id",station_id);
-                    normVal.put("station_name",station_name);
-                    normVal.put("month",sdf_month.format(hData.getData_time()));
-                    normVal.put("date",sdf_date.format(hData.getData_time()));
-                    normVal.put("hour",sdf_hour.format(hData.getData_time()));
-                    normVal.put("minute",sdf_minute.format(hData.getData_time()));
-                    normVal.put("large_car",String.valueOf((int)(Math.random()*50+51)));
-                    normVal.put("small_car",String.valueOf((int)(Math.random()*50)));
-                    normVal.put("remark",remark);
-                    normVal.put(hData.getNorm_code(),hData.getNorm_val());
-                    timeMap.put(dateKey,normVal);
+            if (!StringUtil.isNullOrEmpty(hDataList)) {
+                for (HData hData : hDataList) {
+                    String dateKey = hData.getData_time().toString();
+                    if (timeMap.containsKey(dateKey)) {
+                        timeMap.get(dateKey).put(hData.getNorm_code(), hData.getNorm_val());
+                    } else {
+                        Map<String, String> normVal = new HashMap<String, String>();
+                        normVal.put("station_id", station_id);
+                        normVal.put("station_name", station_name);
+                        normVal.put("month", sdf_month.format(hData.getData_time()));
+                        normVal.put("date", sdf_date.format(hData.getData_time()));
+                        normVal.put("hour", sdf_hour.format(hData.getData_time()));
+                        normVal.put("minute", sdf_minute.format(hData.getData_time()));
+                        normVal.put("large_car", String.valueOf((int) (Math.random() * 50 + 51)));
+                        normVal.put("small_car", String.valueOf((int) (Math.random() * 50)));
+                        normVal.put("remark", remark);
+                        normVal.put(hData.getNorm_code(), hData.getNorm_val());
+                        timeMap.put(dateKey, normVal);
+                    }
                 }
             }
             timeMap=timeMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
@@ -455,22 +460,23 @@ public class ReportController {
             String remark="";
             List<HData> hDataList=hDataService.getByStationAndTime(station_code,start,end);
             Map<String,Map> timeMap=new HashMap<String,Map>();
-            for(HData hData:hDataList){
-                String dateKey=hData.getData_time().toString();
-                if(timeMap.containsKey(dateKey)){
-                    timeMap.get(dateKey).put(hData.getNorm_code(),hData.getNorm_val());
-                }
-                else{
-                    Map<String,String> normVal=new HashMap<String,String>();
-                    normVal.put("station_id",station_id);
-                    normVal.put("station_name",station_name);
-                    normVal.put("month",sdf_month.format(hData.getData_time()));
-                    normVal.put("date",sdf_date.format(hData.getData_time()));
-                    normVal.put("hour",sdf_hour.format(hData.getData_time()));
-                    normVal.put("area_id",area);
-                    normVal.put("remark",remark);
-                    normVal.put(hData.getNorm_code(),hData.getNorm_val());
-                    timeMap.put(dateKey,normVal);
+            if (!StringUtil.isNullOrEmpty(hDataList)) {
+                for (HData hData : hDataList) {
+                    String dateKey = hData.getData_time().toString();
+                    if (timeMap.containsKey(dateKey)) {
+                        timeMap.get(dateKey).put(hData.getNorm_code(), hData.getNorm_val());
+                    } else {
+                        Map<String, String> normVal = new HashMap<String, String>();
+                        normVal.put("station_id", station_id);
+                        normVal.put("station_name", station_name);
+                        normVal.put("month", sdf_month.format(hData.getData_time()));
+                        normVal.put("date", sdf_date.format(hData.getData_time()));
+                        normVal.put("hour", sdf_hour.format(hData.getData_time()));
+                        normVal.put("area_id", area);
+                        normVal.put("remark", remark);
+                        normVal.put(hData.getNorm_code(), hData.getNorm_val());
+                        timeMap.put(dateKey, normVal);
+                    }
                 }
             }
             timeMap=timeMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
