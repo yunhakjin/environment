@@ -246,4 +246,16 @@ public interface StationDao extends JpaRepository<Station, Integer> {
 
     @Query(value = "select * from station s where operation_id = ?1", nativeQuery = true)
     List<Station> findByOperationId(String operatationId);
+
+
+    @Query(value = "select * from station where district = ?1 and domain = ?2", nativeQuery = true)
+    List<Station> findByDistrictAndDomain(String district, int domain);
+
+    /**
+     * 筛选有运维单位的站点模糊查询*/
+    @Query(value = "select * from station where district=?1 and (operation_id='' or operation_id=?2) and (station_code like %?3% or station_name like %?3%)",nativeQuery = true)
+    List<Station> getOperationStationLike(String district,String operation_id,String key);
+
+    @Query(value = "select * from station where (operation_id='' or operation_id=?1) and (station_code like %?2% or station_name like %?2%)",nativeQuery = true)
+    List<Station> getOperationStationLikeAll(String operation_id,String key);
 }

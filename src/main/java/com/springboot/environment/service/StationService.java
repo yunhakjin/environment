@@ -76,4 +76,10 @@ public interface StationService {
     void updateStationOperation(String operation_id,String station_code);
 
     List<Station> findByOperationId(String operatationId);
+
+    List<Station> queryStationsByDistrictAndDomain(String district, int domain );
+
+    List<Station> getOperationStationLike(String district,String operation_id,String key);
+
+    List<Station> getOperationStationLikeAll(String operation_id,String key);
 }
