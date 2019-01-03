@@ -30,7 +30,7 @@ public class M5dataTask {
      * 例如在2018-12-02 00:00:00运行定时任务 数据时间：2018-11-25 00：00：00 ～ 2018-11-1 23：59：59
      * 表名：m5data_20181125，以上个星期一为日期存储
      */
-//    @Scheduled(cron = "0 30 1 ? * MON")
+    @Scheduled(cron = "0 30 1 ? * MON")
     public void createNewM5dataTableByWeek(){
         long begintime = System.currentTimeMillis();
 
@@ -50,7 +50,7 @@ public class M5dataTask {
         System.out.println("数据成功 影响 " + result + " 耗时 " + (System.currentTimeMillis() - begintime));
     }
 
-//    @Scheduled(cron = "0 30 2 ? * MON")
+    @Scheduled(cron = "0 30 2 ? * MON")
     public void deleteM5dataByWeek() {
         long begintime = System.currentTimeMillis();
 

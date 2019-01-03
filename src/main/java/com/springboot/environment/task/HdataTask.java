@@ -31,7 +31,7 @@ public class HdataTask {
      * 存储数据 : 2018-12-01 00:00:00 ～ 2018-12-31 23:59:59的一个月小时数据
      * 定时时间: 凌晨3点做分表的写操作，凌晨4点做主表的删除操作
      */
-//    @Scheduled(cron = "0 0 3 1 * ?")
+    @Scheduled(cron = "0 0 3 1 * ?")
     public void createHdataTableByMonths() {
         long beginTime = System.currentTimeMillis();
 
@@ -53,7 +53,7 @@ public class HdataTask {
         System.out.println("小时数据成功 影响 " + insertResult + " 耗时 " + (System.currentTimeMillis() - beginTime));
     }
 
-//    @Scheduled(cron = "0 0 4 1 * ?")
+    @Scheduled(cron = "0 0 4 1 * ?")
     public void deleteHdataByMonths() {
         long beginTime = System.currentTimeMillis();
 
