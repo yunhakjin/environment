@@ -1,24 +1,19 @@
 package com.springboot.environment.dao;
 
 import com.springboot.environment.bean.HData;
-import com.springboot.environment.bean.MData;
-import com.springboot.environment.repositoiry.HDataRepositority;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 
 @Component
 @Repository
-public interface HDataDao extends JpaRepository<HData,Integer>, HDataRepositority {
+public interface HDataDao extends JpaRepository<HData,Integer>{
 
 
-    @Query(value = "select *from hdata d where d.data_id=?1",nativeQuery = true)
+    @Query(value = "select * from hdata d where d.data_id=?1",nativeQuery = true)
     List<HData> getAllByData_id(String data_id);
 
     /**
@@ -58,4 +53,36 @@ public interface HDataDao extends JpaRepository<HData,Integer>, HDataRepositorit
      */
     @Query(value = "select * from `hdata` where data_time = (select max(data_time) from `hdata` where station_id= ?1) and station_id=?1", nativeQuery = true)
     List<HData> getLatestStationListByStationCode(String stationCode);
+
+    /**
+     * 查询某一个指标的数据
+     * 需要分表操作
+     * @param stationId
+     * @param startTime
+     * @param endTime
+     * @param normCode
+     * @return
+     */
+    //@Query(value = "select * from hdata where station_id = ?1 and data_time between ?2 and ?3", nativeQuery = true)
+    //List<HData> getNormHdataByStationIdAndTime(String stationId, String startTime, String endTime, String normCode);
+
+    /**
+     * 需要用分表操作
+     * 时间格式2018-12-30 ~ 2018-12-31
+     * @param stationId
+     * @param dateTime
+     * @return
+     */
+    //@Query(value = "select * from hdata where station_id = ?1 and data_time = ?2", nativeQuery = true)
+    //List<HData> getByStationAndDate(String stationId, String dateTime);
+
+    /**
+     * 查询指定站点指定时间的小时数据，时间格式2018-12-30 ~ 2018-12-31
+     * @param stationId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    //@Query(value = "select * from hdata where station_id = ?1 and data_time between ?2 and ?3", nativeQuery = true)
+    //List<HData> queryHdataByStationIdAndTime(String stationId, String startTime, String endTime);
 }

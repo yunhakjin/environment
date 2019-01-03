@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.springboot.environment.bean.*;
 import com.springboot.environment.dao.*;
+import com.springboot.environment.repositoiry.HDataRepositority;
 import com.springboot.environment.service.DDataService;
 import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.NormConstant;
@@ -37,6 +38,9 @@ public class DDataServiceImp implements DDataService {
 
     @Autowired
     ThresholdDao thresholdDao;
+
+    @Autowired
+    HDataRepositority hDataRepositority;
 
     private static final int MILLSECONDS = 1000;
     private static final int SECONDS = 60;
@@ -140,7 +144,7 @@ public class DDataServiceImp implements DDataService {
             System.out.println(hDataBeginTime);
             System.out.println(hDataEndTime);
             //查询出当月的所有LEQ指标
-            List<HData> hdataList = hDataDao.getNormHdataByStationIdAndTime(stationId, hDataBeginTime, hDataEndTime, LEQ);
+            List<HData> hdataList = hDataRepositority.getNormHdataByStationIdAndTime(stationId, hDataBeginTime, hDataEndTime, LEQ);
 
             if (!StringUtil.isNullOrEmpty(hdataList)) {
                 //查询该站点的昼夜阈值

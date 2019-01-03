@@ -8,6 +8,7 @@ import com.springboot.environment.bean.*;
 import com.springboot.environment.dao.HDataDao;
 import com.springboot.environment.dao.NormDao;
 import com.springboot.environment.dao.StationDao;
+import com.springboot.environment.repositoiry.HDataRepositority;
 import com.springboot.environment.service.HDataService;
 import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.NormConstant;
@@ -33,6 +34,9 @@ public class HDataServiceImp implements HDataService {
     @Autowired
     private NormDao normDao;
 
+    @Autowired
+    HDataRepositority hDataRepositority;
+
     private static final int HOUR = 24;
 
     @Override
@@ -55,7 +59,7 @@ public class HDataServiceImp implements HDataService {
     public List<HData> getByStationAndTime(String station_id, String starttime, String endtime) {
         String dayStartTime = DateUtil.getThisDayStartTime(starttime);
         String dayEndTime = DateUtil.getThisDayEndTime(endtime);
-        return hDataDao.queryHdataByStationIdAndTime(station_id,dayStartTime,dayEndTime);
+        return hDataRepositority.queryHdataByStationIdAndTime(station_id,dayStartTime,dayEndTime);
     }
 
     @Override
@@ -65,7 +69,7 @@ public class HDataServiceImp implements HDataService {
             String dayStartTime = DateUtil.getThisDayStartTime(dateTime);
             String dayEndTIme = DateUtil.getThisDayEndTime(dateTime);
 
-            List<HData> hDatas = hDataDao.queryHdataByStationIdAndTime(stationId, dayStartTime, dayEndTIme);
+            List<HData> hDatas = hDataRepositority.queryHdataByStationIdAndTime(stationId, dayStartTime, dayEndTIme);
 
             JSONArray hdataArray = new JSONArray();
             JSONObject hdataJSON = new JSONObject();
@@ -139,7 +143,7 @@ public class HDataServiceImp implements HDataService {
 
     @Override
     public List<HData> getByStationAndDate(String station_id, String date) {
-        return hDataDao.getByStationAndDate(station_id,date);
+        return hDataRepositority.getByStationAndDate(station_id,date);
     }
     /*
     * 获取单站点的多因子数据---一天-24小时
@@ -158,8 +162,8 @@ public class HDataServiceImp implements HDataService {
         Station station=stationDao.findStationByStationId(station_id);
         String station_name= station.getStationName();
 
-        List<HData> dDatas_time1=hDataDao.getByStationAndDate(station_id,time1);
-        List<HData> dDatas_time2=hDataDao.getByStationAndDate(station_id,time2);
+        List<HData> dDatas_time1=hDataRepositority.getByStationAndDate(station_id,time1);
+        List<HData> dDatas_time2=hDataRepositority.getByStationAndDate(station_id,time2);
 
 
         Map<String, Object> time1Map = new LinkedHashMap<String, Object>();//time1
