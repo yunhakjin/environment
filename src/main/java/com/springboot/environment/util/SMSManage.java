@@ -39,7 +39,9 @@ public class SMSManage {
         }
         return flag;
     }
-    public static void main(String[] args){
-        SMSManage.getInstance().send("这是测试数据【上海】", "15138898219");
-    }
+//    public static void main(String[] args){
+//        String string1 = "13700719173";
+//        String tel = "ceshi【xx】";
+//        SMSManage.getInstance().send("ceshi【xx】", string1);
+//    }
 }

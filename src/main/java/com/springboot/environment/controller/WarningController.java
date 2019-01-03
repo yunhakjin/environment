@@ -65,13 +65,12 @@ public class WarningController {
             for(Warning warning : newWarnings)
             {
                 String managerTel = warning.getManger_tel();
-                String warningMessage = "你好请前往报警站点： " + warning.getStation_name() + "所属行政区：" + warning.getWarning_district() +
-                        "功能区：" + warning.getWarning_domain() + "报警指标：" + warning.getNorm_code() + "报警阈值：" +
-                        warning.getLimit_value() + "leq：" + warning.getReal_value() + "报警开始时间" + warning.getWarning_start_time();
-                System.out.println(managerTel);
+                String warningMessage = "你好请前往报警站点： " + warning.getStation_name() + "\n" + "所属行政区：" + warning.getWarning_district()+ "\n" +
+                        "功能区：" + warning.getWarning_domain() + "\n" + "报警指标：" + warning.getNorm_code() + "\n" + "报警阈值：" + "\n" +
+                        warning.getLimit_value() + "\n" + "leq：" + warning.getReal_value() + "\n" + "报警开始时间" + warning.getWarning_start_time() + "【上海】";
                 System.out.println(warningMessage);
 
-                SMSManage.getInstance().send(warningMessage, managerTel);
+                SMSManage.getInstance().send(warningMessage,managerTel);
             }
 //            return ConvertToJsonUtil.warningListConvertToJson(newWarnings);
 
