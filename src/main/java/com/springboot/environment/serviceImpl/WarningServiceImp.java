@@ -13,28 +13,24 @@ import com.springboot.environment.dao.WarningDao;
 import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.redis.core.RedisTemplate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class WarningServiceImp implements WarningService {
 
     @Autowired
-    private WarningDao warningDao;
+    RedisTemplate<String, String> redisTemplate;
 
-    @Override
-    public Page<Warning> getAllPage(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return warningDao.findAll(pageable);
-    }
+    @Autowired
+    private WarningDao warningDao;
 
     @Override
     public String queryWarningByDomainAndTimeAndDistrictAndStation(String warning_district,int warning_domain, String start_time, String end_time,String station_id) {
@@ -92,6 +88,22 @@ public class WarningServiceImp implements WarningService {
     @Override
     public int getCount() {
         return warningDao.getCount();
+    }
+
+    @Override
+    public String getRedisWarning() {
+        JSONObject dataJson = new JSONObject();
+        //JSONArray dataArray = new JSONArray();
+
+        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
+        Set<String> maxScoreWdata = zSetOperations.reverseRange("realwarningdata" ,0, 0);
+        if (!maxScoreWdata.isEmpty()) {
+            JSONObject realWarningJson = JSONObject.parseObject(maxScoreWdata.iterator().next());
+            dataJson.put("realWarning", realWarningJson);
+            return realWarningJson.toJSONString();
+        }
+        else
+            return null;
     }
 
 
