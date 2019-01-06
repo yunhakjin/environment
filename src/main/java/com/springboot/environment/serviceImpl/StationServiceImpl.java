@@ -804,9 +804,17 @@ public class StationServiceImpl implements StationService {
                         }
                     }
                     List<String> MType_list=new ArrayList<String>();
-                    MType_list.add("区域环境"+stations.get(i).getArea());
-                    MType_list.add("功能区"+stations.get(i).getDomain());
+                    MType_list.add("区域环境");
+                    MType_list.add("功能区");
                     map.put("M_type",MType_list);
+
+                    List<String> MType_value_list=new ArrayList<String>();
+                    MType_value_list.add(""+stations.get(i).getArea());
+                    MType_value_list.add(""+stations.get(i).getDomain());
+                    map.put("M_typeValue",MType_value_list);
+
+
+
                     List<String> CType_list=new ArrayList<String>();
                     if(stations.get(i).getCountryCon()==1){
                         CType_list.add("国控");
@@ -817,7 +825,6 @@ public class StationServiceImpl implements StationService {
                     if(stations.get(i).getDomainCon()==1){
                         CType_list.add("区控");
                     }
-                    map.put("M_type",MType_list);
                     map.put("C_type",CType_list);
                     //待会修改
 
@@ -883,9 +890,15 @@ public class StationServiceImpl implements StationService {
                                 }
                             }
                             List<String> MType_list=new ArrayList<String>();
-                            MType_list.add("区域环境"+stations.get(i).getArea());
-                            MType_list.add("功能区"+stations.get(i).getDomain());
+                            MType_list.add("区域环境");
+                            MType_list.add("功能区");
                             map.put("M_type",MType_list);
+
+                            List<String> MType_value_list=new ArrayList<String>();
+                            MType_value_list.add(""+stations.get(i).getArea());
+                            MType_value_list.add(""+stations.get(i).getDomain());
+                            map.put("M_typeValue",MType_value_list);
+
                             List<String> CType_list=new ArrayList<String>();
                             if(stations.get(i).getCountryCon()==1){
                                 CType_list.add("国控");
@@ -896,7 +909,6 @@ public class StationServiceImpl implements StationService {
                             if(stations.get(i).getDomainCon()==1){
                                 CType_list.add("区控");
                             }
-                            map.put("M_type",MType_list);
                             map.put("C_type",CType_list);
                             //待会修改
 
@@ -962,9 +974,15 @@ public class StationServiceImpl implements StationService {
                                 map.put("LeqA","0");
                             }
                             List<String> MType_list=new ArrayList<String>();
-                            MType_list.add("区域环境"+gathers.get(i).getArea());
-                            MType_list.add("功能区"+gathers.get(i).getDomain());
+                            MType_list.add("区域环境");
+                            MType_list.add("功能区");
                             map.put("M_type",MType_list);
+
+                            List<String> MType_value_list=new ArrayList<String>();
+                            MType_value_list.add(""+stations.get(i).getArea());
+                            MType_value_list.add(""+stations.get(i).getDomain());
+                            map.put("M_typeValue",MType_value_list);
+
                             List<String> CType_list=new ArrayList<String>();
                             if(gathers.get(i).getCountry_con()==1){
                                 CType_list.add("国控");
@@ -975,7 +993,6 @@ public class StationServiceImpl implements StationService {
                             if(gathers.get(i).getDomain_con()==1){
                                 CType_list.add("区控");
                             }
-                            map.put("M_type",MType_list);
                             map.put("C_type",CType_list);
 
                             LogOffLine logOffLine=logOffLineDao.findByStationOrGatherID(gathers.get(i).getGather_code());
@@ -1033,9 +1050,15 @@ public class StationServiceImpl implements StationService {
                                         map.put("LeqA","0");
                                     }
                                     List<String> MType_list=new ArrayList<String>();
-                                    MType_list.add("区域环境"+gathers.get(i).getArea());
-                                    MType_list.add("功能区"+gathers.get(i).getDomain());
+                                    MType_list.add("区域环境");
+                                    MType_list.add("功能区");
                                     map.put("M_type",MType_list);
+
+                                    List<String> MType_value_list=new ArrayList<String>();
+                                    MType_value_list.add(""+stations.get(i).getArea());
+                                    MType_value_list.add(""+stations.get(i).getDomain());
+                                    map.put("M_typeValue",MType_value_list);
+
                                     List<String> CType_list=new ArrayList<String>();
                                     if(gathers.get(i).getCountry_con()==1){
                                         CType_list.add("国控");
@@ -1046,7 +1069,6 @@ public class StationServiceImpl implements StationService {
                                     if(gathers.get(i).getDomain_con()==1){
                                         CType_list.add("区控");
                                     }
-                                    map.put("M_type",MType_list);
                                     map.put("C_type",CType_list);
 
                                     LogOffLine logOffLine=logOffLineDao.findByStationOrGatherID(gathers.get(i).getGather_code());
@@ -1085,9 +1107,15 @@ public class StationServiceImpl implements StationService {
                                     System.out.println(new Date());
                                     map.put("LeqA","0");
                                     List<String> MType_list=new ArrayList<String>();
-                                    MType_list.add("区域环境"+gathers.get(i).getArea());
-                                    MType_list.add("功能区"+gathers.get(i).getDomain());
+                                    MType_list.add("区域环境");
+                                    MType_list.add("功能区");
                                     map.put("M_type",MType_list);
+
+                                    List<String> MType_value_list=new ArrayList<String>();
+                                    MType_value_list.add(""+stations.get(i).getArea());
+                                    MType_value_list.add(""+stations.get(i).getDomain());
+                                    map.put("M_typeValue",MType_value_list);
+
                                     List<String> CType_list=new ArrayList<String>();
                                     if(gathers.get(i).getCountry_con()==1){
                                         CType_list.add("国控");
@@ -1098,7 +1126,6 @@ public class StationServiceImpl implements StationService {
                                     if(gathers.get(i).getDomain_con()==1){
                                         CType_list.add("区控");
                                     }
-                                    map.put("M_type",MType_list);
                                     map.put("C_type",CType_list);
                                     LogOffLine logOffLine=logOffLineDao.findByStationOrGatherID(gathers.get(i).getGather_code());
                                     System.out.println("logoffline"+logOffLine);
