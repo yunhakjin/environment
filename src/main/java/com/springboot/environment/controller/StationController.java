@@ -477,8 +477,8 @@ public class StationController {
         User user=(User) session.getAttribute("user");
         System.out.println("userOnline"+user);
         String operatationId=user.getOperation_id();
-        if(operatationId==null){
-            System.out.println("超级管理员");
+        if(operatationId==null||operatationId.equals("")){
+            System.out.println("超级管理员或无运维单位人员");
             operatationId="0";
         }
         return operatationId;
