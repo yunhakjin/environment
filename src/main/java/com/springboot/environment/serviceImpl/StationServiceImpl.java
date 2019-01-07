@@ -780,6 +780,7 @@ public class StationServiceImpl implements StationService {
             String LeqAnorm_code=normDao.getLeqACode().toString();
             for(int i=0;i<stations.size();i++){
                 if(operation_id.equals("0")){
+                    //用户为admin或者无运营单位  为0，能看所有站点
                     Map<String,Object> map=new HashMap<String,Object>();
                     map.put("type","Feature");
                     map.put("id",stations.get(i).getStationCode());
@@ -787,26 +788,33 @@ public class StationServiceImpl implements StationService {
                     map.put("region",stations.get(i).getDistrict());
                     //map.put("OverLimit","否");
                     List<HData> hDatas= hDataDao.getLatestStationListByStationCode(stations.get(i).getStationCode());
-                    String time=(hDataDao.getLatestTimeByStationCode(stations.get(i).getStationCode().toString()));
-                    if(time==null){
-                        map.put("time",new Date());
-                    }else{
-                        map.put("time",time);
-                    }
                     if(hDatas!=null){
-                        for (int j= 0;j<hDatas.size();j++){
-                            if(hDatas.get(j).getNorm_code().equals(LeqAnorm_code)){
-                                map.put("LeqA",hDatas.get(j).getNorm_val());
+                        String time=(hDataDao.getLatestTimeByStationCode(stations.get(i).getStationCode().toString()));
+                        if(time!=null){
+                            map.put("time",(time.substring(0,time.length()-2)));
+                            for (int j= 0;j<hDatas.size();j++){
+                                if(hDatas.get(j).getNorm_code().equals(LeqAnorm_code)){
+                                    map.put("LeqA",hDatas.get(j).getNorm_val());
+                                }
                             }
+                        }else{
+                            System.out.println("不存在最新数据");
+                            map.put("time",sdf.format(new Date()));
+                            map.put("LeqA","0");
                         }
-                    }else{
-                        System.out.println("不存在最新数据");
-                        map.put("LeqA",0);
                     }
                     List<String> MType_list=new ArrayList<String>();
-                    MType_list.add(stations.get(i).getArea()+"");
-                    MType_list.add(stations.get(i).getDomain()+"");
+                    MType_list.add("区域环境");
+                    MType_list.add("功能区");
                     map.put("M_type",MType_list);
+
+                    List<String> MType_value_list=new ArrayList<String>();
+                    MType_value_list.add(""+stations.get(i).getArea());
+                    MType_value_list.add(""+stations.get(i).getDomain());
+                    map.put("M_typeValue",MType_value_list);
+
+
+
                     List<String> CType_list=new ArrayList<String>();
                     if(stations.get(i).getCountryCon()==1){
                         CType_list.add("国控");
@@ -817,7 +825,6 @@ public class StationServiceImpl implements StationService {
                     if(stations.get(i).getDomainCon()==1){
                         CType_list.add("区控");
                     }
-                    map.put("M_type",MType_list);
                     map.put("C_type",CType_list);
                     //待会修改
 
@@ -842,6 +849,8 @@ public class StationServiceImpl implements StationService {
                     }else{
                         map.put("OverLimit","是");
                     }
+
+
                     Map<String,Object> mapGeometry=new HashMap<String,Object>();
                     mapGeometry.put("type","Point");
                     List<Float> coordinates=new ArrayList<>();
@@ -853,158 +862,99 @@ public class StationServiceImpl implements StationService {
                     mapGeometry.put("coordinates",coordinates);
                     map.put("geometry",mapGeometry);
                     lists.add(map);
-                }else{
-                    if(stations.get(i).getOperation_id().equals(operation_id)){
-                        Map<String,Object> map=new HashMap<String,Object>();
-                        map.put("type","Feature");
-                        map.put("id",stations.get(i).getStationCode());
-                        map.put("name",stations.get(i).getStationName());
-                        map.put("region",stations.get(i).getDistrict());
-                        //map.put("OverLimit","否");
-                        List<HData> hDatas= hDataDao.getLatestStationListByStationCode(stations.get(i).getStationCode());
-                        String time=(hDataDao.getLatestTimeByStationCode(stations.get(i).getStationCode().toString()));
-                        if(time==null){
-                            map.put("time",new Date());
-                        }else{
-                            map.put("time",time);
-                        }
-                        if(hDatas!=null){
-                            for (int j= 0;j<hDatas.size();j++){
-                                if(hDatas.get(j).getNorm_code().equals(LeqAnorm_code)){
-                                    map.put("LeqA",hDatas.get(j).getNorm_val());
+                } else{
+                    //此用户存在运维单位，需要数据权限
+                    if(stations.get(i).getOperation_id()!=null){
+                        if(stations.get(i).getOperation_id().equals(operation_id)){
+                            Map<String,Object> map=new HashMap<String,Object>();
+                            map.put("type","Feature");
+                            map.put("id",stations.get(i).getStationCode());
+                            map.put("name",stations.get(i).getStationName());
+                            map.put("region",stations.get(i).getDistrict());
+                            //map.put("OverLimit","否");
+                            List<HData> hDatas= hDataDao.getLatestStationListByStationCode(stations.get(i).getStationCode());
+
+                            if(hDatas!=null){
+                                String time=(hDataDao.getLatestTimeByStationCode(stations.get(i).getStationCode().toString()));
+                                if(time!=null){
+                                    map.put("time",(time.substring(0,(time.length()-2))));
+                                    for (int j= 0;j<hDatas.size();j++){
+                                        if(hDatas.get(j).getNorm_code().equals(LeqAnorm_code)){
+                                            map.put("LeqA",hDatas.get(j).getNorm_val());
+                                        }
+                                    }
+                                }else{
+                                    System.out.println("不存在最新数据");
+                                    map.put("time",sdf.format(new Date()));
+                                    map.put("LeqA","0");
                                 }
                             }
-                        }else{
-                            System.out.println("不存在最新数据");
-                            map.put("LeqA",0);
-                        }
-                        List<String> MType_list=new ArrayList<String>();
-                        MType_list.add(stations.get(i).getArea()+"");
-                        MType_list.add(stations.get(i).getDomain()+"");
-                        map.put("M_type",MType_list);
-                        List<String> CType_list=new ArrayList<String>();
-                        if(stations.get(i).getCountryCon()==1){
-                            CType_list.add("国控");
-                        }
-                        if(stations.get(i).getCityCon()==1){
-                            CType_list.add("市控");
-                        }
-                        if(stations.get(i).getDomainCon()==1){
-                            CType_list.add("区控");
-                        }
-                        map.put("M_type",MType_list);
-                        map.put("C_type",CType_list);
-                        //待会修改
+                            List<String> MType_list=new ArrayList<String>();
+                            MType_list.add("区域环境");
+                            MType_list.add("功能区");
+                            map.put("M_type",MType_list);
 
-                        LogOffLine logOffLine=logOffLineDao.findByStationOrGatherID(stations.get(i).getStationCode());
-                        if(logOffLine!=null){
-                            if(logOffLine.getFlag()==1){
-                                map.put("S_type","在线");
-                            }else if(logOffLine.getFlag()==0){
-                                map.put("S_type","离线");
+                            List<String> MType_value_list=new ArrayList<String>();
+                            MType_value_list.add(""+stations.get(i).getArea());
+                            MType_value_list.add(""+stations.get(i).getDomain());
+                            map.put("M_typeValue",MType_value_list);
+
+                            List<String> CType_list=new ArrayList<String>();
+                            if(stations.get(i).getCountryCon()==1){
+                                CType_list.add("国控");
                             }
-                        }else{
-                            map.put("S_type","在线");
+                            if(stations.get(i).getCityCon()==1){
+                                CType_list.add("市控");
+                            }
+                            if(stations.get(i).getDomainCon()==1){
+                                CType_list.add("区控");
+                            }
+                            map.put("C_type",CType_list);
+                            //待会修改
+
+                            LogOffLine logOffLine=logOffLineDao.findByStationOrGatherID(stations.get(i).getStationCode());
+                            if(logOffLine!=null){
+                                if(logOffLine.getFlag()==1){
+                                    map.put("S_type","在线");
+                                }else if(logOffLine.getFlag()==0){
+                                    map.put("S_type","离线");
+                                }
+                            }else{
+                                map.put("S_type","在线");
+                            }
+                            if(stations.get(i).getStation_attribute()==1){
+                                map.put("O_status","自动");
+                            }else if(stations.get(i).getStation_attribute()==0){
+                                map.put("O_status","手动");
+                            }
+                            //暂时报警部分未做完
+                            if(i<5){
+                                map.put("OverLimit","否");
+                            }else{
+                                map.put("OverLimit","是");
+                            }
+                            Map<String,Object> mapGeometry=new HashMap<String,Object>();
+                            mapGeometry.put("type","Point");
+                            List<Float> coordinates=new ArrayList<>();
+                            String[] coordinates_str=stations.get(i).getPosition().split(",");
+                            Float coordinates_strlat=Float.parseFloat(coordinates_str[0]);
+                            Float coordinates_strlon=Float.parseFloat(coordinates_str[1]);
+                            coordinates.add(coordinates_strlon);
+                            coordinates.add(coordinates_strlat);
+                            mapGeometry.put("coordinates",coordinates);
+                            map.put("geometry",mapGeometry);
+                            lists.add(map);
                         }
-                        if(stations.get(i).getStation_attribute()==1){
-                            map.put("O_status","自动");
-                        }else if(stations.get(i).getStation_attribute()==0){
-                            map.put("O_status","手动");
-                        }
-                        //暂时报警部分未做完
-                        if(i<5){
-                            map.put("OverLimit","否");
-                        }else{
-                            map.put("OverLimit","是");
-                        }
-                        Map<String,Object> mapGeometry=new HashMap<String,Object>();
-                        mapGeometry.put("type","Point");
-                        List<Float> coordinates=new ArrayList<>();
-                        String[] coordinates_str=stations.get(i).getPosition().split(",");
-                        Float coordinates_strlat=Float.parseFloat(coordinates_str[0]);
-                        Float coordinates_strlon=Float.parseFloat(coordinates_str[1]);
-                        coordinates.add(coordinates_strlon);
-                        coordinates.add(coordinates_strlat);
-                        mapGeometry.put("coordinates",coordinates);
-                        map.put("geometry",mapGeometry);
-                        lists.add(map);
                     }
+
                 }
             }
 
             //gather
-
             List<Gather> gathers=gatherDao.findAll();
-            for(int i=0;i<gathers.size();i++){
-                if(operation_id.equals("0")){
-                    Map<String,Object> map=new HashMap<String,Object>();
-                    map.put("type","Feature");
-                    map.put("id",gathers.get(i).getGather_code());
-                    map.put("name",gathers.get(i).getGather_name());
-                    map.put("region",gathers.get(i).getDistrict());
-                    GatherData gatherDatas= gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id());
-                    if(gatherDatas!=null){
-                        //System.out.println("ss"+gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id()).getData_time().toString());
-                        String time = (gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id()).getData_time().toString());
-                        if(time==null){
-                            map.put("time",new Date());
-                        }else{
-                            map.put("time",time);
-                        }
-                        if(gatherDatas.getNorm_code().equals(LeqAnorm_code)){
-                            map.put("LeqA",gatherDatas.getNorm_val());
-                        }
-                        List<String> MType_list=new ArrayList<String>();
-                        MType_list.add(gathers.get(i).getArea()+"");
-                        MType_list.add(gathers.get(i).getDomain()+"");
-                        map.put("M_type",MType_list);
-                        List<String> CType_list=new ArrayList<String>();
-                        if(gathers.get(i).getCountry_con()==1){
-                            CType_list.add("国控");
-                        }
-                        if(gathers.get(i).getCity_con()==1){
-                            CType_list.add("市控");
-                        }
-                        if(gathers.get(i).getDomain_con()==1){
-                            CType_list.add("区控");
-                        }
-                        map.put("M_type",MType_list);
-                        map.put("C_type",CType_list);
-
-                        LogOffLine logOffLine=logOffLineDao.findByStationOrGatherID(gathers.get(i).getGather_code());
-                        System.out.println("logoffline"+logOffLine);
-                        if(logOffLine!=null){
-                            if(logOffLine.getFlag()==1){
-                                map.put("S_type","在线");
-                            }else if(logOffLine.getFlag()==0){
-                                map.put("S_type","离线");
-                            }
-                        }else{
-                            map.put("S_type","在线");
-                        }
-                        map.put("O_status","流动");
-                        //暂时报警部分未做完
-                        if(i<5){
-                            map.put("OverLimit","否");
-                        }else{
-                            map.put("OverLimit","是");
-                        }
-                        Map<String,Object> mapGeometry=new HashMap<String,Object>();
-                        mapGeometry.put("type","Point");
-                        List<Float> coordinates=new ArrayList<>();
-                        String pos=gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id()).getGather_position();
-                        String gatherposition=pos.substring(1, pos.length());
-                        String[] coordinates_str=gatherposition.substring(0,gatherposition.length()-1).split(",");
-                        Float coordinates_strlat=Float.parseFloat(coordinates_str[0]);
-                        Float coordinates_strlon=Float.parseFloat(coordinates_str[1]);
-                        coordinates.add(coordinates_strlon);
-                        coordinates.add(coordinates_strlat);
-                        mapGeometry.put("coordinates",coordinates);
-                        map.put("geometry",mapGeometry);
-                        lists.add(map);
-                    }
-                }else{
-                    if(gathers.get(i).getOperation_id().equals(operation_id)){
+            if(gathers!=null){
+                for(int i=0;i<gathers.size();i++){
+                    if(operation_id.equals("0")){
                         Map<String,Object> map=new HashMap<String,Object>();
                         map.put("type","Feature");
                         map.put("id",gathers.get(i).getGather_code());
@@ -1012,20 +962,27 @@ public class StationServiceImpl implements StationService {
                         map.put("region",gathers.get(i).getDistrict());
                         GatherData gatherDatas= gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id());
                         if(gatherDatas!=null){
-                            //System.out.println("ss"+gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id()).getData_time().toString());
                             String time = (gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id()).getData_time().toString());
-                            if(time==null){
-                                map.put("time",new Date());
+                            if(time!=null){
+                                if(gatherDatas.getNorm_code().equals(LeqAnorm_code)){
+                                    map.put("LeqA",gatherDatas.getNorm_val());
+                                }
+                                map.put("time",(time.substring(0,(time.length()-2))));
                             }else{
-                                map.put("time",time);
-                            }
-                            if(gatherDatas.getNorm_code().equals(LeqAnorm_code)){
-                                map.put("LeqA",gatherDatas.getNorm_val());
+                                System.out.println("不存在最新数据");
+                                map.put("time",sdf.format(new Date()));
+                                map.put("LeqA","0");
                             }
                             List<String> MType_list=new ArrayList<String>();
-                            MType_list.add(gathers.get(i).getArea()+"");
-                            MType_list.add(gathers.get(i).getDomain()+"");
+                            MType_list.add("区域环境");
+                            MType_list.add("功能区");
                             map.put("M_type",MType_list);
+
+                            List<String> MType_value_list=new ArrayList<String>();
+                            MType_value_list.add(""+stations.get(i).getArea());
+                            MType_value_list.add(""+stations.get(i).getDomain());
+                            map.put("M_typeValue",MType_value_list);
+
                             List<String> CType_list=new ArrayList<String>();
                             if(gathers.get(i).getCountry_con()==1){
                                 CType_list.add("国控");
@@ -1036,7 +993,6 @@ public class StationServiceImpl implements StationService {
                             if(gathers.get(i).getDomain_con()==1){
                                 CType_list.add("区控");
                             }
-                            map.put("M_type",MType_list);
                             map.put("C_type",CType_list);
 
                             LogOffLine logOffLine=logOffLineDao.findByStationOrGatherID(gathers.get(i).getGather_code());
@@ -1071,13 +1027,145 @@ public class StationServiceImpl implements StationService {
                             map.put("geometry",mapGeometry);
                             lists.add(map);
                         }
+                    }else{
+                        if(gathers.get(i).getOperation_id()!=null){
+                            if(gathers.get(i).getOperation_id().equals(operation_id)){
+                                Map<String,Object> map=new HashMap<String,Object>();
+                                map.put("type","Feature");
+                                map.put("id",gathers.get(i).getGather_code());
+                                map.put("name",gathers.get(i).getGather_name());
+                                map.put("region",gathers.get(i).getDistrict());
+                                GatherData gatherDatas= gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id());
+                                if(gatherDatas!=null){
+                                    //System.out.println("ss"+gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id()).getData_time().toString());
+                                    String time = (gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id()).getData_time().toString());
+                                    if(time!=null){
+                                        if(gatherDatas.getNorm_code().equals(LeqAnorm_code)){
+                                            map.put("LeqA",gatherDatas.getNorm_val());
+                                        }
+                                        map.put("time",(time.substring(0,(time.length()-2))));
+                                    }else{
+                                        System.out.println("不存在最新数据");
+                                        map.put("time",sdf.format(new Date()));
+                                        map.put("LeqA","0");
+                                    }
+                                    List<String> MType_list=new ArrayList<String>();
+                                    MType_list.add("区域环境");
+                                    MType_list.add("功能区");
+                                    map.put("M_type",MType_list);
+
+                                    List<String> MType_value_list=new ArrayList<String>();
+                                    MType_value_list.add(""+stations.get(i).getArea());
+                                    MType_value_list.add(""+stations.get(i).getDomain());
+                                    map.put("M_typeValue",MType_value_list);
+
+                                    List<String> CType_list=new ArrayList<String>();
+                                    if(gathers.get(i).getCountry_con()==1){
+                                        CType_list.add("国控");
+                                    }
+                                    if(gathers.get(i).getCity_con()==1){
+                                        CType_list.add("市控");
+                                    }
+                                    if(gathers.get(i).getDomain_con()==1){
+                                        CType_list.add("区控");
+                                    }
+                                    map.put("C_type",CType_list);
+
+                                    LogOffLine logOffLine=logOffLineDao.findByStationOrGatherID(gathers.get(i).getGather_code());
+                                    System.out.println("logoffline"+logOffLine);
+                                    if(logOffLine!=null){
+                                        if(logOffLine.getFlag()==1){
+                                            map.put("S_type","在线");
+                                        }else if(logOffLine.getFlag()==0){
+                                            map.put("S_type","离线");
+                                        }
+                                    }else{
+                                        map.put("S_type","在线");
+                                    }
+                                    map.put("O_status","流动");
+                                    //暂时报警部分未做完
+                                    if(i<5){
+                                        map.put("OverLimit","否");
+                                    }else{
+                                        map.put("OverLimit","是");
+                                    }
+                                    Map<String,Object> mapGeometry=new HashMap<String,Object>();
+                                    mapGeometry.put("type","Point");
+                                    List<Float> coordinates=new ArrayList<>();
+                                    String pos=gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id()).getGather_position();
+                                    String gatherposition=pos.substring(1, pos.length());
+                                    String[] coordinates_str=gatherposition.substring(0,gatherposition.length()-1).split(",");
+                                    Float coordinates_strlat=Float.parseFloat(coordinates_str[0]);
+                                    Float coordinates_strlon=Float.parseFloat(coordinates_str[1]);
+                                    coordinates.add(coordinates_strlon);
+                                    coordinates.add(coordinates_strlat);
+                                    mapGeometry.put("coordinates",coordinates);
+                                    map.put("geometry",mapGeometry);
+                                    lists.add(map);
+                                }else{//gather的某些站点没有数据，那么站点的很多数据都是空的,此站点数据返回空
+                                    map.put("time",sdf.format(new Date()));
+                                    System.out.println(new Date());
+                                    map.put("LeqA","0");
+                                    List<String> MType_list=new ArrayList<String>();
+                                    MType_list.add("区域环境");
+                                    MType_list.add("功能区");
+                                    map.put("M_type",MType_list);
+
+                                    List<String> MType_value_list=new ArrayList<String>();
+                                    MType_value_list.add(""+stations.get(i).getArea());
+                                    MType_value_list.add(""+stations.get(i).getDomain());
+                                    map.put("M_typeValue",MType_value_list);
+
+                                    List<String> CType_list=new ArrayList<String>();
+                                    if(gathers.get(i).getCountry_con()==1){
+                                        CType_list.add("国控");
+                                    }
+                                    if(gathers.get(i).getCity_con()==1){
+                                        CType_list.add("市控");
+                                    }
+                                    if(gathers.get(i).getDomain_con()==1){
+                                        CType_list.add("区控");
+                                    }
+                                    map.put("C_type",CType_list);
+                                    LogOffLine logOffLine=logOffLineDao.findByStationOrGatherID(gathers.get(i).getGather_code());
+                                    System.out.println("logoffline"+logOffLine);
+                                    if(logOffLine!=null){
+                                        if(logOffLine.getFlag()==1){
+                                            map.put("S_type","在线");
+                                        }else if(logOffLine.getFlag()==0){
+                                            map.put("S_type","离线");
+                                        }
+                                    }else{
+                                        map.put("S_type","在线");
+                                    }
+                                    map.put("O_status","流动");
+                                    //暂时报警部分未做完
+                                    if(i<5){
+                                        map.put("OverLimit","否");
+                                    }else{
+                                        map.put("OverLimit","是");
+                                    }
+                                    Map<String,Object> mapGeometry=new HashMap<String,Object>();
+                                    mapGeometry.put("type","Point");
+                                    List<Object> coordinates=new ArrayList<>();
+                                    coordinates.add("");
+                                    coordinates.add("");
+                                    mapGeometry.put("coordinates",coordinates);
+                                    map.put("geometry",mapGeometry);
+                                    lists.add(map);
+                                }
+                            }
+                        }
+
                     }
                 }
             }
+
         }
 
         resultMap.put("type","FeatureCollection");
         resultMap.put("features",lists);
+        System.out.println(lists.size());
         return resultMap;
     }
 
