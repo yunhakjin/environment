@@ -36,7 +36,7 @@ public class GetWarningLastNum implements CommandLineRunner{
 
         LastWarningNum = warningService.getCount();
 
-        final long timeInterval = 1000;
+        final long timeInterval = 1200000;
         Runnable runnable = new Runnable() {
             @Override
             public void run() {

@@ -1,5 +1,7 @@
 package com.springboot.environment.util;
 
+import org.springframework.util.StringUtils;
+
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -47,6 +49,9 @@ public class StringUtil {
      * @return
      */
     public static String convertStringToInt(String string) {
+        if (StringUtils.isEmpty(string)){
+            return "";
+        }
         float num = Float.parseFloat(string);
         int number = (int) num;
         return number + "%";
