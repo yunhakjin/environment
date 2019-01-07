@@ -76,7 +76,7 @@ public class GetWarningLastNum implements CommandLineRunner{
                     }
                     else{
                         System.out.println("没有新的报警信息");
-                        zset.remove("realwarningdata");
+                        //zset.remove("realwarningdata");
                     }
                     try {
                         Thread.sleep(timeInterval);
