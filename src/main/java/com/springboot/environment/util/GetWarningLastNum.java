@@ -57,7 +57,7 @@ public class GetWarningLastNum implements CommandLineRunner{
                                     "功能区：" + warning.getWarning_domain() + "\n" + "报警指标：" + warning.getNorm_code() + "\n" + "报警阈值：" + "\n" +
                                     warning.getLimit_value() + "\n" + "leq：" + warning.getReal_value() + "\n" + "报警开始时间" + warning.getWarning_start_time() + "【上海】";
                             System.out.println(warningMessage);
-                            SMSManage.getInstance().send(warningMessage,managerTel);
+//                            SMSManage.getInstance().send(warningMessage,managerTel);
 
                             double score ;
                             JSONObject realwarningdataJson = new JSONObject();
@@ -70,7 +70,7 @@ public class GetWarningLastNum implements CommandLineRunner{
                             realwarningdataJson.put("station_id",warning.getStation_id());
                             String dataString = realwarningdataJson.toJSONString();
 
-                            zset.add("realwarningdata",dataString,1);//score 不懂？！
+//                            zset.add("realwarningdata",dataString,1);//score 不懂？！
                         }
 
                     }
