@@ -265,6 +265,7 @@ public class StationController {
         }else{
             List<Map> stationsList=new ArrayList<>();
             List<Station> stationList=stationService.queryStationsByNameLikeAndArea(area,query);
+            System.out.println("stationList:"+stationList);
             for(Station station:stationList){
                 if(!operation_id.equals("0")){
                     if(station.getOperation_id().equals(operation_id)){
@@ -274,12 +275,12 @@ public class StationController {
                         stationsList.add(map);
                     }
                 }else{
-                    if(station.getOperation_id().equals(operation_id)){
+
                         Map<String,String> map=new HashMap<String,String>();
                         map.put("station_id",station.getStationCode());
                         map.put("station_name",station.getStationName());
                         stationsList.add(map);
-                    }
+
                 }
 
             }
