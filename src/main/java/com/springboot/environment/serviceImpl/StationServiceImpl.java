@@ -1019,8 +1019,8 @@ public class StationServiceImpl implements StationService {
                             String pos=gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id()).getGather_position();
                             String gatherposition=pos.substring(1, pos.length());
                             String[] coordinates_str=gatherposition.substring(0,gatherposition.length()-1).split(",");
-                            Float coordinates_strlat=Float.parseFloat(coordinates_str[0]);
-                            Float coordinates_strlon=Float.parseFloat(coordinates_str[1]);
+                            Float coordinates_strlon=Float.parseFloat(coordinates_str[0]);
+                            Float coordinates_strlat=Float.parseFloat(coordinates_str[1]);
                             coordinates.add(coordinates_strlon);
                             coordinates.add(coordinates_strlat);
                             mapGeometry.put("coordinates",coordinates);
