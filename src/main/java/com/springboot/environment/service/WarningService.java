@@ -18,6 +18,6 @@ public interface WarningService {
     public String queryWarningByDomainAndTimeAndDistrictAndStation(String warning_district, int warning_domain, String start_time, String end_time,String station_id) throws ParseException;
     public List<Warning> queryNewWarning(int lastNum);
     public int getCount();
-    public String getRedisWarning();
+    public String getRedisWarning() throws ParseException;
 
 }

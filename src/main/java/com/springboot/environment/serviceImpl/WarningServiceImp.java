@@ -3,25 +3,25 @@ package com.springboot.environment.serviceImpl;
 /**
  * Created by sts on 2018/11/26.
  */
-import com.alibaba.fastjson.JSONArray;
+
+//import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.springboot.environment.service.WarningService;
 import com.springboot.environment.bean.*;
 import com.springboot.environment.dao.WarningDao;
-import com.springboot.environment.util.DateUtil;
-import com.springboot.environment.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.data.redis.core.RedisTemplate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
+import net.sf.json.JSONArray;
 
 @Service
 public class WarningServiceImp implements WarningService {
@@ -91,16 +91,19 @@ public class WarningServiceImp implements WarningService {
     }
 
     @Override
-    public String getRedisWarning() {
+    public String getRedisWarning() throws ParseException {
         JSONObject dataJson = new JSONObject();
-        //JSONArray dataArray = new JSONArray();
 
-        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
-        Set<String> maxScoreWdata = zSetOperations.reverseRange("realwarningdata" ,0, 0);
-        if (!maxScoreWdata.isEmpty()) {
-            JSONObject realWarningJson = JSONObject.parseObject(maxScoreWdata.iterator().next());
-            dataJson.put("realWarning", realWarningJson);
-            return realWarningJson.toJSONString();
+        ZSetOperations<String, String> zset = redisTemplate.opsForZSet();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
+        String str = sdf.format(new Date());
+        Date hourDate = sdf.parse(str);
+        Set<String> hourWdata = zset.reverseRangeByScore("realwarningdata" ,hourDate.getTime(), System.currentTimeMillis());
+        List<String> setList = new ArrayList<String>(hourWdata);
+        if (!hourWdata.isEmpty()) {
+            JSONArray jsonArray = JSONArray.fromObject( setList );
+            dataJson.put("realWarning", jsonArray);
+            return dataJson.toJSONString();
         }
         else
             return null;

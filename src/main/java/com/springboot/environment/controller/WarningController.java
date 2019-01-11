@@ -53,32 +53,7 @@ public class WarningController {
 
     @ApiOperation(value = "查询实时报警信息", notes = "")
     @RequestMapping(value = "/queryNewWarning", method = RequestMethod.GET)
-    public String getNewWarning() {
+    public String getNewWarning() throws ParseException {
         return warningService.getRedisWarning();
-//        int newNum = warningService.getCount();
-//        int lastNum = GetWarningLastNum.LastWarningNum;
-//
-//        if ( newNum > lastNum) {
-//            int tmp = lastNum;
-//            GetWarningLastNum.setLastWarningNum(newNum);
-//            System.out.println(GetWarningLastNum.LastWarningNum);
-//            List<Warning> newWarnings = warningService.queryNewWarning(tmp);
-//            for(Warning warning : newWarnings)
-//            {
-//                String managerTel = warning.getManger_tel();
-//                String warningMessage = "你好请前往报警站点： " + warning.getStation_name() + "\n" + "所属行政区：" + warning.getWarning_district()+ "\n" +
-//                        "功能区：" + warning.getWarning_domain() + "\n" + "报警指标：" + warning.getNorm_code() + "\n" + "报警阈值：" + "\n" +
-//                        warning.getLimit_value() + "\n" + "leq：" + warning.getReal_value() + "\n" + "报警开始时间" + warning.getWarning_start_time() + "【上海】";
-//                System.out.println(warningMessage);
-//
-//                SMSManage.getInstance().send(warningMessage,managerTel);
-//            }
-////            return ConvertToJsonUtil.warningListConvertToJson(newWarnings);
-//
-//        }
-//        else
-////            return null;
-//            System.out.println("没有新的报警信息");
-
     }
 }
