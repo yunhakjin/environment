@@ -36,3 +36,5 @@ spring:
         port: 6379
         password:
         database: 0
+logging:
+  file: C:\logs\environment.log

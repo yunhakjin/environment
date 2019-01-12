@@ -475,6 +475,8 @@ public class StationServiceImpl implements StationService {
     @Override
     public String queryhDataByStationArea(QueryhDataByStationAreaReq req) {
 
+        long startTime = System.currentTimeMillis();
+
         JSONObject dataJson = new JSONObject();
         JSONObject siteData = new JSONObject();
         JSONArray dataArray = new JSONArray();
@@ -576,13 +578,15 @@ public class StationServiceImpl implements StationService {
 
         dataJson.put("sitesDataHour", siteData);
 
-        System.out.println(dataJson.toJSONString());
+        logger.info("返回数据 {}", dataJson.toJSONString());
+        logger.info("方法耗时 {}" , (System.currentTimeMillis() - startTime) + "毫秒");
         return dataJson.toJSONString();
     }
 
     @Override
     public String querydDataByStationArea(QuerydDataByStationAreaReq req) {
 
+        long startTime = System.currentTimeMillis();
         JSONObject dataJson = new JSONObject();
         JSONObject siteData = new JSONObject();
         JSONArray dataArray = new JSONArray();
@@ -677,8 +681,8 @@ public class StationServiceImpl implements StationService {
         siteData.put("count", count);
         siteData.put("data", dataArray);
         dataJson.put("sitesDataDay", siteData);
-        System.out.println(dataJson.toJSONString());
-
+        logger.info("返回数据 {}", dataJson.toJSONString());
+        logger.info("方法耗时 {}" , (System.currentTimeMillis() - startTime) + "毫秒");
         return dataJson.toJSONString();
     }
 
