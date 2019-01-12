@@ -7,7 +7,7 @@ server:
         buffered: true
         directory: C:/logs
         enabled: true
-        file-date-format: .yyyy-MM-dd
+        file-date-format: yyyy-MM-dd
         pattern: common
         prefix: access_log
         rename-on-rotate: false
@@ -36,5 +36,3 @@ spring:
         port: 6379
         password:
         database: 0
-logging:
-  path: C:\logs

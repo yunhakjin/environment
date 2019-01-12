@@ -11,8 +11,9 @@ import com.springboot.environment.service.StationService;
 import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.StationConstant;
 import com.springboot.environment.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,7 @@ public class StationServiceImpl implements StationService {
     @Autowired
     MDataBasicDao mDataBasicDao;
 
+    private static final Logger logger = LoggerFactory.getLogger(StationServiceImpl.class);
 
     @Override
     public List<Station> findALl() {
@@ -465,9 +467,8 @@ public class StationServiceImpl implements StationService {
         siteData.put("data", dataArray);
 
         dataJson.put("sitesDataReal", siteData);
-        //打印语句上线要删除
-        System.out.println(dataJson.toJSONString());
-        System.out.println("方法结束时间" + (System.currentTimeMillis() - startTime) + "毫秒");
+        logger.info("返回数据 {}", dataJson.toJSONString());
+        logger.info("方法耗时 {}" , (System.currentTimeMillis() - startTime) + "毫秒");
         return dataJson.toJSONString();
     }
 
