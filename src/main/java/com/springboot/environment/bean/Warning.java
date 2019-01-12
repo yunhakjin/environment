@@ -102,13 +102,13 @@ public class Warning {
 //    public void setLimit_type(int limit_type) { this.limit_type = limit_type; }
 
 
-    @Column(name = "norm_code", length = 5)
+    @Column(name = "norm_code", length = 10)
     private String norm_code;
     public String getNorm_code() { return norm_code; }
     public void setNorm_code(String norm_code) { this.norm_code = norm_code; }
 
 
-    @Column(name = "norm_name", length = 20)
+    @Column(name = "norm_name", length = 5)
     private String norm_name;
     public String getNorm_name() { return norm_name; }
     public void setNorm_name(String norm_name) { this.norm_name = norm_name; }

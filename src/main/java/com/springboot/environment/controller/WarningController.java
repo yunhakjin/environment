@@ -4,18 +4,13 @@ package com.springboot.environment.controller;
  * Created by sts on 2018/12/6.
  */
 
-import com.springboot.environment.bean.Warning;
 import com.springboot.environment.dao.WarningDao;
 import com.springboot.environment.service.WarningService;
-import com.springboot.environment.util.ConvertToJsonUtil;
-import com.springboot.environment.util.SMSManage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.springboot.environment.util.GetWarningLastNum;
-import com.springboot.environment.util.SmsClientSend;
 
 
 import java.text.ParseException;
@@ -33,6 +28,8 @@ public class WarningController {
     @Autowired
     WarningDao warningDao;
 
+
+
     @ApiOperation(value = "查询指定行政区，功能区，时间段的报警信息", notes = "需要定义行政区，功能区，开始时间，结束时间")
     @ApiImplicitParam(name = "params", value = "包含行政区，功能区，开始时间，结束时间的json", dataType = "JSON")
     @RequestMapping(value = "/queryWarningByDomainAndTimeAndDistrictAndStation", method = RequestMethod.POST)
@@ -49,11 +46,5 @@ public class WarningController {
 //        int pageNum = (Integer) params.get("current_page");
 
         return warningService.queryWarningByDomainAndTimeAndDistrictAndStation(warning_district, warning_domain, start_time, end_time, station_id);
-    }
-
-    @ApiOperation(value = "查询实时报警信息", notes = "")
-    @RequestMapping(value = "/queryNewWarning", method = RequestMethod.GET)
-    public String getNewWarning() throws ParseException {
-        return warningService.getRedisWarning();
     }
 }
