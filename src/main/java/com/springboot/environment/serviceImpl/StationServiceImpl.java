@@ -798,11 +798,23 @@ public class StationServiceImpl implements StationService {
                     List<HData> hDatas= hDataDao.getLatestStationListByStationCode(stations.get(i).getStationCode());
                     if(hDatas!=null){
                         String time=(hDataDao.getLatestTimeByStationCode(stations.get(i).getStationCode().toString()));
-                        if(time!=null){
-                            map.put("time",(time.substring(0,time.length()-2)));
-                            for (int j= 0;j<hDatas.size();j++){
-                                if(hDatas.get(j).getNorm_code().equals(LeqAnorm_code)){
-                                    map.put("LeqA",hDatas.get(j).getNorm_val());
+                        boolean flag= false;
+                        for(int tt=0;tt<hDatas.size();tt++){
+                            if(hDatas.get(tt).getNorm_code().equals(LeqAnorm_code)){
+                                flag=true;
+                                break;
+                            }
+                        }
+                        if(flag==true){
+                            if(time!=null){
+                                map.put("time",(time.substring(0,time.length()-2)));
+                                for (int j= 0;j<hDatas.size();j++){
+                                    if(hDatas.get(j).getNorm_code().equals(LeqAnorm_code)){
+                                        map.put("LeqA",hDatas.get(j).getNorm_val());
+                                        break;
+                                    }else{
+                                        map.put("LeqA","0");
+                                    }
                                 }
                             }
                         }else{

@@ -274,19 +274,19 @@ public class UserServiceImpl implements UserService {
             if(u!=null){
                 userDao.save(user);
                 User user1=userDao.loadByUserId(Integer.parseInt(user_id));
-                if(user1.getUser_name().equals(user_name)&&user1.getPassword().equals(newPs)&&user1.getUser_mail().equals(user_mail)&&user1.getUser_tel().equals(user_tel)){
+                if(user1.getUser_name().equals(user_name)&&user1.getPassword().equals(password)&&user1.getUser_mail().equals(user_mail)&&user1.getUser_tel().equals(user_tel)){
                     resultMap.put("editFlag","true");
                 }else{
                     resultMap.put("editFlag","false");
                 }
-             int userRoleCount=userDao.Count(Integer.parseInt(user_id));
-             System.out.println(userRoleCount+"userRoleCount");
-             if(userRoleCount==1){
-                 userDao.updateRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
-             }else {
-                 userDao.addRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
+               int userRoleCount=userDao.Count(Integer.parseInt(user_id));
+               System.out.println(userRoleCount+"userRoleCount");
+               if(userRoleCount==1){
+                   userDao.updateRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
+               }else {
+                   userDao.addRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
 
-             }
+               }
 
             }else{
                 System.out.println("不存在此用户");
