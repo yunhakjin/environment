@@ -58,6 +58,8 @@ public class StationServiceImpl implements StationService {
     @Autowired
     MDataBasicDao mDataBasicDao;
 
+    @Autowired
+    WarningServiceImp warningServiceImp;
 
     @Override
     public List<Station> findALl() {
@@ -774,6 +776,13 @@ public class StationServiceImpl implements StationService {
         Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<Map> lists=new ArrayList<Map>();
+        Map<Object, Object> police = warningServiceImp.getRealWarning();
+        Map<Object, Object> realWarningData=(Map<Object, Object>) police.get("realWarningData");
+        List<Map> policeDatas = (List<Map>) realWarningData.get("data");
+        System.out.println(policeDatas.get(0).get("station_id"));
+
+
+
         if(type.equals("all")){
             //station
             List<Station> stations=stationDao.findAll();
@@ -843,14 +852,22 @@ public class StationServiceImpl implements StationService {
                     }else if(stations.get(i).getStation_attribute()==0){
                         map.put("O_status","手动");
                     }
-                    //暂时报警部分未做完
-                    if(i<5){
-                        map.put("OverLimit","否");
-                    }else{
-                        map.put("OverLimit","是");
+                    //报警  是否超标
+                    for (int p=0;p< policeDatas.size();p++) {
+                        Map<Object,Object> policeData= policeDatas.get(p);
+                        System.out.println(policeDatas.get(p));
+                        System.out.println((policeData.get("station_id").equals(stations.get(i).getStationCode())));
+                        System.out.println("police:"+policeData.get("station_id"));
+                        System.out.println("station:"+stations.get(i).getStationCode());
+                        if((policeData.get("station_id").equals(stations.get(i).getStationCode()))){
+                            //此站点有超标数据
+                            System.out.println("ininini");
+                            map.put("OverLimit","是");
+                            break;
+                        }else{
+                            map.put("OverLimit","否");
+                        }
                     }
-
-
                     Map<String,Object> mapGeometry=new HashMap<String,Object>();
                     mapGeometry.put("type","Point");
                     List<Float> coordinates=new ArrayList<>();
@@ -927,11 +944,22 @@ public class StationServiceImpl implements StationService {
                             }else if(stations.get(i).getStation_attribute()==0){
                                 map.put("O_status","手动");
                             }
-                            //暂时报警部分未做完
-                            if(i<5){
-                                map.put("OverLimit","否");
-                            }else{
-                                map.put("OverLimit","是");
+
+                            //报警  是否超标
+                            for (int p=0;p< policeDatas.size();p++) {
+                                Map<Object,Object> policeData= policeDatas.get(p);
+                                System.out.println(policeDatas.get(p));
+                                System.out.println((stations.get(i).getStationCode()));
+                                System.out.println("police:"+policeData.get("station_id"));
+                                System.out.println("station:"+stations.get(i).getStationCode());
+                                System.out.println((policeData.get("station_id").equals(stations.get(i).getStationCode())));
+                                if((policeData.get("station_id").equals(stations.get(i).getStationCode()))){
+                                    //此站点有超标数据
+                                    System.out.println("ininini");
+                                    map.put("OverLimit","是");
+                                }else{
+                                    map.put("OverLimit","否");
+                                }
                             }
                             Map<String,Object> mapGeometry=new HashMap<String,Object>();
                             mapGeometry.put("type","Point");
@@ -957,7 +985,7 @@ public class StationServiceImpl implements StationService {
                     if(operation_id.equals("0")){
                         Map<String,Object> map=new HashMap<String,Object>();
                         map.put("type","Feature");
-                        map.put("id",gathers.get(i).getGather_code());
+                        map.put("id",gathers.get(i).getGather_id());
                         map.put("name",gathers.get(i).getGather_name());
                         map.put("region",gathers.get(i).getDistrict());
                         GatherData gatherDatas= gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id());
@@ -1007,12 +1035,8 @@ public class StationServiceImpl implements StationService {
                                 map.put("S_type","在线");
                             }
                             map.put("O_status","流动");
-                            //暂时报警部分未做完
-                            if(i<5){
-                                map.put("OverLimit","否");
-                            }else{
-                                map.put("OverLimit","是");
-                            }
+                            //采集车没有报警
+                            map.put("OverLimit","");
                             Map<String,Object> mapGeometry=new HashMap<String,Object>();
                             mapGeometry.put("type","Point");
                             List<Float> coordinates=new ArrayList<>();
@@ -1032,7 +1056,7 @@ public class StationServiceImpl implements StationService {
                             if(gathers.get(i).getOperation_id().equals(operation_id)){
                                 Map<String,Object> map=new HashMap<String,Object>();
                                 map.put("type","Feature");
-                                map.put("id",gathers.get(i).getGather_code());
+                                map.put("id",gathers.get(i).getGather_id());
                                 map.put("name",gathers.get(i).getGather_name());
                                 map.put("region",gathers.get(i).getDistrict());
                                 GatherData gatherDatas= gatherDataDao.getLaestDataByGather_id(gathers.get(i).getGather_id());
@@ -1083,12 +1107,8 @@ public class StationServiceImpl implements StationService {
                                         map.put("S_type","在线");
                                     }
                                     map.put("O_status","流动");
-                                    //暂时报警部分未做完
-                                    if(i<5){
-                                        map.put("OverLimit","否");
-                                    }else{
-                                        map.put("OverLimit","是");
-                                    }
+                                    //采集车没有报警
+                                    map.put("OverLimit","");
                                     Map<String,Object> mapGeometry=new HashMap<String,Object>();
                                     mapGeometry.put("type","Point");
                                     List<Float> coordinates=new ArrayList<>();
@@ -1139,12 +1159,8 @@ public class StationServiceImpl implements StationService {
                                         map.put("S_type","在线");
                                     }
                                     map.put("O_status","流动");
-                                    //暂时报警部分未做完
-                                    if(i<5){
-                                        map.put("OverLimit","否");
-                                    }else{
-                                        map.put("OverLimit","是");
-                                    }
+                                    //采集车没有报警
+                                    map.put("OverLimit","");
                                     Map<String,Object> mapGeometry=new HashMap<String,Object>();
                                     mapGeometry.put("type","Point");
                                     List<Object> coordinates=new ArrayList<>();
