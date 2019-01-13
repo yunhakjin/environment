@@ -15,7 +15,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.json.JSONArray;
 
@@ -87,7 +89,8 @@ public class WarningServiceImp implements WarningService {
     }
 
     @Override
-    public String getRealWarning() {
+    public Map getRealWarning() {
+        Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
         String hourEnd = sdf.format(new Date());
         long time = 60*60*1000;//1小时
@@ -117,8 +120,8 @@ public class WarningServiceImp implements WarningService {
 //        }
         realWarningData.put("count",realWarningArray.size());
         realWarningData.put("data",realWarningArray);
-        dataJson.put("realWarningData",realWarningData);
-        return dataJson.toJSONString();
+        resultMap.put("realWarningData",realWarningData);
+        return resultMap;
     }
 
 //    @Override
