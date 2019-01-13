@@ -258,4 +258,12 @@ public interface StationDao extends JpaRepository<Station, Integer> {
 
     @Query(value = "select * from station where (operation_id='' or operation_id=?1) and (station_code like %?2% or station_name like %?2%)",nativeQuery = true)
     List<Station> getOperationStationLikeAll(String operation_id,String key);
+
+    /**
+     * 查询站点名称
+     * @param station_id
+     * @return
+     */
+    @Query(value = "select STATION_NAME from station where STATION_CODE = ?1", nativeQuery = true)
+    String findStationNameByStationId(String station_id);
 }

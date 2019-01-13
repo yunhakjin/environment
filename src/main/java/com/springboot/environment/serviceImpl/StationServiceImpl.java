@@ -1207,4 +1207,9 @@ public class StationServiceImpl implements StationService {
     public List<Station> getOperationStationLikeAll(String operation_id,String key){
         return stationDao.getOperationStationLikeAll(operation_id,key);
     }
+
+    @Override
+    public String findStationNameByStationId(String station_id) {
+        return stationDao.findStationNameByStationId(station_id);
+    }
 }
