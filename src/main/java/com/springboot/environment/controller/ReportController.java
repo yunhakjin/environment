@@ -44,7 +44,7 @@ public class ReportController {
         List<Map> resultList=new ArrayList<Map>();
         for(Station station:stationList){
             Map<String,String> map=new HashMap<String,String>();
-            String station_id=station.getStationId();
+            String station_code=station.getStationCode();
             String station_name=station.getStationName();
             String pos=station.getPosition();
             String station_lon="";
@@ -57,7 +57,7 @@ public class ReportController {
             String population=String.valueOf(random.nextInt(2000));
             String area_id=String.valueOf(station.getArea());
             String remark="";
-            map.put("station_id",station_id);
+            map.put("station_code",station_code);
             map.put("station_name",station_name);
             map.put("station_lon",station_lon);
             map.put("station_lat",station_lat);
@@ -79,7 +79,7 @@ public class ReportController {
         List<Map> resultList=new ArrayList<Map>();
         for(Station station:stationList){
             Map<String,String> map=new HashMap<String,String>();
-            String station_id=station.getStationId();
+            String station_code=station.getStationCode();
             String station_name=station.getStationName();
             String pos=station.getPosition().replace("(","").replace(")","").replace(" ","");
             String station_lon=pos.split(",")[0];
@@ -92,7 +92,7 @@ public class ReportController {
             String road_width=String.valueOf(random.nextInt(100));
             String road_level=String.valueOf(random.nextInt(5));
             String remark="";
-            map.put("station_id",station_id);
+            map.put("station_code",station_code);
             map.put("station_name",station_name);
             map.put("station_lon",station_lon);
             map.put("station_lat",station_lat);
@@ -119,7 +119,7 @@ public class ReportController {
         List<Map> resultList=new ArrayList<Map>();
         for(Station station:stationList){
             Map<String,String> map=new HashMap<String,String>();
-            String station_id=station.getStationId();
+            String station_code=station.getStationCode();
             String station_name=station.getStationName();
             String pos=station.getPosition().replace("(","").replace(")","").replace(" ","");
             String station_lon=pos.split(",")[0];
@@ -128,7 +128,7 @@ public class ReportController {
             String reference=station.getStreet();
             String functional_area_id=String.valueOf(station.getDomain());
             String remark="";
-            map.put("station_id",station_id);
+            map.put("station_code",station_code);
             map.put("station_name",station_name);
             map.put("station_lon",station_lon);
             map.put("station_lat",station_lat);
@@ -159,7 +159,6 @@ public class ReportController {
         List<Station> stationList=stationService.queryStationsByArea(area);
         List<Norm> normList=normService.getAllByHflag();
         for(Station station:stationList){
-            String station_id=station.getStationId();
             String station_name=station.getStationName();
             String station_code=station.getStationCode();
             String noise_code=String.valueOf(station.getProtocol());
@@ -173,7 +172,7 @@ public class ReportController {
                         timeMap.get(dateKey).put(hData.getNorm_code(), hData.getNorm_val());
                     } else {
                         Map<String, String> normVal = new HashMap<String, String>();
-                        normVal.put("station_id", station_id);
+                        normVal.put("station_code", station_code);
                         normVal.put("station_name", station_name);
                         normVal.put("month", sdf_month.format(hData.getData_time()));
                         normVal.put("date", sdf_day.format(hData.getData_time()));
@@ -214,7 +213,6 @@ public class ReportController {
         List<Station> stationList=stationService.queryStationsByStreet(road);
         List<Norm> normList=normService.getAllByHflag();
         for(Station station:stationList){
-            String station_id=station.getStationId();
             String station_name=station.getStationName();
             String station_code=station.getStationCode();
             String noise_code=String.valueOf(station.getProtocol());
@@ -227,7 +225,7 @@ public class ReportController {
                         timeMap.get(dateKey).put(hData.getNorm_code(), hData.getNorm_val());
                     } else {
                         Map<String, String> normVal = new HashMap<String, String>();
-                        normVal.put("station_id", station_id);
+                        normVal.put("station_code", station_code);
                         normVal.put("station_name", station_name);
                         normVal.put("month", sdf_month.format(hData.getData_time()));
                         normVal.put("date", sdf_day.format(hData.getData_time()));
@@ -259,14 +257,14 @@ public class ReportController {
         //{"station_id":"31010702335001","time":"2018-10-27"}
         Map<String,List> resultMap=new HashMap<String,List>();
         List<Map> resultList=new ArrayList<Map>();
-        String station_id=params.get("station_id");
+        String station_code=params.get("station_code");
         String time=params.get("time");
         int count=0;
         SimpleDateFormat sdf_month=new SimpleDateFormat("MM");
         SimpleDateFormat sdf_day=new SimpleDateFormat("dd");
         SimpleDateFormat sdf_hour=new SimpleDateFormat("HH");
         SimpleDateFormat sdf_minute=new SimpleDateFormat("mm");
-        List<HData> hDataList=hDataService.getByStationAndDate(station_id,time);
+        List<HData> hDataList=hDataService.getByStationAndDate(station_code,time);
         if(hDataList == null || hDataList.isEmpty()){
             return null;
         }
@@ -342,7 +340,6 @@ public class ReportController {
         SimpleDateFormat sdf_minute=new SimpleDateFormat("mm");
         int count=0;
         for(Station station:stationList){
-            String station_id=station.getStationId();
             String station_name=station.getStationName();
             String station_code=station.getStationCode();
             String noise_code=String.valueOf(station.getProtocol());
@@ -357,7 +354,7 @@ public class ReportController {
                         timeMap.get(dateKey).put(hData.getNorm_code(), hData.getNorm_val());
                     } else {
                         Map<String, String> normVal = new HashMap<String, String>();
-                        normVal.put("station_id", station_id);
+                        normVal.put("station_code", station_code);
                         normVal.put("station_name", station_name);
                         normVal.put("month", sdf_month.format(hData.getData_time()));
                         normVal.put("date", sdf_date.format(hData.getData_time()));
@@ -397,7 +394,6 @@ public class ReportController {
         SimpleDateFormat sdf_minute=new SimpleDateFormat("mm");
         int count=0;
         for(Station station:stationList){
-            String station_id=station.getStationId();
             String station_name=station.getStationName();
             String station_code=station.getStationCode();
             String noise_code=String.valueOf(station.getProtocol());
@@ -412,7 +408,7 @@ public class ReportController {
                         timeMap.get(dateKey).put(hData.getNorm_code(), hData.getNorm_val());
                     } else {
                         Map<String, String> normVal = new HashMap<String, String>();
-                        normVal.put("station_id", station_id);
+                        normVal.put("station_code", station_code);
                         normVal.put("station_name", station_name);
                         normVal.put("month", sdf_month.format(hData.getData_time()));
                         normVal.put("date", sdf_date.format(hData.getData_time()));
@@ -452,7 +448,6 @@ public class ReportController {
         SimpleDateFormat sdf_minute=new SimpleDateFormat("mm");
         int count=0;
         for(Station station:stationList){
-            String station_id=station.getStationId();
             String station_name=station.getStationName();
             String station_code=station.getStationCode();
             String noise_code=String.valueOf(station.getProtocol());
@@ -467,7 +462,7 @@ public class ReportController {
                         timeMap.get(dateKey).put(hData.getNorm_code(), hData.getNorm_val());
                     } else {
                         Map<String, String> normVal = new HashMap<String, String>();
-                        normVal.put("station_id", station_id);
+                        normVal.put("station_code", station_code);
                         normVal.put("station_name", station_name);
                         normVal.put("month", sdf_month.format(hData.getData_time()));
                         normVal.put("date", sdf_date.format(hData.getData_time()));

@@ -90,4 +90,6 @@ public interface StationService {
     List<Station> getOperationStationLike(String district,String operation_id,String key);
 
     List<Station> getOperationStationLikeAll(String operation_id,String key);
+
+    String findStationNameByStationId(String station_id);
 }

@@ -2,6 +2,7 @@ package com.springboot.environment.util;
 
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.Warning;
+import com.springboot.environment.service.StationService;
 import com.springboot.environment.service.WarningService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -25,6 +26,9 @@ public class GetWarningLastNum implements CommandLineRunner{
     @Autowired
     private WarningService warningService;
 
+    @Autowired
+    private StationService stationService;
+
 
     public static int LastWarningNum;
 
@@ -35,7 +39,9 @@ public class GetWarningLastNum implements CommandLineRunner{
 
         LastWarningNum = warningService.getCount();
 
-        final long timeInterval = 1200000;
+//        final long timeInterval = 1200000;
+        final long timeInterval = 3000;
+
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -50,12 +56,15 @@ public class GetWarningLastNum implements CommandLineRunner{
 
                         for(Warning warning : newWarnings)
                         {
+                            String station_id = warning.getStation_id();
+                            String station_name = stationService.findStationNameByStationId(station_id);
                             String managerTel = warning.getManger_tel();
-                            String warningMessage = "你好请前往报警站点： " + warning.getStation_name() + "\n" + "所属行政区：" + warning.getWarning_district()+ "\n" +
-                                    "功能区：" + warning.getWarning_domain() + "\n" + "报警指标：" + warning.getNorm_code() + "\n" + "报警阈值：" + "\n" +
+                            String warningMessage = "你好请前往报警站点： " + station_name + "\n" + "所属行政区：" + warning.getWarning_district()+ "\n" +
+                                    "功能区：" + warning.getWarning_domain() + "\n" + "报警指标：" + warning.getNorm_name() + "\n" + "报警阈值："  +
                                     warning.getLimit_value() + "\n" + "leq：" + warning.getReal_value() + "\n" + "报警开始时间" + warning.getWarning_start_time() + "【上海】";
                             System.out.println(warningMessage);
-//                            SMSManage.getInstance().send(warningMessage,managerTel);
+                            SMSManage.getInstance().send(warningMessage,managerTel);
+                            System.out.print(new Date());
 
 //                            JSONObject realwarningdataJson = new JSONObject();
 //                            realwarningdataJson.put("warning_id", warning.getWarning_id());
