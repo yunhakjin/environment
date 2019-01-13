@@ -1,6 +1,7 @@
 package com.springboot.environment.service;
 
 import com.springboot.environment.bean.Station;
+import com.springboot.environment.request.ComprehensiveQueryRequest;
 import com.springboot.environment.request.QuerydDataByStationAreaReq;
 import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
@@ -46,11 +47,18 @@ public interface StationService {
 
     String queryStationsByKey(String key);
 
-    String querymDataByStationArea(QuerymDataByStationsAreaReq req) throws ParseException;
+    String querymDataByStationArea(Map<String, Object> params) throws ParseException;
 
-    String queryhDataByStationArea(QueryhDataByStationAreaReq req);
+    String queryhDataByStationArea(Map<String, Object> params);
 
-    String querydDataByStationArea(QuerydDataByStationAreaReq req);
+    String querydDataByStationArea(Map<String, Object> params);
+
+    /**
+     * 综合查询站点信息
+     * @param params
+     * @return
+     */
+    List<Station> comprehensiveQueryStations(Map<String, Object> params);
 
 
     Map getDomainFromStation();

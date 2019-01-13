@@ -1,5 +1,6 @@
 package com.springboot.environment.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.Enum.DataTypeEnum;
 import com.springboot.environment.bean.DData;
@@ -7,6 +8,7 @@ import com.springboot.environment.bean.HData;
 import com.springboot.environment.bean.M5Data;
 import com.springboot.environment.bean.MData;
 import com.springboot.environment.dao.MDataDao;
+import com.springboot.environment.dao.StationDao;
 import com.springboot.environment.request.QueryDataByStationIdAndDatetimeReq;
 import com.springboot.environment.request.QuerydDataByStationAreaReq;
 import com.springboot.environment.request.QueryhDataByStationAreaReq;
@@ -20,6 +22,8 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import net.sf.ehcache.util.TimeUtil;
 import org.apache.shiro.session.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -59,6 +63,11 @@ public class DataController {
 
     @Autowired
     MDataDao mDataDao;
+
+    @Autowired
+    StationDao stationDao;
+
+    private static final Logger logger = LoggerFactory.getLogger(DataController.class);
 
     /*单站点日昼夜数据查询*/
     @ApiOperation(value="单站点日昼夜数据查询",notes = "需要传送包含站点id和查询时间的json")
@@ -203,13 +212,13 @@ public class DataController {
     @RequestMapping(value = "/querymDataByStationsArea", method = RequestMethod.POST)
     public String querymDataByStationsArea(@RequestBody Map<String, Object> params) throws ParseException {
 
-        System.out.println(params.toString());
-        int area = (Integer)params.get("area_id");
-        int pageSize = (Integer) params.get("each_page_num");
-        int pageNum = (Integer) params.get("current_page");
-
-        QuerymDataByStationsAreaReq querymDataByStationsAreaReq = new QuerymDataByStationsAreaReq(area, pageSize, pageNum);
-        return stationService.querymDataByStationArea(querymDataByStationsAreaReq);
+//        System.out.println(params.toString());
+//        int area = (Integer)params.get("area_id");
+//        int pageSize = (Integer) params.get("each_page_num");
+//        int pageNum = (Integer) params.get("current_page");
+//
+//        QuerymDataByStationsAreaReq querymDataByStationsAreaReq = new QuerymDataByStationsAreaReq(area, pageSize, pageNum);
+        return stationService.querymDataByStationArea(params);
 
     }
 
@@ -220,13 +229,8 @@ public class DataController {
     @RequestMapping(value = "/queryhDataByStationsArea", method = RequestMethod.POST)
     public String queryhDataByStationArea(@RequestBody Map<String, Object> params){
 
-        System.out.println(params.toString());
-        int area = (Integer)params.get("area_id");
-        int pageSize = (Integer) params.get("each_page_num");
-        int pageNum = (Integer) params.get("current_page");
+        return stationService.queryhDataByStationArea(params);
 
-        QueryhDataByStationAreaReq queryhDataByStationAreaReq = new QueryhDataByStationAreaReq(area, pageSize, pageNum);
-        return stationService.queryhDataByStationArea(queryhDataByStationAreaReq);
     }
 
 
@@ -237,14 +241,7 @@ public class DataController {
     @RequestMapping(value = "/querydDataByStationsArea", method = RequestMethod.POST)
     public String querydDataByStationByArea(@RequestBody Map<String, Object> params){
 
-        System.out.println(params.toString());
-        int area = (Integer)params.get("area_id");
-        int pageSize = (Integer) params.get("each_page_num");
-        int pageNum = (Integer) params.get("current_page");
-
-        QuerydDataByStationAreaReq querydDataByStationAreaReq = new QuerydDataByStationAreaReq(area, pageSize, pageNum);
-
-        return stationService.querydDataByStationArea(querydDataByStationAreaReq);
+        return stationService.querydDataByStationArea(params);
     }
 
 
@@ -621,9 +618,6 @@ public class DataController {
         return mDataService.getmanyMdatabystationanddata(params);
 
     }
-
-
-
     @ApiOperation(value = "测试redis数据",notes = "测试redis数据")
     @ApiImplicitParam(name = "params",value="向redis中写入2018-11-16的所有站点数据，约16W条",dataType = "JSON")
     @RequestMapping(value = "/testRedis",method = RequestMethod.POST)

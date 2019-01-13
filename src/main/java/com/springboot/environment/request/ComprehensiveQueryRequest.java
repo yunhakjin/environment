@@ -1,9 +1,8 @@
 package com.springboot.environment.request;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.fasterxml.jackson.annotation.JsonFilter;
 
-public class QueryhDataByStationAreaReq {
+public class ComprehensiveQueryRequest {
 
     //功能区
     @JSONField(name = "area_id")
@@ -53,7 +52,7 @@ public class QueryhDataByStationAreaReq {
 
 
 
-    public QueryhDataByStationAreaReq(String area, String environment, String isArea, String isCity, String isCountry, String state, String attribute, String district, String street, int pageSize, int pageNum) {
+    public ComprehensiveQueryRequest(String area, String environment, String isArea, String isCity, String isCountry, String state, String attribute, String district, String street, int pageSize, int pageNum) {
         this.area = area;
         this.environment = environment;
         this.isArea = isArea;
@@ -77,16 +76,16 @@ public class QueryhDataByStationAreaReq {
     @JSONField(name = "current_page")
     private int pageNum;
 
-    public QueryhDataByStationAreaReq() {
+    public ComprehensiveQueryRequest() {
     }
 
-    public QueryhDataByStationAreaReq(String area, int pageSize, int pageNum) {
+    public ComprehensiveQueryRequest(String area, int pageSize, int pageNum) {
         this.area = area;
         this.pageSize = pageSize;
         this.pageNum = pageNum;
     }
 
-    public QueryhDataByStationAreaReq(String area, String environment, String state, String attribute, String district, String street, int pageSize, int pageNum) {
+    public ComprehensiveQueryRequest(String area, String environment, String state, String attribute, String district, String street, int pageSize, int pageNum) {
         this.area = area;
         this.environment = environment;
         this.state = state;

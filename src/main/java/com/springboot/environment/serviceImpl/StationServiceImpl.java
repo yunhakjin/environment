@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.environment.bean.*;
 import com.springboot.environment.dao.*;
+import com.springboot.environment.request.ComprehensiveQueryRequest;
 import com.springboot.environment.request.QuerydDataByStationAreaReq;
 import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
@@ -11,6 +12,7 @@ import com.springboot.environment.service.StationService;
 import com.springboot.environment.util.DateUtil;
 import com.springboot.environment.util.StationConstant;
 import com.springboot.environment.util.StringUtil;
+import org.hibernate.event.service.spi.EventListenerGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -355,7 +357,7 @@ public class StationServiceImpl implements StationService {
     }
 
     @Override
-    public String querymDataByStationArea(QuerymDataByStationsAreaReq req) {
+    public String querymDataByStationArea(Map<String, Object> params) {
 
         //方法开始时间
         long startTime  = System.currentTimeMillis();
@@ -365,105 +367,73 @@ public class StationServiceImpl implements StationService {
         JSONObject siteData = new JSONObject();
         JSONArray dataArray = new JSONArray();
 
-
-        if (req.getArea() > 5 || req.getArea() < 0){
-            return null;
-        }
-        if (req.getPageSize() < 1){
-            return null;
-        }
-        if (req.getPageNum() < 1){
-            return null;
-        }
-
-        //符合区域环境的总数
-        int count ;
-        if (req.getArea() == 5 ){
-
-            count = stationDao.queryAllStationNum();
-        }
-        else {
-            count = stationDao.queryStationsNumByArea(req.getArea());
-        }
-
-        //分页查询站点
-        int start = (req.getPageNum() - 1) * req.getPageSize();
-        int end = req.getPageSize();
-
-        List<Station> stations = null;
-
-        if (req.getArea() == 5){
-            stations = stationDao.queryStationsByPage(start, end);
-        }
-        else {
-            stations = stationDao.queryStationsByAreaAndPage(req.getArea(), start, end);
-        }
-
+        List<Station> stations = comprehensiveQueryStations(params);
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
-        for (Station station : stations){
+        if (!StringUtil.isNullOrEmpty(stations)) {
+            for (Station station : stations) {
 
-            JSONObject stationJSON = new JSONObject();
+                JSONObject stationJSON = new JSONObject();
 
-            //取得当天的数据条数
-            int thisDayCount = mDataDao.querymDataNumBetween(station.getStationCode(), DateUtil.getTodayStr(nowDate), DateUtil.getDateStr(nowDate));
-            //取得第一个数据
-            Set<String> maxScoreMdata = zSetOperations.reverseRange(station.getStationCode(), 0, 0);
-            String maxDataTime = null;
+                //取得当天的数据条数
+                int thisDayCount = mDataDao.querymDataNumBetween(station.getStationCode(), DateUtil.getTodayStr(nowDate), DateUtil.getDateStr(nowDate));
+                //取得第一个数据
+                Set<String> maxScoreMdata = zSetOperations.reverseRange(station.getStationCode(), 0, 0);
+                String maxDataTime = null;
 
-            //如果redis中存在最新的数据
-            if (!maxScoreMdata.isEmpty()) {
-                //最新数据的json格式
-                JSONObject maxMdataJson = JSONObject.parseObject(maxScoreMdata.iterator().next());
+                //如果redis中存在最新的数据
+                if (!maxScoreMdata.isEmpty()) {
+                    //最新数据的json格式
+                    JSONObject maxMdataJson = JSONObject.parseObject(maxScoreMdata.iterator().next());
 
-                //最新数据的时间，格式为yyyy-MM-dd HH:mm:ss.000
-                //最新数据的时间戳
-                maxDataTime = (String) maxMdataJson.get("data_time");
-                maxDataTime = maxDataTime.split("\\.")[0];
-                maxDataTime = DateUtil.getTimeUntilMM(maxDataTime);
+                    //最新数据的时间，格式为yyyy-MM-dd HH:mm:ss.000
+                    //最新数据的时间戳
+                    maxDataTime = (String) maxMdataJson.get("data_time");
+                    maxDataTime = maxDataTime.split("\\.")[0];
+                    maxDataTime = DateUtil.getTimeUntilMM(maxDataTime);
 
-                String LA = null;
-                String LEQ = null;
-                String LMX = null;
+                    String LA = null;
+                    String LEQ = null;
+                    String LMX = null;
 
-                JSONArray data = maxMdataJson.getJSONArray("data");
-                for (int i = 0; i < data.size(); i++) {
-                    JSONObject indexData = data.getJSONObject(i);
-                    if (indexData.get("code").equals("n00000")) {
-                        LA = (String) indexData.get("Val");
+                    JSONArray data = maxMdataJson.getJSONArray("data");
+                    for (int i = 0; i < data.size(); i++) {
+                        JSONObject indexData = data.getJSONObject(i);
+                        if (indexData.get("code").equals("n00000")) {
+                            LA = (String) indexData.get("Val");
+                        }
+                        if (indexData.get("code").equals("n00006")) {
+                            LEQ = (String) indexData.get("Val");
+                        }
+                        if (indexData.get("code").equals("n00010")) {
+                            LMX = (String) indexData.get("Val");
+                        }
                     }
-                    if (indexData.get("code").equals("n00006")) {
-                        LEQ = (String) indexData.get("Val");
-                    }
-                    if (indexData.get("code").equals("n00010")) {
-                        LMX = (String) indexData.get("Val");
-                    }
+                    stationJSON.put("station_name", station.getStationName());
+                    stationJSON.put("station_id", station.getStationId());
+                    stationJSON.put("station_code", station.getStationCode());
+                    stationJSON.put("sim", station.getStationSim());
+                    stationJSON.put("latest_time", maxDataTime);
+                    stationJSON.put("count_r", thisDayCount == 0 ? "" : thisDayCount);
+                    stationJSON.put("LA", LA);
+                    stationJSON.put("LEQ", LEQ);
+                    stationJSON.put("LMX", LMX);
+                } else {
+                    stationJSON.put("station_name", station.getStationName());
+                    stationJSON.put("station_id", station.getStationId());
+                    stationJSON.put("station_code", station.getStationCode());
+                    stationJSON.put("sim", station.getStationSim());
+                    stationJSON.put("latest_time", "");
+                    stationJSON.put("count_r", thisDayCount == 0 ? "" : thisDayCount);
+                    stationJSON.put("LA", "");
+                    stationJSON.put("LEQ", "");
+                    stationJSON.put("LMX", "");
                 }
-                stationJSON.put("station_name", station.getStationName());
-                stationJSON.put("station_id", station.getStationId());
-                stationJSON.put("station_code", station.getStationCode());
-                stationJSON.put("sim", station.getStationSim());
-                stationJSON.put("latest_time", maxDataTime);
-                stationJSON.put("count_r", thisDayCount == 0 ? "" : thisDayCount);
-                stationJSON.put("LA", LA);
-                stationJSON.put("LEQ", LEQ);
-                stationJSON.put("LMX", LMX);
-            }
-            else {
-                stationJSON.put("station_name", station.getStationName());
-                stationJSON.put("station_id", station.getStationId());
-                stationJSON.put("station_code", station.getStationCode());
-                stationJSON.put("sim", station.getStationSim());
-                stationJSON.put("latest_time", "");
-                stationJSON.put("count_r", thisDayCount == 0 ? "" : thisDayCount);
-                stationJSON.put("LA", "");
-                stationJSON.put("LEQ", "");
-                stationJSON.put("LMX", "");
-            }
 
-            dataArray.add(stationJSON);
+                dataArray.add(stationJSON);
+            }
         }
 
-        siteData.put("count", count);
+        siteData.put("count", stations == null ? 0 : stations.size());
         siteData.put("data", dataArray);
 
         dataJson.put("sitesDataReal", siteData);
@@ -473,7 +443,7 @@ public class StationServiceImpl implements StationService {
     }
 
     @Override
-    public String queryhDataByStationArea(QueryhDataByStationAreaReq req) {
+    public String queryhDataByStationArea(Map<String, Object> params) {
 
         long startTime = System.currentTimeMillis();
 
@@ -481,99 +451,68 @@ public class StationServiceImpl implements StationService {
         JSONObject siteData = new JSONObject();
         JSONArray dataArray = new JSONArray();
 
-        if (req.getArea() > 5 || req.getArea() < 0){
-            return null;
-        }
-        if (req.getPageSize() < 1){
-            return null;
-        }
-        if (req.getPageNum() < 1){
-            return null;
-        }
+        List<Station> stations = comprehensiveQueryStations(params);
 
-        //符合区域环境的总数
-        int count ;
+        if (!StringUtil.isNullOrEmpty(stations)) {
+            for (Station station : stations) {
+                JSONObject stationJSON = new JSONObject();
 
-        if (req.getArea() == 5 ){
+                List<HData> hDatas = hDataDao.queryMaxTimeHdataByStationId(station.getStationCode());
+                if (StringUtil.isNullOrEmpty(hDatas)) {
+                    //没有该站点的数据记录
+                    stationJSON.put("station_name", station.getStationName());
+                    stationJSON.put("station_id", station.getStationId());
+                    stationJSON.put("station_code", station.getStationCode());
+                    stationJSON.put("sim", station.getStationSim());
+                    stationJSON.put("calibration_value", "");
+                    stationJSON.put("flag", "");
+                    stationJSON.put("latest_time_h", "");
+                    stationJSON.put("count_h", "");
+                    stationJSON.put("effective_rate_h", "");
+                    stationJSON.put("LEQ_h", "");
+                    stationJSON.put("LMX_h", "");
+                } else {
+                    //查询当天的小时数据的条数
+                    Date date = new Date();
+                    int nowdayHdataNum = hDataDao.queryhDataNumBetween(station.getStationCode(), DateUtil.getTodayStr(date), DateUtil.getDateStr(date));
 
-            count = stationDao.queryAllStationNum();
-        }
-        else {
-            count = stationDao.queryStationsNumByArea(req.getArea());
-        }
+                    String calibration_value = null;
+                    String flag = null;
+                    String effective_rate_h = null;
+                    String LEQ_h = null;
+                    String LMX_h = null;
 
-        //分页查询站点
-        int start = (req.getPageNum() - 1) * req.getPageSize();
-        int end = req.getPageSize();
-        List<Station> stations = null;
-
-        if (req.getArea() == 5){
-            stations = stationDao.queryStationsByPage(start, end);
-        }
-        else {
-            stations = stationDao.queryStationsByAreaAndPage(req.getArea(), start, end);
-        }
-
-        for (Station station : stations){
-            JSONObject stationJSON = new JSONObject();
-
-            List<HData> hDatas = hDataDao.queryMaxTimeHdataByStationId(station.getStationCode());
-            if (StringUtil.isNullOrEmpty(hDatas)){
-                //没有该站点的数据记录
-                stationJSON.put("station_name", station.getStationName());
-                stationJSON.put("station_id", station.getStationId());
-                stationJSON.put("station_code", station.getStationCode());
-                stationJSON.put("sim", station.getStationSim());
-                stationJSON.put("calibration_value","");
-                stationJSON.put("flag", "");
-                stationJSON.put("latest_time_h","");
-                stationJSON.put("count_h", "");
-                stationJSON.put("effective_rate_h", "");
-                stationJSON.put("LEQ_h", "");
-                stationJSON.put("LMX_h", "");
-            }
-            else {
-                //查询当天的小时数据的条数
-                Date date = new Date();
-                int nowdayHdataNum = hDataDao.queryhDataNumBetween(station.getStationCode(), DateUtil.getTodayStr(date), DateUtil.getDateStr(date));
-
-                String calibration_value = null;
-                String flag = null;
-                String effective_rate_h  = null;
-                String LEQ_h = null;
-                String LMX_h = null;
-
-                for (HData hdata : hDatas){
-                    if (hdata.getNorm_code().equals("n00100")){
-                        calibration_value = hdata.getNorm_val();
-                        flag = hdata.getNorm_flag();
+                    for (HData hdata : hDatas) {
+                        if (hdata.getNorm_code().equals("n00100")) {
+                            calibration_value = hdata.getNorm_val();
+                            flag = hdata.getNorm_flag();
+                        }
+                        if (hdata.getNorm_code().equals("n00006")) {
+                            LEQ_h = hdata.getNorm_val();
+                        }
+                        if (hdata.getNorm_code().equals("n00010")) {
+                            LMX_h = hdata.getNorm_val();
+                            effective_rate_h = hdata.getNorm_vdr();
+                        }
                     }
-                    if (hdata.getNorm_code().equals("n00006")){
-                        LEQ_h = hdata.getNorm_val();
-                    }
-                    if (hdata.getNorm_code().equals("n00010")){
-                        LMX_h = hdata.getNorm_val();
-                        effective_rate_h = hdata.getNorm_vdr();
-                    }
+
+                    stationJSON.put("station_name", station.getStationName());
+                    stationJSON.put("station_id", station.getStationId());
+                    stationJSON.put("station_code", station.getStationCode());
+                    stationJSON.put("calibration_value", calibration_value);
+                    stationJSON.put("sim", station.getStationSim());
+                    stationJSON.put("flag", flag);
+                    stationJSON.put("latest_time_h", DateUtil.getDateBeforeSecond(hDatas.get(0).getData_time()));
+                    stationJSON.put("count_h", nowdayHdataNum);
+                    stationJSON.put("effective_rate_h", StringUtil.convertStringToInt(effective_rate_h));
+                    stationJSON.put("LEQ_h", LEQ_h);
+                    stationJSON.put("LMX_h", LMX_h);
                 }
-
-                stationJSON.put("station_name", station.getStationName());
-                stationJSON.put("station_id", station.getStationId());
-                stationJSON.put("station_code", station.getStationCode());
-                stationJSON.put("calibration_value",calibration_value);
-                stationJSON.put("sim", station.getStationSim());
-                stationJSON.put("flag", flag);
-                stationJSON.put("latest_time_h",DateUtil.getDateBeforeSecond(hDatas.get(0).getData_time()));
-                stationJSON.put("count_h", nowdayHdataNum);
-                stationJSON.put("effective_rate_h", StringUtil.convertStringToInt(effective_rate_h));
-                stationJSON.put("LEQ_h", LEQ_h);
-                stationJSON.put("LMX_h", LMX_h);
+                dataArray.add(stationJSON);
             }
-
-            dataArray.add(stationJSON);
         }
 
-        siteData.put("count", count);
+        siteData.put("count", stations == null ? 0 : stations.size());
         siteData.put("data", dataArray);
 
         dataJson.put("sitesDataHour", siteData);
@@ -584,106 +523,178 @@ public class StationServiceImpl implements StationService {
     }
 
     @Override
-    public String querydDataByStationArea(QuerydDataByStationAreaReq req) {
+    public String querydDataByStationArea(Map<String, Object> params) {
 
         long startTime = System.currentTimeMillis();
         JSONObject dataJson = new JSONObject();
         JSONObject siteData = new JSONObject();
         JSONArray dataArray = new JSONArray();
 
-        if (req.getArea() > 5 || req.getArea() < 0){
-            return null;
-        }
-        if (req.getPageSize() < 1){
-            return null;
-        }
-        if (req.getPageNum() < 1){
-            return null;
-        }
+        List<Station> stations = comprehensiveQueryStations(params);
 
-        //符合区域环境的总数
-        int count ;
+        if (!StringUtil.isNullOrEmpty(stations)) {
+            for (Station station : stations) {
 
-        if (req.getArea() == 5 ){
+                JSONObject stationJSON = new JSONObject();
 
-            count = stationDao.queryAllStationNum();
-        }
-        else {
-            count = stationDao.queryStationsNumByArea(req.getArea());
-        }
+                List<DData> dDatas = dDataDao.queryMaxTimeDdataByStationId(station.getStationCode());
+                if (StringUtil.isNullOrEmpty(dDatas)) {
+                    stationJSON.put("station_name", station.getStationName());
+                    stationJSON.put("station_id", station.getStationId());
+                    stationJSON.put("station_code", station.getStationCode());
+                    stationJSON.put("sim", station.getStationSim());
+                    stationJSON.put("Ld", "");
+                    stationJSON.put("effective_rate_Ld", "");
+                    stationJSON.put("Ln", "");
+                    stationJSON.put("effective_rate_Ln", "");
+                    stationJSON.put("Lnm", "");
+                } else {
 
-        //分页查询站点
-        int start = (req.getPageNum() - 1) * req.getPageSize();
-        int end = req.getPageSize();
+                    //查询最新的日数据
+                    String Ld = null;
+                    String effective_rate_Ld = null;
+                    String Ln = null;
+                    String effective_rate_Ln = null;
+                    String Lnm = null;
 
-        List<Station> stations = null;
-
-        if (req.getArea() == 5){
-            stations = stationDao.queryStationsByPage(start, end);
-        }
-        else {
-            stations = stationDao.queryStationsByAreaAndPage(req.getArea(), start, end);
-        }
-
-        for(Station station : stations){
-
-            JSONObject stationJSON = new JSONObject();
-
-            List<DData> dDatas = dDataDao.queryMaxTimeDdataByStationId(station.getStationCode());
-            if (StringUtil.isNullOrEmpty(dDatas)){
-                stationJSON.put("station_name", station.getStationName());
-                stationJSON.put("station_id", station.getStationId());
-                stationJSON.put("station_code", station.getStationCode());
-                stationJSON.put("sim", station.getStationSim());
-                stationJSON.put("Ld", "");
-                stationJSON.put("effective_rate_Ld", "");
-                stationJSON.put("Ln", "");
-                stationJSON.put("effective_rate_Ln", "");
-                stationJSON.put("Lnm", "");
-            }
-            else {
-
-                //查询最新的日数据
-                String Ld = null;
-                String effective_rate_Ld = null;
-                String Ln = null;
-                String effective_rate_Ln = null;
-                String Lnm = null;
-
-                for (DData dData : dDatas){
-                    if (dData.getNorm_code().equals("n00008")){
-                        Ld = dData.getNorm_val();
-                        effective_rate_Ld = dData.getNorm_vdr();
+                    for (DData dData : dDatas) {
+                        if (dData.getNorm_code().equals("n00008")) {
+                            Ld = dData.getNorm_val();
+                            effective_rate_Ld = dData.getNorm_vdr();
+                        }
+                        if (dData.getNorm_code().equals("n00009")) {
+                            Ln = dData.getNorm_val();
+                            effective_rate_Ln = dData.getNorm_vdr();
+                        }
+                        if (dData.getNorm_code().equals("n00021")) {
+                            Lnm = dData.getNorm_val();
+                        }
                     }
-                    if (dData.getNorm_code().equals("n00009")){
-                        Ln = dData.getNorm_val();
-                        effective_rate_Ln = dData.getNorm_vdr();
-                    }
-                    if (dData.getNorm_code().equals("n00021")){
-                        Lnm = dData.getNorm_val();
-                    }
+
+                    stationJSON.put("station_name", station.getStationName());
+                    stationJSON.put("station_id", station.getStationId());
+                    stationJSON.put("station_code", station.getStationCode());
+                    stationJSON.put("sim", station.getStationSim());
+                    stationJSON.put("Ld", Ld);
+                    stationJSON.put("effective_rate_Ld", StringUtil.convertStringToInt(effective_rate_Ld));
+                    stationJSON.put("Ln", Ln);
+                    stationJSON.put("effective_rate_Ln", StringUtil.convertStringToInt(effective_rate_Ln));
+                    stationJSON.put("Lnm", Lnm);
                 }
 
-                stationJSON.put("station_name", station.getStationName());
-                stationJSON.put("station_id", station.getStationId());
-                stationJSON.put("station_code", station.getStationCode());
-                stationJSON.put("sim", station.getStationSim());
-                stationJSON.put("Ld", Ld);
-                stationJSON.put("effective_rate_Ld", StringUtil.convertStringToInt(effective_rate_Ld));
-                stationJSON.put("Ln", Ln);
-                stationJSON.put("effective_rate_Ln", StringUtil.convertStringToInt(effective_rate_Ln));
-                stationJSON.put("Lnm", Lnm);
+                dataArray.add(stationJSON);
             }
-
-            dataArray.add(stationJSON);
         }
 
-        siteData.put("count", count);
+        siteData.put("count", stations == null ? 0 : stations.size());
         siteData.put("data", dataArray);
         dataJson.put("sitesDataDay", siteData);
         logger.info("返回数据 {}", dataJson.toJSONString());
         logger.info("方法耗时 {}" , (System.currentTimeMillis() - startTime) + "毫秒");
         return dataJson.toJSONString();
+    }
+
+    @Override
+    public List<Station> comprehensiveQueryStations(Map<String, Object> params) {
+        ComprehensiveQueryRequest request = new ComprehensiveQueryRequest();
+        //area是区域环境
+        String area = (String)params.get("area");
+        String environment = (String)params.get("environment");
+        String control = (String) params.get("c");
+        String state = (String) params.get("s");
+        String attribute = (String)params.get("o");
+        List position = (List)params.get("street");
+        String district = (String)position.get(0);
+        String street = (String)position.get(1);
+        int pageSize = (Integer) params.get("each_page_num");
+        int pageNum = (Integer) params.get("current_page");
+
+        if (area.equals("5")) {
+            request.setArea(null);
+        }
+        else {
+            request.setArea(area);
+        }
+
+        if (environment.equals("5")) {
+            request.setEnvironment(null);
+        }else {
+            request.setEnvironment(environment);
+        }
+        //如果是全部则不做设置,默认的是初始化空值
+        if (control.equals("国控")) {
+            request.setIsCountry("1");
+        }
+        else if (control.equals("市控")) {
+            request.setIsCity("1");
+        }
+        else if (control.equals("区控")) {
+            request.setIsArea("1");
+        }
+
+        if (state.equals("在线")){
+            request.setState("1");
+        } else if (state.equals("离线")){
+            request.setState("0");
+        }
+
+        if (attribute.equals("自动")){
+            request.setAttribute("1");
+        }else if (attribute.equals("手动")){
+            request.setAttribute("0");
+        }
+
+        request.setDistrict(district);
+        request.setStreet(street);
+        request.setPageSize(pageSize);
+        request.setPageNum(pageNum);
+        logger.info("构造的参数为{}", request.toString());
+
+        if (request.getPageSize() < 1){
+            return null;
+        }
+        if (request.getPageNum() < 1){
+            return null;
+        }
+        //分页查询站点
+        int start = (request.getPageNum() - 1) * request.getPageSize();
+        int end = request.getPageSize();
+        //综合查询站点信息，不包含在线离线判断
+        List<Station> stations = stationDao.comprehensiveQueryByPage(request.getArea(), request.getEnvironment(), request.getIsCountry(),
+                request.getIsCity(), request.getIsArea(), request.getAttribute(), request.getDistrict(), request.getStreet(), start, end);
+        //在线离线判断，如果为null则表示查询全部的站点信息
+        //查询在线标识,需要循环判断
+        if (request.getState().equals("1")) {
+            if (!StringUtil.isNullOrEmpty(stations)) {
+                Iterator<Station> iterator = stations.iterator();
+                while (iterator.hasNext()){
+                    Station station =  iterator.next();
+                    LogOffLine logOffLine = logOffLineDao.findByStationOrGatherID(station.getStationCode());
+                    if (logOffLine != null) {
+                        if (logOffLine.getFlag() == 0) {
+                            stations.remove(station);
+                        }
+                    }
+                }
+            }
+        } else if (request.getState().equals("0")) {
+            if (!StringUtil.isNullOrEmpty(stations)) {
+                Iterator<Station> iterator = stations.iterator();
+                while (iterator.hasNext()){
+                    Station station =  iterator.next();
+                    LogOffLine logOffLine = logOffLineDao.findByStationOrGatherID(station.getStationCode());
+                    if (logOffLine != null) {
+                        if (logOffLine.getFlag() == 1) {
+                            stations.remove(station);
+                        }
+                    }
+                }
+            }
+        }
+        //符合区域环境的总数
+        int count = stations.size();
+        logger.info("符合条件的站点信息={}, 总数={}", stations.toString(), count);
+        return stations;
     }
 
     @Override

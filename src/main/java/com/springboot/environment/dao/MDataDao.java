@@ -23,7 +23,7 @@ public interface MDataDao extends JpaRepository<MData,Integer>, MDataRepositoiry
      * @return
      */
     @Query(value = "select count(*) from (select m.data_time from mdata m where m.station_id = ?1 and m.data_time between ?2 and ?3 group by m.data_time) mdg", nativeQuery = true)
-    int querymDataNumBetween(String stationId, String startDate, String endDate);
+    int  querymDataNumBetween(String stationId, String startDate, String endDate);
 
     /**
      * 查询最新实时数据
