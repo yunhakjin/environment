@@ -25,8 +25,6 @@ public class GetWarningLastNum implements CommandLineRunner{
     @Autowired
     private WarningService warningService;
 
-    @Autowired
-    private RedisTemplate<String, String> redisTemplate;
 
     public static int LastWarningNum;
 
@@ -38,14 +36,11 @@ public class GetWarningLastNum implements CommandLineRunner{
         LastWarningNum = warningService.getCount();
 
         final long timeInterval = 1200000;
-//        final long timeInterval = 3000;
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 while (true) {
                     int newNum = warningService.getCount();
-                    ZSetOperations<String, String> zset = redisTemplate.opsForZSet();
-                    double scoreMax = new Date().getTime();
                     if ( newNum > LastWarningNum ) {
 
                         int tmp = LastWarningNum;
@@ -71,18 +66,18 @@ public class GetWarningLastNum implements CommandLineRunner{
 //                            realwarningdataJson.put("threshold",warning.getLimit_value());
 //                            realwarningdataJson.put("station_id",warning.getStation_id());
 //                            String dataString = realwarningdataJson.toJSONString();
-                            zset.add("realwarningdata",warning.getStation_id(),System.currentTimeMillis());
+//                            zset.add("realwarningdata",warning.getStation_id(),System.currentTimeMillis());
                         }
 
 
                     }
                     else{
                         System.out.println("没有新的报警信息");
-                        if (redisTemplate.hasKey("realwarningdata")) {
-                            long time = 60*60*1000;//1小时
-                            double oneHourBefore = new Date(System.currentTimeMillis() - time).getTime();
-                            zset.removeRangeByScore("realwarningdata", 0, oneHourBefore);//删除1小时前的缓存
-                        }
+//                        if (redisTemplate.hasKey("realwarningdata")) {
+//                            long time = 60*60*1000;//1小时
+//                            double oneHourBefore = new Date(System.currentTimeMillis() - time).getTime();
+//                            zset.removeRangeByScore("realwarningdata", 0, oneHourBefore);//删除1小时前的缓存
+//                        }
                     }
                     try {
                         Thread.sleep(timeInterval);

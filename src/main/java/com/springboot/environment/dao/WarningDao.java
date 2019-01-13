@@ -52,4 +52,13 @@ public interface WarningDao extends JpaRepository<Warning,String> {
      */
     @Query(value = "select manager_tel from warning where warning_id > ?1",nativeQuery = true)
     List<Warning> queryManagerTel(int lastNum);
+
+    /**
+     * 获取最新一小时报警数据
+     * @param hourEnd
+     * @param hourBegin
+     * @return
+     */
+    @Query(value = "select * from warning where warning_start_time >?1 and warning_start_time <= ?2",nativeQuery = true)
+    List<Warning> queryRealWarning(String hourBegin, String hourEnd);
 }

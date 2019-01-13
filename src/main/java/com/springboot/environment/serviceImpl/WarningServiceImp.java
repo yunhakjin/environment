@@ -6,20 +6,16 @@ package com.springboot.environment.serviceImpl;
 
 //import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
 import com.springboot.environment.service.WarningService;
 import com.springboot.environment.bean.*;
 import com.springboot.environment.dao.WarningDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.data.redis.core.RedisTemplate;
-import java.text.ParseException;
+
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import net.sf.json.JSONArray;
 
@@ -49,7 +45,7 @@ public class WarningServiceImp implements WarningService {
                 for (Warning warning : warnings) {
                     JSONObject warningJSON = new JSONObject();
                     warningJSON.put("station_name",warning.getStation_name());
-                    warningJSON.put("norm_code",warning.getNorm_code());
+                    warningJSON.put("norm_name",warning.getNorm_name());
                     warningJSON.put("threshold",warning.getLimit_value());
                     warningJSON.put("warning_start_time",sdf.format(warning.getWarning_start_time()));
                     warningJSON.put("warning_end_time",sdf.format(warning.getWarning_end_time()));
@@ -91,23 +87,59 @@ public class WarningServiceImp implements WarningService {
     }
 
     @Override
-    public String getRedisWarning() throws ParseException {
+    public String getRealWarning() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
+        String hourEnd = sdf.format(new Date());
+        long time = 60*60*1000;//1小时
+        String hourBegin = sdf.format(new Date(System.currentTimeMillis() - time));
+        List<Warning> realWarnings = warningDao.queryRealWarning(hourBegin,hourEnd);
+
+        JSONArray realWarningArray = new JSONArray();
+        JSONObject realWarningData = new JSONObject();
         JSONObject dataJson = new JSONObject();
 
-        ZSetOperations<String, String> zset = redisTemplate.opsForZSet();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
-        String str = sdf.format(new Date());
-        Date hourDate = sdf.parse(str);
-        Set<String> hourWdata = zset.reverseRangeByScore("realwarningdata" ,hourDate.getTime(), System.currentTimeMillis());
-        List<String> setList = new ArrayList<String>(hourWdata);
-        if (!hourWdata.isEmpty()) {
-            JSONArray jsonArray = JSONArray.fromObject( setList );
-            dataJson.put("realWarning", jsonArray);
-            return dataJson.toJSONString();
+
+        if (realWarnings.size() > 0) {
+            for (Warning realWarning : realWarnings) {
+                JSONObject realWarningJSON = new JSONObject();
+                realWarningJSON.put("station_id",realWarning.getStation_id());
+                realWarningJSON.put("norm_code",realWarning.getNorm_code());
+                realWarningJSON.put("norm_name",realWarning.getNorm_name());
+                realWarningJSON.put("leq",realWarning.getReal_value());
+
+                realWarningArray.add(realWarningJSON);
+            }
         }
-        else
-            return null;
+//        else {
+//            realWarningData.put("data", realWarningArray);
+//            dataJson.put("realWarningData", realWarningData);
+//            return dataJson.toJSONString();
+//        }
+        realWarningData.put("count",realWarningArray.size());
+        realWarningData.put("data",realWarningArray);
+        dataJson.put("realWarningData",realWarningData);
+        return dataJson.toJSONString();
     }
+
+//    @Override
+//    public String getRedisWarning() throws ParseException {
+//        JSONObject dataJson = new JSONObject();
+//
+//        ZSetOperations<String, String> zset = redisTemplate.opsForZSet();
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
+//        String str = sdf.format(new Date());
+//        Date hourDate = sdf.parse(str);
+//        Set<String> hourWdata = zset.reverseRangeByScore("realwarningdata" ,hourDate.getTime(), System.currentTimeMillis());
+//        List<String> setList = new ArrayList<String>(hourWdata);
+//        if (!hourWdata.isEmpty()) {
+//            JSONArray jsonArray = JSONArray.fromObject( setList );
+//            dataJson.put("realWarning", jsonArray);
+//            return dataJson.toJSONString();
+//        }
+//        else
+//            return null;
+//    }
+
 
 
 }
