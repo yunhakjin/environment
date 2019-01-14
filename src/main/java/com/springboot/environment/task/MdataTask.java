@@ -33,6 +33,15 @@ public class MdataTask {
     private static final Logger logger = LoggerFactory.getLogger(MdataTask.class);
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
 
+
+    /**
+     * 分钟数据的分表任务，每天1时定时，将前一天的数据分表
+     * 表名 : mdata_yyyyMMdd 例如:mdata_20181231存储当天的所有数据
+     * 分钟数据删除任务，每天2时定时，将前一天Mdata中的数据删除
+     * 因为分钟数据只保留三个月，所以有分表删除任务
+     * 分表删除任务， 每天0时运行，将改天前3个月的分表数据删除。
+     * 例如：20181231 0时运行，将改天前3个月的分表删除
+     */
     @Scheduled(cron = "0 0 1 ? * ?")
     public void createNewMdataTableByDay(){
 
