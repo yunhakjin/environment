@@ -666,37 +666,33 @@ public class StationServiceImpl implements StationService {
                 request.getIsCity(), request.getIsArea(), request.getAttribute(), request.getDistrict(), request.getStreet(), start, end);
         //在线离线判断，如果为null则表示查询全部的站点信息
         //查询在线标识,需要循环判断
-        if (request.getState().equals("1")) {
+        List<Station> newList = new ArrayList<>();
+        if (request.getState() == null) {
+            newList = stations;
+        }
+        else if (request.getState().equals("1")) {
             if (!StringUtil.isNullOrEmpty(stations)) {
-                Iterator<Station> iterator = stations.iterator();
-                while (iterator.hasNext()){
-                    Station station =  iterator.next();
+                for (Station station : stations) {
                     LogOffLine logOffLine = logOffLineDao.findByStationOrGatherID(station.getStationCode());
-                    if (logOffLine != null) {
-                        if (logOffLine.getFlag() == 0) {
-                            stations.remove(station);
-                        }
+                    if (logOffLine == null || logOffLine.getFlag() == 1) {
+                        newList.add(station);
                     }
                 }
             }
         } else if (request.getState().equals("0")) {
             if (!StringUtil.isNullOrEmpty(stations)) {
-                Iterator<Station> iterator = stations.iterator();
-                while (iterator.hasNext()){
-                    Station station =  iterator.next();
+                for (Station station : stations) {
                     LogOffLine logOffLine = logOffLineDao.findByStationOrGatherID(station.getStationCode());
-                    if (logOffLine != null) {
-                        if (logOffLine.getFlag() == 1) {
-                            stations.remove(station);
-                        }
+                    if (logOffLine != null && logOffLine.getFlag() == 0) {
+                        newList.add(station);
                     }
                 }
             }
         }
         //符合区域环境的总数
-        int count = stations.size();
-        logger.info("符合条件的站点信息={}, 总数={}", stations.toString(), count);
-        return stations;
+        int count = newList.size();
+        logger.info("符合条件的站点信息={}, 总数={}", newList.toString(), count);
+        return newList;
     }
 
     @Override
