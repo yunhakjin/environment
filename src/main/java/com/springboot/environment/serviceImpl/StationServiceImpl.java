@@ -368,9 +368,12 @@ public class StationServiceImpl implements StationService {
         JSONObject dataJson = new JSONObject();
         JSONObject siteData = new JSONObject();
         JSONArray dataArray = new JSONArray();
-
-        List<Station> stations = comprehensiveQueryStations(params);
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
+
+        ComprehensiveQueryRequest request = buildReq(params);
+        List<Station> stations = comprehensiveQueryStations(request);
+        int count = getComprehensiveQueryNum(request);
+
         if (!StringUtil.isNullOrEmpty(stations)) {
             for (Station station : stations) {
 
@@ -435,7 +438,7 @@ public class StationServiceImpl implements StationService {
             }
         }
 
-        siteData.put("count", stations == null ? 0 : stations.size());
+        siteData.put("count", count);
         siteData.put("data", dataArray);
 
         dataJson.put("sitesDataReal", siteData);
@@ -453,7 +456,9 @@ public class StationServiceImpl implements StationService {
         JSONObject siteData = new JSONObject();
         JSONArray dataArray = new JSONArray();
 
-        List<Station> stations = comprehensiveQueryStations(params);
+        ComprehensiveQueryRequest request = buildReq(params);
+        List<Station> stations = comprehensiveQueryStations(request);
+        int count = getComprehensiveQueryNum(request);
 
         if (!StringUtil.isNullOrEmpty(stations)) {
             for (Station station : stations) {
@@ -514,7 +519,7 @@ public class StationServiceImpl implements StationService {
             }
         }
 
-        siteData.put("count", stations == null ? 0 : stations.size());
+        siteData.put("count", count);
         siteData.put("data", dataArray);
 
         dataJson.put("sitesDataHour", siteData);
@@ -532,7 +537,9 @@ public class StationServiceImpl implements StationService {
         JSONObject siteData = new JSONObject();
         JSONArray dataArray = new JSONArray();
 
-        List<Station> stations = comprehensiveQueryStations(params);
+        ComprehensiveQueryRequest request = buildReq(params);
+        List<Station> stations = comprehensiveQueryStations(request);
+        int count = getComprehensiveQueryNum(request);
 
         if (!StringUtil.isNullOrEmpty(stations)) {
             for (Station station : stations) {
@@ -587,8 +594,7 @@ public class StationServiceImpl implements StationService {
                 dataArray.add(stationJSON);
             }
         }
-
-        siteData.put("count", stations == null ? 0 : stations.size());
+        siteData.put("count", count);
         siteData.put("data", dataArray);
         dataJson.put("sitesDataDay", siteData);
         logger.info("返回数据 {}", dataJson.toJSONString());
@@ -597,7 +603,45 @@ public class StationServiceImpl implements StationService {
     }
 
     @Override
-    public List<Station> comprehensiveQueryStations(Map<String, Object> params) {
+    public List<Station> comprehensiveQueryStations(ComprehensiveQueryRequest request) {
+        //分页查询站点
+        int start = (request.getPageNum() - 1) * request.getPageSize();
+        int end = request.getPageSize();
+        //综合查询站点信息，不包含在线离线判断
+        List<Station> stations = stationDao.comprehensiveQueryByPage(request.getArea(), request.getEnvironment(), request.getIsCountry(),
+                request.getIsCity(), request.getIsArea(), request.getAttribute(), request.getDistrict(), request.getStreet(), start, end);
+        //在线离线判断，如果为null则表示查询全部的站点信息
+        //查询在线标识,需要循环判断
+        List<Station> newList = new ArrayList<>();
+        if (request.getState() == null) {
+            newList = stations;
+        }
+        else if (request.getState().equals("1")) {
+            if (!StringUtil.isNullOrEmpty(stations)) {
+                for (Station station : stations) {
+                    LogOffLine logOffLine = logOffLineDao.findByStationOrGatherID(station.getStationCode());
+                    if (logOffLine == null || logOffLine.getFlag() == 1) {
+                        newList.add(station);
+                    }
+                }
+            }
+        } else if (request.getState().equals("0")) {
+            if (!StringUtil.isNullOrEmpty(stations)) {
+                for (Station station : stations) {
+                    LogOffLine logOffLine = logOffLineDao.findByStationOrGatherID(station.getStationCode());
+                    if (logOffLine != null && logOffLine.getFlag() == 0) {
+                        newList.add(station);
+                    }
+                }
+            }
+        }
+        //符合区域环境的总数
+        int count = newList.size();
+        logger.info("符合条件的站点信息={}, 总数={}", newList.toString(), count);
+        return newList;
+    }
+
+    private ComprehensiveQueryRequest buildReq(Map<String, Object> params) {
         ComprehensiveQueryRequest request = new ComprehensiveQueryRequest();
         //area是区域环境
         String area = (String)params.get("area");
@@ -645,54 +689,19 @@ public class StationServiceImpl implements StationService {
         }else if (attribute.equals("手动")){
             request.setAttribute("0");
         }
-
         request.setDistrict(district);
         request.setStreet(street);
         request.setPageSize(pageSize);
         request.setPageNum(pageNum);
         logger.info("构造的参数为{}", request.toString());
 
-        if (request.getPageSize() < 1){
-            return null;
-        }
-        if (request.getPageNum() < 1){
-            return null;
-        }
-        //分页查询站点
-        int start = (request.getPageNum() - 1) * request.getPageSize();
-        int end = request.getPageSize();
-        //综合查询站点信息，不包含在线离线判断
-        List<Station> stations = stationDao.comprehensiveQueryByPage(request.getArea(), request.getEnvironment(), request.getIsCountry(),
-                request.getIsCity(), request.getIsArea(), request.getAttribute(), request.getDistrict(), request.getStreet(), start, end);
-        //在线离线判断，如果为null则表示查询全部的站点信息
-        //查询在线标识,需要循环判断
-        List<Station> newList = new ArrayList<>();
-        if (request.getState() == null) {
-            newList = stations;
-        }
-        else if (request.getState().equals("1")) {
-            if (!StringUtil.isNullOrEmpty(stations)) {
-                for (Station station : stations) {
-                    LogOffLine logOffLine = logOffLineDao.findByStationOrGatherID(station.getStationCode());
-                    if (logOffLine == null || logOffLine.getFlag() == 1) {
-                        newList.add(station);
-                    }
-                }
-            }
-        } else if (request.getState().equals("0")) {
-            if (!StringUtil.isNullOrEmpty(stations)) {
-                for (Station station : stations) {
-                    LogOffLine logOffLine = logOffLineDao.findByStationOrGatherID(station.getStationCode());
-                    if (logOffLine != null && logOffLine.getFlag() == 0) {
-                        newList.add(station);
-                    }
-                }
-            }
-        }
-        //符合区域环境的总数
-        int count = newList.size();
-        logger.info("符合条件的站点信息={}, 总数={}", newList.toString(), count);
-        return newList;
+        return request;
+    }
+
+    private int getComprehensiveQueryNum(ComprehensiveQueryRequest request) {
+
+        return stationDao.queryStationMunByComprehensiveQuery(request.getArea(), request.getEnvironment(), request.getIsCountry(),
+                request.getIsCity(), request.getIsArea(), request.getAttribute(), request.getDistrict(), request.getStreet());
     }
 
     @Override

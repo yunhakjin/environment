@@ -279,6 +279,22 @@ public interface StationDao extends JpaRepository<Station, Integer> {
     List<Station> comprehensiveQueryByPage(String area, String environment, String isCountry, String isCity, String isArea, String attribute, String district, String street, Integer start, Integer end);
 
     /**
+     * 查询符合站点的信息条数
+     * @param area
+     * @param environment
+     * @param isCountry
+     * @param isCity
+     * @param isArea
+     * @param attribute
+     * @param district
+     * @param street
+     * @return
+     */
+    @Query(value = "select count(*) from station s where if(?1 !='' ,s.DOMAIN = ?1,1=1) and if(?2 !='' ,s.AREA = ?2,1=1) and if(?3 !='' ,s.COUNTRY_CON = ?3,1=1) and if(?4 !='' ,s.CITY_CON = ?4, 1=1) " +
+            "and if(?5 !='' ,s.DOMAIN_CON=?5,1=1) and if(?6 !='' ,s.station_attribute = ?6,1=1) and if(?7 !='' ,s.DISTRICT = ?7,1=1) and if(?8 !='' ,s.STREET = ?8,1=1)", nativeQuery = true)
+    int queryStationMunByComprehensiveQuery(String area, String environment, String isCountry, String isCity, String isArea, String attribute, String district, String street);
+
+    /**
      * 查询站点名称
      * @param station_id
      * @return

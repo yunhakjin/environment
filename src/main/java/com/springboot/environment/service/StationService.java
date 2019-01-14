@@ -55,10 +55,10 @@ public interface StationService {
 
     /**
      * 综合查询站点信息
-     * @param params
+     * @param request
      * @return
      */
-    List<Station> comprehensiveQueryStations(Map<String, Object> params);
+    List<Station> comprehensiveQueryStations(ComprehensiveQueryRequest request);
 
 
     Map getDomainFromStation();

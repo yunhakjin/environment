@@ -212,12 +212,6 @@ public class DataController {
     @RequestMapping(value = "/querymDataByStationsArea", method = RequestMethod.POST)
     public String querymDataByStationsArea(@RequestBody Map<String, Object> params) throws ParseException {
 
-//        System.out.println(params.toString());
-//        int area = (Integer)params.get("area_id");
-//        int pageSize = (Integer) params.get("each_page_num");
-//        int pageNum = (Integer) params.get("current_page");
-//
-//        QuerymDataByStationsAreaReq querymDataByStationsAreaReq = new QuerymDataByStationsAreaReq(area, pageSize, pageNum);
         return stationService.querymDataByStationArea(params);
 
     }

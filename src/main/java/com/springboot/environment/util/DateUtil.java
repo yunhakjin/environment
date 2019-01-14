@@ -1,14 +1,9 @@
 package com.springboot.environment.util;
 
-import org.apache.tomcat.jni.Local;
-import sun.java2d.pipe.SpanShapeRenderer;
-
-import javax.xml.crypto.Data;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -32,12 +27,6 @@ public class DateUtil {
         return sdf.format(nowDate);
     }
 
-    public static String getTodayEndStr(Date nowDate){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
-        return sdf.format(nowDate);
-    }
-
-
     /**
      * 日期格式转化为字符串
      * @param date
@@ -46,12 +35,6 @@ public class DateUtil {
     public static String getDateStr(Date date){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return simpleDateFormat.format(date);
-    }
-
-    public static long dateToDateStamp(String date) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date datedate = sdf.parse(date);
-        return datedate.getTime();
     }
 
     /**
@@ -65,30 +48,6 @@ public class DateUtil {
     public static String getHourAndMinute(Date date){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
         return simpleDateFormat.format(date);
-    }
-
-    public static String getHourAndMinuteAndSecond(Date date){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-        return simpleDateFormat.format(date);
-    }
-
-    /**
-     * 获得指定时间一小时的时间,格式为yyyy-MM-dd HH:mm
-     * @param date
-     * @return
-     */
-    public static String getDateBefore1hour(String date) {
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date nowDate = null;
-        try {
-            nowDate = sdf.parse(date);
-            Date before1hour = new Date(nowDate.getTime() - MINUTE * SECOND * MILLISECOND);
-            return sdf.format(before1hour);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public static String getDateAfter1Hour(String date) {
@@ -280,22 +239,6 @@ public class DateUtil {
         return null;
     }
 
-    /**
-     * 取得时间戳
-     * @param date
-     * @return
-     */
-    public static long getTime(String date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date time = null;
-        try {
-            time = sdf.parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return time.getTime();
-    }
-
     public static String getTimeUntilMM(String date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
@@ -372,13 +315,6 @@ public class DateUtil {
         return 0;
     }
 
-
-    public static String getYearMonthDay(Date date){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(date);
-    }
-
-
     public static String getDayBeforeTodayStartTime(Date date) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -410,15 +346,6 @@ public class DateUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.add(Calendar.MONTH, offset);
-        date = calendar.getTime();
-        return sdf.format(date);
-    }
-
-    public static String getDayBeforeOneWeekStartTime(Date date){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.DATE, -7);
         date = calendar.getTime();
         return sdf.format(date);
     }
@@ -502,17 +429,6 @@ public class DateUtil {
         return new SimpleDateFormat("yyyyMM").format(date);
     }
 
-    public static String getYearAndMonth(String dateTime){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        try {
-            Date date = sdf.parse(dateTime);
-            return getYearAndMonth(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     /**
      * 得到日期中的天
      * @param date
@@ -547,15 +463,7 @@ public class DateUtil {
         return calendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    public static void main(String[] args) throws ParseException {
-//        System.out.println(getMonthDayEndTimeSixClock("2018-2"));
-//        System.out.println(getDayNumOfMonth("2018-11"));
-//        String s = "2018-10-10";
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//        Date date = sdf.parse(s);
-//        System.out.println(getThisDateOfDay(date));
-//        System.out.println(getDayAfterThisDay(new Date(getTime("2018-9-30 22:00:00"))));
-//        System.out.println(getStartDayBeforeOneMonth(new Date(System.currentTimeMillis())));
+    public static void main(String[] args) {
         Date date = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
