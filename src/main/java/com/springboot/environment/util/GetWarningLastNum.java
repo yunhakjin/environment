@@ -59,12 +59,18 @@ public class GetWarningLastNum implements CommandLineRunner{
                             String station_id = warning.getStation_id();
                             String station_name = stationService.findStationNameByStationId(station_id);
                             String managerTel = warning.getManger_tel();
-                            String warningMessage = "你好请前往报警站点： " + station_name + "\n" + "所属行政区：" + warning.getWarning_district()+ "\n" +
-                                    "功能区：" + warning.getWarning_domain() + "\n" + "报警指标：" + warning.getNorm_name() + "\n" + "报警阈值："  +
-                                    warning.getLimit_value() + "\n" + "leq：" + warning.getReal_value() + "\n" + "报警开始时间" + warning.getWarning_start_time() + "【上海】";
-                            System.out.println(warningMessage);
-                            SMSManage.getInstance().send(warningMessage,managerTel);
-                            System.out.print(new Date());
+                            if (managerTel != null) {
+                                String warningMessage = "你好请前往报警站点： " + station_name + "\n" + "所属行政区：" + warning.getWarning_district()+ "\n" +
+                                        "功能区：" + warning.getWarning_domain() + "\n" + "报警指标：" + warning.getNorm_name() + "\n" + "报警阈值："  +
+                                        warning.getLimit_value() + "\n" + "leq：" + warning.getReal_value() + "\n" + "报警开始时间" + warning.getWarning_start_time() + "【上海】";
+                                System.out.println(warningMessage);
+                                SMSManage.getInstance().send(warningMessage,managerTel);
+                                System.out.print(new Date());
+                            }
+
+                            else {
+                                System.out.print("报警无接收者");
+                            }
 
 //                            JSONObject realwarningdataJson = new JSONObject();
 //                            realwarningdataJson.put("warning_id", warning.getWarning_id());
