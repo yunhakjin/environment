@@ -257,13 +257,13 @@ public class StationServiceImpl implements StationService {
                     for (Station station:stations) {
                         if(operation_id.equals("0")){
                             Map<String, String> innerMap = new LinkedHashMap<String, String>();
-                            innerMap.put("station_id",station.getStationId());
+                            innerMap.put("station_id",station.getStationCode());
                             innerMap.put("station_name",station.getStationName());
                             innerMapList.add(innerMap);
                         }else{
                             if(station.getOperation_id().equals(operation_id)){
                                 Map<String, String> innerMap = new LinkedHashMap<String, String>();
-                                innerMap.put("station_id",station.getStationId());
+                                innerMap.put("station_id",station.getStationCode());
                                 innerMap.put("station_name",station.getStationName());
                                 innerMapList.add(innerMap);
                             }
