@@ -20,7 +20,7 @@ public class User  implements Serializable {
 
     @Id
     //@GeneratedValue
-    private Integer user_id;
+    private String user_id;
     private String password;
     private String user_mail;
 
@@ -71,11 +71,11 @@ public class User  implements Serializable {
         this.operation_id = operation_id;
     }
 
-    public Integer getUser_id() {
+    public String getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(Integer user_id) {
+    public void setUser_id(String user_id) {
         this.user_id = user_id;
     }
 

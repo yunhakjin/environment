@@ -38,7 +38,7 @@ public interface RoleDao extends JpaRepository<Role,Integer> {
     List<Object[]> getAll();
 
     @Query(value = "select * from role where role_id in (select role_id from user_role where user_id=?1)",nativeQuery = true)
-    List<Role> getRoleByUserID(Integer user_id);
+    List<Role> getRoleByUserID(String user_id);
 
 
     @Transactional

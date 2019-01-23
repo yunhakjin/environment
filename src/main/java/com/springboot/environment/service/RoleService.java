@@ -19,7 +19,7 @@ public interface RoleService {
 
     void updateOne(String role_id, String role_name);
 
-    List<Role> getRoleByUserID(Integer user_id);
+    List<Role> getRoleByUserID(String user_id);
 
     Map addRole(Map params);
 

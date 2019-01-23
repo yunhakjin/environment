@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByUserId(String user_id) {
-        return userDao.loadByUserId(Integer.parseInt(user_id));
+        return userDao.loadByUserId((user_id));
         // return null;
     }
 
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean register(String user_id, String name, String password, String mail , String tel, String user_prefer,String role_id,String group_id, HttpSession session, HttpServletRequest request) {
 
-        ByteSource salt = ByteSource.Util.bytes(name);
+        ByteSource salt = ByteSource.Util.bytes(user_id);
         /*
         * MD5加密：
         * 使用SimpleHash类对原始密码进行加密。
@@ -80,15 +80,15 @@ public class UserServiceImpl implements UserService {
         * */
         String newPs = new SimpleHash("MD5", password, salt, 1024).toHex();
         User u = new User();
-        u.setUser_id(Integer.parseInt(user_id));
+        u.setUser_id((user_id));
         u.setPassword(newPs);
         u.setUser_mail(mail);
         u.setUser_tel(tel);
         u.setUser_name(name);
         u.setUser_prefer(user_prefer);
         userDao.save(u);
-        userDao.saveUser_Role(Integer.parseInt(user_id),Integer.parseInt(role_id));
-        userDao.saveUser_Group(Integer.parseInt(user_id),Integer.parseInt(group_id));
+        userDao.saveUser_Role(user_id,Integer.parseInt(role_id));
+        userDao.saveUser_Group(user_id,Integer.parseInt(group_id));
         return true;
     }
 
@@ -121,19 +121,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delOne(String user_id) {
-        userDao.deleteUserRole(Integer.parseInt(user_id));
-        userDao.deleteUserGroup(Integer.parseInt(user_id));
+        userDao.deleteUserRole((user_id));
+        userDao.deleteUserGroup((user_id));
         userDao.deleteById(Integer.parseInt(user_id));
     }
 
     @Override
     public void updateOne(String user_id, String user_name, String password, String user_mail, String user_tel, String user_prefer) {
-        userDao.updateOne(Integer.parseInt(user_id),user_name,password,user_mail,user_tel,user_prefer);
+        userDao.updateOne((user_id),user_name,password,user_mail,user_tel,user_prefer);
     }
 
     @Override
     public List<String> getPrefer(String user_id) {
-        String[] prefers=userDao.loadByUserId(Integer.parseInt(user_id)).getUser_prefer().split(",");
+        String[] prefers=userDao.loadByUserId((user_id)).getUser_prefer().split(",");
         List<String> lists=new ArrayList<>();
         for (String a: prefers) {
             lists.add(a);
@@ -195,7 +195,7 @@ public class UserServiceImpl implements UserService {
 
             }
         }else {
-            User user=userDao.loadByUserId(Integer.parseInt(selectedUserId));
+            User user=userDao.loadByUserId((selectedUserId));
             System.out.println(user);
             Map<String,Object> userMap=new LinkedHashMap<String,Object>();
             if(userDao.getRoleIDByUserID(user.getUser_id())!=null){
@@ -234,7 +234,7 @@ public class UserServiceImpl implements UserService {
         String user_name=(String)params.get("user_name");
         String password=(String)params.get("password");
         String role=(String)params.get("role");
-        ByteSource salt = ByteSource.Util.bytes(user_name);
+        ByteSource salt = ByteSource.Util.bytes(user_id);
         String newPs = new SimpleHash("MD5", password, salt, 1024).toHex();
         String user_tel=(String)params.get("user_tel");
         String user_mail=(String)params.get("user_mail");
@@ -242,7 +242,7 @@ public class UserServiceImpl implements UserService {
         String frozenflag=(String)params.get("frozenflag");
 
         User user=new User();
-        user.setUser_id(Integer.parseInt(user_id));
+        user.setUser_id((user_id));
         user.setUser_name(user_name);
         user.setPassword(newPs);
         user.setUser_tel(user_tel);
@@ -251,11 +251,11 @@ public class UserServiceImpl implements UserService {
         user.setFrozenflag(Integer.parseInt(frozenflag));
         if(type.equals("add")){
             user.setPassword(newPs);
-            User u=userDao.loadByUserId(Integer.parseInt(user_id));
+            User u=userDao.loadByUserId((user_id));
             if(u==null){
                 userDao.save(user);
-                userDao.addRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
-                User user1=userDao.loadByUserId(Integer.parseInt(user_id));
+                userDao.addRoleUser((user_id),Integer.parseInt(role));
+                User user1=userDao.loadByUserId((user_id));
                 if(user1!=null){
                     resultMap.put("addFlag","true");
                 }else{
@@ -270,21 +270,21 @@ public class UserServiceImpl implements UserService {
             //判断user-id是否有，如果有，那么
 
             user.setPassword(password);
-            User u=userDao.loadByUserId(Integer.parseInt(user_id));
+            User u=userDao.loadByUserId((user_id));
             if(u!=null){
                 userDao.save(user);
-                User user1=userDao.loadByUserId(Integer.parseInt(user_id));
+                User user1=userDao.loadByUserId((user_id));
                 if(user1.getUser_name().equals(user_name)&&user1.getPassword().equals(password)&&user1.getUser_mail().equals(user_mail)&&user1.getUser_tel().equals(user_tel)){
                     resultMap.put("editFlag","true");
                 }else{
                     resultMap.put("editFlag","false");
                 }
-               int userRoleCount=userDao.Count(Integer.parseInt(user_id));
+               int userRoleCount=userDao.Count((user_id));
                System.out.println(userRoleCount+"userRoleCount");
                if(userRoleCount==1){
-                   userDao.updateRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
+                   userDao.updateRoleUser((user_id),Integer.parseInt(role));
                }else {
-                   userDao.addRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
+                   userDao.addRoleUser((user_id),Integer.parseInt(role));
 
                }
 
@@ -295,21 +295,21 @@ public class UserServiceImpl implements UserService {
         }else if(type.equals("updatePWD")){
             //判断user-id是否有，如果有，那么
             user.setPassword(newPs);
-            User u=userDao.loadByUserId(Integer.parseInt(user_id));
+            User u=userDao.loadByUserId((user_id));
             if(u!=null){
                 userDao.save(user);
-                User user1=userDao.loadByUserId(Integer.parseInt(user_id));
+                User user1=userDao.loadByUserId((user_id));
                 if(user1.getUser_name().equals(user_name)&&user1.getPassword().equals(newPs)&&user1.getUser_mail().equals(user_mail)&&user1.getUser_tel().equals(user_tel)){
                     resultMap.put("updateFlag","true");
                 }else{
                     resultMap.put("updateFlag","false");
                 }
-                int userRoleCount=userDao.Count(Integer.parseInt(user_id));
+                int userRoleCount=userDao.Count((user_id));
                 System.out.println(userRoleCount+"userRoleCount");
                 if(userRoleCount==1){
-                    userDao.updateRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
+                    userDao.updateRoleUser((user_id),Integer.parseInt(role));
                 }else {
-                    userDao.addRoleUser(Integer.parseInt(user_id),Integer.parseInt(role));
+                    userDao.addRoleUser((user_id),Integer.parseInt(role));
                 }
             }else{
                 System.out.println("不存在此用户");
@@ -328,13 +328,13 @@ public class UserServiceImpl implements UserService {
             String user_id=userIdList.get(i).toString();
             //判断用户和其他的表连接关系-如果存在就删除--最后再删除用户信息。user_group user-role
             //暂时不考虑，后期考虑
-            if(userDao.loadByUserId(Integer.parseInt(user_id))!=null){
+            if(userDao.loadByUserId((user_id))!=null){
                 List<Object[]> UserRoleList=userDao.getUserRoleByUserID(Integer.parseInt(user_id));
                 if(UserRoleList!=null){
                     System.out.println("UserRoleList"+UserRoleList);
                 }
                 userDao.deleteById(Integer.parseInt(user_id));
-                if (userDao.loadByUserId(Integer.parseInt(user_id))==null){
+                if (userDao.loadByUserId((user_id))==null){
                     count++;
                 }
             }else{
@@ -355,8 +355,8 @@ public class UserServiceImpl implements UserService {
         String user_id=(String)params.get("user_id");
         String old_pwd=(String)params.get("old_pwd");
         Map<String,String> resultMap=new LinkedHashMap<String,String>();
-        User user=userDao.loadByUserId(Integer.parseInt(user_id));
-        ByteSource salt = ByteSource.Util.bytes(user.getUser_name());
+        User user=userDao.loadByUserId((user_id));
+        ByteSource salt = ByteSource.Util.bytes(user_id);
         String newPs = new SimpleHash("MD5", old_pwd, salt, 1024).toHex();
         if(newPs.equals(user.getPassword())){
             resultMap.put("flag","true");
@@ -371,7 +371,7 @@ public class UserServiceImpl implements UserService {
         String user_id=(String)params.get("user_id");
         boolean froze=(boolean)params.get("froze");
         Map<String,String> resultMap=new LinkedHashMap<String,String>();
-        User user=userDao.loadByUserId(Integer.parseInt(user_id));
+        User user=userDao.loadByUserId((user_id));
         if(user!=null){
             if(froze==false&&user.getFrozenflag()==0){
                 int flag=userDao.updateActiveFlag(user_id);

@@ -59,11 +59,11 @@ public class AuthRealm extends AuthorizingRealm {
         System.out.println("NAME"+userName);
         //根据用户名查询数据库中对应的记录
         User user = userService.findByUserId(userName);
-        System.out.println(user);
+        System.out.println(user+"test yonghuming");
         //当前realm对象的name
         String realmName = getName();
         //盐值
-        ByteSource credentialsSalt = ByteSource.Util.bytes(user.getUser_name());
+        ByteSource credentialsSalt = ByteSource.Util.bytes(userName);
         //封装用户信息，构建AuthenticationInfo对象并返回
         AuthenticationInfo authcInfo = new SimpleAuthenticationInfo(user, user.getPassword(),credentialsSalt, realmName);
         return authcInfo;
