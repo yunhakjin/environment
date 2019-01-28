@@ -463,12 +463,40 @@ public class DateUtil {
         return calendar.get(Calendar.DAY_OF_MONTH);
     }
 
+    /**
+     * 判断给定年月是否是当前年月
+     * @param nowDate
+     * @param givenTime
+     * @return
+     */
+    public static boolean isCurrYearAndMonth(Date nowDate, String givenTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(nowDate);
+        int currYear = calendar.get(Calendar.YEAR);
+        //这里需要做加1处理
+        int currMonth = calendar.get(Calendar.MONTH) + 1;
+        return (currYear == Integer.parseInt(givenTime.split("-")[0]) && currMonth == Integer.parseInt(givenTime.split("-")[1]));
+    }
+
+    /**
+     * 获得当前的天数
+     * @param nowDate
+     * @return
+     */
+    public static int getDayNowDate(Date nowDate) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(nowDate);
+        return calendar.get(Calendar.DAY_OF_MONTH);
+    }
+
     public static void main(String[] args) {
         Date date = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
-        System.out.println(sdf.format(calendar.getTime()));
+        String givenTime = "2019-01";
+        System.out.println(getDayNowDate(date));
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTime(date);
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+//        System.out.println(sdf.format(calendar.getTime()));
 
     }
 

@@ -1,5 +1,6 @@
 package com.springboot.environment.serviceImpl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
@@ -213,6 +214,17 @@ public class DDataServiceImp implements DDataService {
                         object.put("qualifiedRate_night", qualifiedRate + "%");
                     }
                 }
+                //将当前时间的多余数据删除，判断当前的年月是否是给定的年月
+                Date nowDate = new Date();
+                if (DateUtil.isCurrYearAndMonth(nowDate, dateTime)) {
+                    int currDate = DateUtil.getDayNowDate(nowDate);
+                    for (int i = currDate + 1; i <= dayNums; i++) {
+                        JSONObject newObject = new JSONObject();
+                        newObject.put("time", i);
+                        ddataArray.set(i - 1, newObject);
+                    }
+                }
+
             }
             dataJSON.put("count", dayNums);
             dataJSON.put("data", ddataArray);
