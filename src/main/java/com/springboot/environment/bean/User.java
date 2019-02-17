@@ -135,12 +135,14 @@ public class User  implements Serializable {
     @Override
     public String toString() {
         return "User{" +
-                "user_id=" + user_id +
+                "user_name='" + user_name + '\'' +
                 ", password='" + password + '\'' +
+                ", user_id='" + user_id + '\'' +
                 ", user_mail='" + user_mail + '\'' +
-                ", user_name='" + user_name + '\'' +
                 ", user_tel='" + user_tel + '\'' +
-                ", user_prefer='" + user_prefer +
+                ", user_prefer='" + user_prefer + '\'' +
+                ", frozenflag=" + frozenflag +
+                ", operation_id='" + operation_id + '\'' +
                 '}';
     }
 

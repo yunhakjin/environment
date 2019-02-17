@@ -232,6 +232,7 @@ public class StationController {
     @RequestMapping(value = "/getStationsByAreasAndFuncCodes",method = RequestMethod.POST)
     public Map getStationsByAreasAndFuncCodes(@RequestBody Map<String,Object> params, HttpSession session){
         String operation_id = GetStationListByUser(session);
+        //System.out.println("operation_id"+operation_id);
         return stationService.getStationsByAreasAndFuncCodes(params,operation_id);
     }
 
@@ -478,10 +479,11 @@ public class StationController {
         User user=(User) session.getAttribute("user");
         System.out.println("userOnline"+user);
         String operatationId=user.getOperation_id();
-        if(operatationId==null||operatationId.equals("")){
+        if(operatationId==null||operatationId.equals("")||operatationId.equals("null")){
             System.out.println("超级管理员或无运维单位人员");
             operatationId="0";
         }
+        //System.out.println(operatationId);
         return operatationId;
     }
 
