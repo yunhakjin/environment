@@ -254,6 +254,7 @@ public class StationServiceImpl implements StationService {
             }else{//列表中不是全部的areas，但是是全部的func
                 for(int i=0;i<areas.size();i++){
                     List<Station> stations=stationDao.getAreasByAreasName(areas.get(i));
+
                     for (Station station:stations) {
                         if(operation_id.equals("0")){
                             Map<String, String> innerMap = new LinkedHashMap<String, String>();
@@ -287,6 +288,10 @@ public class StationServiceImpl implements StationService {
                             }
                         }
                     }else{
+                        /*System.out.println("stationCode666:::"+station.getStationCode());
+                        System.out.println(station.getOperation_id().equals(operation_id));
+                        System.out.println(station.getOperation_id());
+                        System.out.println(operation_id);*/
                         if(station.getOperation_id().equals(operation_id)){
                             for(int j=0;j<funcCodes.size();j++){//从获得的stationslist中查找功能让区为get(j)的站点，并把这个站点加入到list中
                                 if(funcCodes.get(j).equals((station.getDomain()+""))){
@@ -297,6 +302,7 @@ public class StationServiceImpl implements StationService {
                                 }
                             }
                         }
+                        //System.out.println(innerMapList);
                     }
 
                 }
