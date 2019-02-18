@@ -891,7 +891,7 @@ public class StationServiceImpl implements StationService {
                         map.put("O_status","手动");
                     }
 
-                    if(policeDatas==null){
+                    if(policeDatas.isEmpty()){
                         map.put("OverLimit","否");
                     }else{
                         //报警  是否超标
