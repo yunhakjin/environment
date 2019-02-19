@@ -210,9 +210,9 @@ public class DataController {
             @ApiImplicitParam(name = "params",value="参数列表",dataType = "String")
     })
     @RequestMapping(value = "/querymDataByStationsArea", method = RequestMethod.POST)
-    public String querymDataByStationsArea(@RequestBody Map<String, Object> params) throws ParseException {
+    public String querymDataByStationsArea(@RequestBody Map<String, Object> params, HttpSession session) throws ParseException {
 
-        return stationService.querymDataByStationArea(params);
+        return stationService.querymDataByStationArea(params, session);
 
     }
 
@@ -221,9 +221,9 @@ public class DataController {
             @ApiImplicitParam(name = "params",value="参数列表",dataType = "String")
     })
     @RequestMapping(value = "/queryhDataByStationsArea", method = RequestMethod.POST)
-    public String queryhDataByStationArea(@RequestBody Map<String, Object> params){
+    public String queryhDataByStationArea(@RequestBody Map<String, Object> params, HttpSession session){
 
-        return stationService.queryhDataByStationArea(params);
+        return stationService.queryhDataByStationArea(params, session);
 
     }
 
@@ -233,9 +233,9 @@ public class DataController {
             @ApiImplicitParam(name = "params",value="当前的页号",dataType = "String")
     })
     @RequestMapping(value = "/querydDataByStationsArea", method = RequestMethod.POST)
-    public String querydDataByStationByArea(@RequestBody Map<String, Object> params){
+    public String querydDataByStationByArea(@RequestBody Map<String, Object> params, HttpSession session){
 
-        return stationService.querydDataByStationArea(params);
+        return stationService.querydDataByStationArea(params, session);
     }
 
 

@@ -33,4 +33,7 @@ public interface NormDao extends JpaRepository<Norm,String> {
     @Query(value = "select norm_code from norm where mflag=1 and norm_name = 'LeqA'",nativeQuery = true)
     Object getLeqACode();
 
+    @Query(value = "select * from norm where norm_id_code = ?1", nativeQuery = true)
+    Norm getNormCodeByNorimIdCode(String normIdCode);
+
 }

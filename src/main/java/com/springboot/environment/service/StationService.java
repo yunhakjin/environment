@@ -6,6 +6,7 @@ import com.springboot.environment.request.QuerydDataByStationAreaReq;
 import com.springboot.environment.request.QueryhDataByStationAreaReq;
 import com.springboot.environment.request.QuerymDataByStationsAreaReq;
 
+import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +48,11 @@ public interface StationService {
 
     String queryStationsByKey(String key);
 
-    String querymDataByStationArea(Map<String, Object> params) throws ParseException;
+    String querymDataByStationArea(Map<String, Object> params, HttpSession session) throws ParseException;
 
-    String queryhDataByStationArea(Map<String, Object> params);
+    String queryhDataByStationArea(Map<String, Object> params, HttpSession session);
 
-    String querydDataByStationArea(Map<String, Object> params);
+    String querydDataByStationArea(Map<String, Object> params, HttpSession session);
 
     /**
      * 综合查询站点信息

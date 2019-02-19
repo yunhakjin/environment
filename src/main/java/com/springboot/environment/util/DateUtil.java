@@ -45,6 +45,11 @@ public class DateUtil {
         return simpleDateFormat.format(date);
     }
 
+    public static String getDateBeforeHour(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(date);
+    }
+
     public static String getHourAndMinute(Date date){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
         return simpleDateFormat.format(date);
@@ -491,12 +496,13 @@ public class DateUtil {
 
     public static void main(String[] args) {
         Date date = new Date();
-        String givenTime = "2019-01";
-        System.out.println(getDayNowDate(date));
+//        String givenTime = "2019-01";
+//        System.out.println(getDayNowDate(date));
 //        Calendar calendar = Calendar.getInstance();
 //        calendar.setTime(date);
 //        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 //        System.out.println(sdf.format(calendar.getTime()));
+        System.out.println(getDateBeforeHour(date));
 
     }
 

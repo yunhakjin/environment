@@ -21,6 +21,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
@@ -365,7 +366,7 @@ public class StationServiceImpl implements StationService {
     }
 
     @Override
-    public String querymDataByStationArea(Map<String, Object> params) {
+    public String querymDataByStationArea(Map<String, Object> params, HttpSession session) {
 
         //方法开始时间
         long startTime  = System.currentTimeMillis();
@@ -376,7 +377,7 @@ public class StationServiceImpl implements StationService {
         JSONArray dataArray = new JSONArray();
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
 
-        ComprehensiveQueryRequest request = buildReq(params);
+        ComprehensiveQueryRequest request = buildReq(params, session);
         List<Station> stations = comprehensiveQueryStations(request);
         int count = getComprehensiveQueryNum(request);
 
@@ -454,7 +455,7 @@ public class StationServiceImpl implements StationService {
     }
 
     @Override
-    public String queryhDataByStationArea(Map<String, Object> params) {
+    public String queryhDataByStationArea(Map<String, Object> params, HttpSession session) {
 
         long startTime = System.currentTimeMillis();
 
@@ -462,7 +463,7 @@ public class StationServiceImpl implements StationService {
         JSONObject siteData = new JSONObject();
         JSONArray dataArray = new JSONArray();
 
-        ComprehensiveQueryRequest request = buildReq(params);
+        ComprehensiveQueryRequest request = buildReq(params, session);
         List<Station> stations = comprehensiveQueryStations(request);
         int count = getComprehensiveQueryNum(request);
 
@@ -536,14 +537,14 @@ public class StationServiceImpl implements StationService {
     }
 
     @Override
-    public String querydDataByStationArea(Map<String, Object> params) {
+    public String querydDataByStationArea(Map<String, Object> params, HttpSession session) {
 
         long startTime = System.currentTimeMillis();
         JSONObject dataJson = new JSONObject();
         JSONObject siteData = new JSONObject();
         JSONArray dataArray = new JSONArray();
 
-        ComprehensiveQueryRequest request = buildReq(params);
+        ComprehensiveQueryRequest request = buildReq(params, session);
         List<Station> stations = comprehensiveQueryStations(request);
         int count = getComprehensiveQueryNum(request);
 
@@ -560,6 +561,7 @@ public class StationServiceImpl implements StationService {
                     stationJSON.put("sim", station.getStationSim());
                     stationJSON.put("Ld", "");
                     stationJSON.put("effective_rate_Ld", "");
+                    stationJSON.put("latest_time_d", "");
                     stationJSON.put("Ln", "");
                     stationJSON.put("effective_rate_Ln", "");
                     stationJSON.put("Lnm", "");
@@ -591,6 +593,7 @@ public class StationServiceImpl implements StationService {
                     stationJSON.put("station_code", station.getStationCode());
                     stationJSON.put("sim", station.getStationSim());
                     stationJSON.put("Ld", Ld);
+                    stationJSON.put("latest_time_d", DateUtil.getDateBeforeHour(dDatas.get(0).getData_time()));
                     stationJSON.put("effective_rate_Ld", StringUtil.convertStringToInt(effective_rate_Ld));
                     stationJSON.put("Ln", Ln);
                     stationJSON.put("effective_rate_Ln", StringUtil.convertStringToInt(effective_rate_Ln));
@@ -615,7 +618,7 @@ public class StationServiceImpl implements StationService {
         int end = request.getPageSize();
         //综合查询站点信息，不包含在线离线判断
         List<Station> stations = stationDao.comprehensiveQueryByPage(request.getArea(), request.getEnvironment(), request.getIsCountry(),
-                request.getIsCity(), request.getIsArea(), request.getAttribute(), request.getDistrict(), request.getStreet(), start, end);
+                request.getIsCity(), request.getIsArea(), request.getAttribute(), request.getDistrict(), request.getStreet(), request.getUserOperationId(), start, end);
         //在线离线判断，如果为null则表示查询全部的站点信息
         //查询在线标识,需要循环判断
         List<Station> newList = new ArrayList<>();
@@ -647,7 +650,7 @@ public class StationServiceImpl implements StationService {
         return newList;
     }
 
-    private ComprehensiveQueryRequest buildReq(Map<String, Object> params) {
+    private ComprehensiveQueryRequest buildReq(Map<String, Object> params, HttpSession session) {
         ComprehensiveQueryRequest request = new ComprehensiveQueryRequest();
         //area是区域环境
         String area = (String)params.get("area");
@@ -660,6 +663,7 @@ public class StationServiceImpl implements StationService {
         String street = (String)position.get(1);
         int pageSize = (Integer) params.get("each_page_num");
         int pageNum = (Integer) params.get("current_page");
+        User user = (User) session.getAttribute("user");
 
         if (area.equals("5")) {
             request.setArea(null);
@@ -699,6 +703,9 @@ public class StationServiceImpl implements StationService {
         request.setStreet(street);
         request.setPageSize(pageSize);
         request.setPageNum(pageNum);
+        if (user != null) {
+            request.setUserOperationId(user.getOperation_id());
+        }
         logger.info("构造的参数为{}", request.toString());
 
         return request;
@@ -707,7 +714,7 @@ public class StationServiceImpl implements StationService {
     private int getComprehensiveQueryNum(ComprehensiveQueryRequest request) {
 
         return stationDao.queryStationMunByComprehensiveQuery(request.getArea(), request.getEnvironment(), request.getIsCountry(),
-                request.getIsCity(), request.getIsArea(), request.getAttribute(), request.getDistrict(), request.getStreet());
+                request.getIsCity(), request.getIsArea(), request.getAttribute(), request.getDistrict(), request.getStreet(), request.getUserOperationId());
     }
 
     @Override

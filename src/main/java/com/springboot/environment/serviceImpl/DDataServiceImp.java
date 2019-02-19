@@ -30,15 +30,12 @@ public class DDataServiceImp implements DDataService {
     private NormDao normDao;
 
     @Autowired
-    private HDataDao hDataDao;
-
-    @Autowired
     ThresholdDao thresholdDao;
 
     @Autowired
     HDataRepositority hDataRepositority;
 
-    private static final String LEQ = "n00006";
+    private static final String LEQ = "LEQ";
 
     @Override
     public List<DData> getAll() {
@@ -135,7 +132,8 @@ public class DDataServiceImp implements DDataService {
             System.out.println(hDataBeginTime);
             System.out.println(hDataEndTime);
             //查询出当月的所有LEQ指标
-            List<HData> hdataList = hDataRepositority.getNormHdataByStationIdAndTime(stationId, hDataBeginTime, hDataEndTime, LEQ);
+            Norm norm = normDao.getNormCodeByNorimIdCode(LEQ);
+            List<HData> hdataList = hDataRepositority.getNormHdataByStationIdAndTime(stationId, hDataBeginTime, hDataEndTime, norm.getNorm_code());
 
             if (!StringUtil.isNullOrEmpty(hdataList)) {
                 //查询该站点的昼夜阈值

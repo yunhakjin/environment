@@ -33,24 +33,6 @@ public class ComprehensiveQueryRequest {
     @JSONField(name = "district")
     private String district;
 
-    @Override
-    public String toString() {
-        return "QueryhDataByStationAreaReq{" +
-                "area=" + area +
-                ", environment=" + environment +
-                ", isArea=" + isArea +
-                ", isCity=" + isCity +
-                ", isCountry=" + isCountry +
-                ", state=" + state +
-                ", attribute=" + attribute +
-                ", district='" + district + '\'' +
-                ", street='" + street + '\'' +
-                ", pageSize=" + pageSize +
-                ", pageNum=" + pageNum +
-                '}';
-    }
-
-
 
     public ComprehensiveQueryRequest(String area, String environment, String isArea, String isCity, String isCountry, String state, String attribute, String district, String street, int pageSize, int pageNum) {
         this.area = area;
@@ -76,16 +58,46 @@ public class ComprehensiveQueryRequest {
     @JSONField(name = "current_page")
     private int pageNum;
 
+    @JSONField(name = "user_operation_id")
+    private String userOperationId;
+
+    public String getUserOperationId() {
+        return userOperationId;
+    }
+
+    public void setUserOperationId(String userOperationId) {
+        this.userOperationId = userOperationId;
+    }
+
+    @Override
+    public String toString() {
+        return "ComprehensiveQueryRequest{" +
+                "area='" + area + '\'' +
+                ", environment='" + environment + '\'' +
+                ", isArea='" + isArea + '\'' +
+                ", isCity='" + isCity + '\'' +
+                ", isCountry='" + isCountry + '\'' +
+                ", state='" + state + '\'' +
+                ", attribute='" + attribute + '\'' +
+                ", district='" + district + '\'' +
+                ", street='" + street + '\'' +
+                ", pageSize=" + pageSize +
+                ", pageNum=" + pageNum +
+                ", userOperationId='" + userOperationId + '\'' +
+                '}';
+    }
+
     public ComprehensiveQueryRequest() {
     }
 
-    public ComprehensiveQueryRequest(String area, int pageSize, int pageNum) {
+    public ComprehensiveQueryRequest(String area, int pageSize, int pageNum, String userOperationId) {
         this.area = area;
         this.pageSize = pageSize;
         this.pageNum = pageNum;
+        this.userOperationId = userOperationId;
     }
 
-    public ComprehensiveQueryRequest(String area, String environment, String state, String attribute, String district, String street, int pageSize, int pageNum) {
+    public ComprehensiveQueryRequest(String area, String environment, String state, String attribute, String district, String street, int pageSize, int pageNum, String userOperationId) {
         this.area = area;
         this.environment = environment;
         this.state = state;
@@ -94,6 +106,7 @@ public class ComprehensiveQueryRequest {
         this.street = street;
         this.pageSize = pageSize;
         this.pageNum = pageNum;
+        this.userOperationId = userOperationId;
     }
 
 
