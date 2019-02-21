@@ -229,7 +229,15 @@ public class UserController {
     public Map frozenOrActiveUser(@RequestBody Map<String,Object> params){
         return userService.frozenOrActiveUser(params);
     }
-
+    /*
+           * 初始化用户密码
+           * */
+    @ApiOperation(value = "初始化用户密码",notes = "初始化用户密码by id")
+    @ApiImplicitParam(name = "params",value="userid",dataType = "JSON")
+    @RequestMapping(value = "/initPWD",method = RequestMethod.POST)
+    public Map initPWD(@RequestBody Map<String,Object> params){
+        return userService.initPWD(params);
+    }
 
 }
 

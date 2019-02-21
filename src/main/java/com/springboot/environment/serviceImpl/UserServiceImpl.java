@@ -395,6 +395,26 @@ public class UserServiceImpl implements UserService {
         return resultMap;
     }
 
+    /*
+    * 初始化此用户密码为12345678
+    *
+    * */
+    @Override
+    public Map initPWD(Map params) {
+        String user_id=(String)params.get("user_id");
+        Map<String,String> resultMap=new LinkedHashMap<String,String>();
+        String pwd="12345678";
+        ByteSource salt = ByteSource.Util.bytes(user_id);
+        String newPs = new SimpleHash("MD5", pwd, salt, 1024).toHex();
+        System.out.println("newPWd"+newPs+"     "+user_id);
+        int flag=userDao.initPWD(newPs,user_id);
+        if(flag==1){
+            resultMap.put("initPasswordFlag","true");
+        }else{
+            resultMap.put("initPasswordFlag","false");
+        }
+        return resultMap;
+    }
 
 
 }
