@@ -45,6 +45,8 @@ public interface UserService {
 
     Map frozenOrActiveUser(Map params);
 
+    Map initPWD(Map params);
+
 
     // Object login(String name, String pass, HttpSession session, HttpServletRequest request);
 
