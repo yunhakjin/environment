@@ -74,8 +74,16 @@ public interface UserDao extends JpaRepository<User,Integer> {
     @Query(value = "update user set frozenflag=1 where user_id=?1 ",nativeQuery = true)
     int updateActiveFlag(String user_id);
 
+
+    @Transactional
+    @Modifying
+    @Query(value = "update user set password=?1 where user_id=?2 ",nativeQuery = true)
+    int initPWD(String password, String user_id);
+
     @Transactional
     @Modifying
     @Query(value = "update user set frozenflag=0 where user_id=?1 ",nativeQuery = true)
     int updateFrozenFlag(String user_id);
+
+
 }
