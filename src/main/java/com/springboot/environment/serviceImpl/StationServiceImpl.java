@@ -423,6 +423,7 @@ public class StationServiceImpl implements StationService {
                     stationJSON.put("station_name", station.getStationName());
                     stationJSON.put("station_id", station.getStationId());
                     stationJSON.put("station_code", station.getStationCode());
+                    stationJSON.put("area", station.getDistrict());
                     stationJSON.put("sim", station.getStationSim());
                     stationJSON.put("latest_time", maxDataTime);
                     stationJSON.put("count_r", thisDayCount == 0 ? "" : thisDayCount);
@@ -433,6 +434,7 @@ public class StationServiceImpl implements StationService {
                     stationJSON.put("station_name", station.getStationName());
                     stationJSON.put("station_id", station.getStationId());
                     stationJSON.put("station_code", station.getStationCode());
+                    stationJSON.put("area", station.getDistrict());
                     stationJSON.put("sim", station.getStationSim());
                     stationJSON.put("latest_time", "");
                     stationJSON.put("count_r", thisDayCount == 0 ? "" : thisDayCount);
@@ -477,6 +479,7 @@ public class StationServiceImpl implements StationService {
                     stationJSON.put("station_name", station.getStationName());
                     stationJSON.put("station_id", station.getStationId());
                     stationJSON.put("station_code", station.getStationCode());
+                    stationJSON.put("area", station.getDistrict());
                     stationJSON.put("sim", station.getStationSim());
                     stationJSON.put("calibration_value", "");
                     stationJSON.put("flag", "");
@@ -513,6 +516,7 @@ public class StationServiceImpl implements StationService {
                     stationJSON.put("station_name", station.getStationName());
                     stationJSON.put("station_id", station.getStationId());
                     stationJSON.put("station_code", station.getStationCode());
+                    stationJSON.put("area", station.getDistrict());
                     stationJSON.put("calibration_value", calibration_value);
                     stationJSON.put("sim", station.getStationSim());
                     stationJSON.put("flag", flag);
@@ -558,6 +562,7 @@ public class StationServiceImpl implements StationService {
                     stationJSON.put("station_name", station.getStationName());
                     stationJSON.put("station_id", station.getStationId());
                     stationJSON.put("station_code", station.getStationCode());
+                    stationJSON.put("area", station.getDistrict());
                     stationJSON.put("sim", station.getStationSim());
                     stationJSON.put("Ld", "");
                     stationJSON.put("effective_rate_Ld", "");
@@ -591,6 +596,7 @@ public class StationServiceImpl implements StationService {
                     stationJSON.put("station_name", station.getStationName());
                     stationJSON.put("station_id", station.getStationId());
                     stationJSON.put("station_code", station.getStationCode());
+                    stationJSON.put("area", station.getDistrict());
                     stationJSON.put("sim", station.getStationSim());
                     stationJSON.put("Ld", Ld);
                     stationJSON.put("latest_time_d", DateUtil.getDateBeforeHour(dDatas.get(0).getData_time()));
